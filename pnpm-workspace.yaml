@@ -1,0 +1,8 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+# Kept out of the default install graph until their step in PLAN.md section 12.
+onlyBuiltDependencies:
+  - esbuild
+  - simple-git-hooks

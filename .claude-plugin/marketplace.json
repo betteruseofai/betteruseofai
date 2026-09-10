@@ -1,0 +1,18 @@
+{
+  "name": "betteruseofai",
+  "owner": {
+    "name": "Better Use of AI",
+    "url": "https://betteruseofai.org"
+  },
+  "metadata": {
+    "description": "Energy, water and carbon estimates for your Claude Code sessions, computed locally.",
+    "version": "0.0.0"
+  },
+  "plugins": [
+    {
+      "name": "betteruseofai",
+      "source": "./apps/claude-code-plugin",
+      "description": "A live statusline footprint and a nudge when a smaller model would do."
+    }
+  ]
+}
