@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+.turbo/
+.output/
+*.tsbuildinfo
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+
+# test and tooling
+coverage/
+.vitest/
+playwright-report/
+test-results/
+.astro/
+.wrangler/
+
+# editors and os
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# secrets, never committed
+.env
+.env.*
+!.env.example
+
+# generated screenshots are committed on purpose, so no ignore for design/shots
+
+# assistant config, local only: the public repo names no AI tooling
+CLAUDE.md
+.claude/
