@@ -315,3 +315,14 @@ def test_the_vendored_dataset_is_the_one_in_the_repository():
     assert digest.hexdigest() == DATASET["sha256"], (
         "The vendored dataset is out of date. Run: python scripts/sync-dataset.py"
     )
+
+
+def test_units_step_up_when_the_number_stops_being_readable():
+    """The same scaling the TypeScript does, so the plain text agrees too."""
+    from betteruseofai.cli import format_range, scale_unit
+    from betteruseofai.engine import Range
+
+    assert scale_unit(56350, "mL") == (56.35, "L")
+    assert scale_unit(500, "mL") == (500, "mL")
+    assert format_range(Range(2745, 17264, 192342), "Wh") == "17.3 kWh [ 2.75 to 192 ]"
+    assert format_range(Range(500, 5000, 50000), "Wh") == "5.00 kWh [ 0.500 to 50.0 ]"

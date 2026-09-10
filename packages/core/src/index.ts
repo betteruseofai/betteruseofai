@@ -20,6 +20,7 @@ export type { EquivalentResult } from './equivalents.js';
 export {
   formatRange,
   displayNumber,
+  scaleUnit,
   canonicalNumber,
   roundSignificant,
   explainFlags,

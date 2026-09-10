@@ -33,6 +33,16 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@22.20.2)(tsx@4.23.13)
 
+  apps/claude-code-plugin:
+    dependencies:
+      betteruseofai:
+        specifier: workspace:*
+        version: link:../cli-ts
+    devDependencies:
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
+
   apps/cli-ts:
     dependencies:
       '@betteruseofai/core':

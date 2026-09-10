@@ -1,4 +1,4 @@
-import { canonicalNumber, displayNumber, formatRange } from '@betteruseofai/core';
+import { canonicalNumber, displayNumber, formatRange, scaleUnit } from '@betteruseofai/core';
 import type { Aggregate, EstimateFlag, Range } from '@betteruseofai/core';
 
 import { canonicalJson, SCHEMA_VERSION } from './canonical.js';
@@ -131,5 +131,8 @@ export const caveats = (context: Context, totals: Aggregate): string[] => {
 
 export const flagList = (flags: EstimateFlag[]): string => (flags.length === 0 ? '' : flags.join(' '));
 
-export const short = (range: Range | null, unit: string): string =>
-  range === null ? 'unknown' : `${displayNumber(range.central)} ${unit}`;
+export const short = (range: Range | null, unit: string): string => {
+  if (range === null) return 'unknown';
+  const scaled = scaleUnit(range.central, unit);
+  return `${displayNumber(scaled.value)} ${scaled.unit}`;
+};

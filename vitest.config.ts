@@ -16,6 +16,7 @@ export default defineConfig({
       'packages/tokens',
       'packages/readers',
       'apps/cli-ts',
+      'apps/claude-code-plugin',
     ],
   },
 });

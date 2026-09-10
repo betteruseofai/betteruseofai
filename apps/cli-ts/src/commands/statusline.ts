@@ -9,6 +9,7 @@ import {
   estimate,
   formatRange,
   getModel,
+  scaleUnit,
 } from '@betteruseofai/core';
 import type { Estimate, UsageEvent } from '@betteruseofai/core';
 import { readClaudeCodeIncremental } from '@betteruseofai/readers';
@@ -182,8 +183,14 @@ export const statusline = async (context: Context, args: ParsedArgs): Promise<st
   parts.push(
     formatRange(rolled.energyWh, { unit: 'Wh', bounds: false, flags: rolled.flags, ascii }),
   );
-  if (rolled.waterMl) parts.push(`${displayNumber(rolled.waterMl.central)} mL`);
-  if (rolled.carbonG) parts.push(`${displayNumber(rolled.carbonG.central)} g`);
+  for (const [value, unit] of [
+    [rolled.waterMl, 'mL'],
+    [rolled.carbonG, 'g'],
+  ] as const) {
+    if (!value) continue;
+    const scaled = scaleUnit(value.central, unit);
+    parts.push(`${displayNumber(scaled.value)} ${scaled.unit}`);
+  }
 
   // The share of the session spent on the largest model, which is the number
   // that actually changes behaviour.
@@ -236,8 +243,14 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
     const cached: string[] = [
       formatRange(rolled.energyWh, { unit: 'Wh', bounds: false, flags: rolled.flags, ascii: true }),
     ];
-    if (rolled.waterMl) cached.push(`${displayNumber(rolled.waterMl.central)} mL`);
-    if (rolled.carbonG) cached.push(`${displayNumber(rolled.carbonG.central)} g`);
+    for (const [value, unit] of [
+      [rolled.waterMl, 'mL'],
+      [rolled.carbonG, 'g'],
+    ] as const) {
+      if (!value) continue;
+      const scaled = scaleUnit(value.central, unit);
+      cached.push(`${displayNumber(scaled.value)} ${scaled.unit}`);
+    }
     writeLine(input.session_id, cached.join(' · '));
 
     // Say something every tenth turn rather than after every one. A meter that
@@ -249,7 +262,7 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
     const share = top ? ` · ${Math.round((top[1] / rolled.count) * 100)}% ${getModel(top[0], context.dataset)?.displayName ?? top[0]}` : '';
 
     return say(
-      `Session so far: ${formatRange(rolled.energyWh, { unit: 'Wh', bounds: false, flags: rolled.flags, ascii: true })}, ${rolled.waterMl ? `${displayNumber(rolled.waterMl.central)} mL` : 'water unknown'}, ${rolled.carbonG ? `${displayNumber(rolled.carbonG.central)} gCO2e` : 'carbon unknown'} across ${rolled.count} turns${share}`,
+      `Session so far: ${cached.join(', ')} across ${rolled.count} turns${share}`,
     );
   }
 

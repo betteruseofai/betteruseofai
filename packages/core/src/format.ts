@@ -54,6 +54,27 @@ export const displayNumber = (value: number): string => {
   return value.toPrecision(2);
 };
 
+/**
+ * Steps a figure up to a larger unit once it stops being readable.
+ *
+ * An agent session reaches thousands of watt hours and tens of thousands of
+ * millilitres, and "7111 Wh" is a number nobody pictures. The thresholds are
+ * plain factors of a thousand, so the reader can always convert back in their
+ * head.
+ */
+const SCALES: Record<string, Array<{ at: number; unit: string; divide: number }>> = {
+  Wh: [{ at: 1000, unit: 'kWh', divide: 1000 }],
+  mL: [{ at: 1000, unit: 'L', divide: 1000 }],
+  g: [{ at: 1000, unit: 'kg', divide: 1000 }],
+};
+
+export const scaleUnit = (value: number, unit: string): { value: number; unit: string } => {
+  for (const step of SCALES[unit] ?? []) {
+    if (Math.abs(value) >= step.at) return { value: value / step.divide, unit: step.unit };
+  }
+  return { value, unit };
+};
+
 export interface FormatRangeOptions {
   unit?: string;
   /** Flags from the estimate, so a lower bound renders as one. */
@@ -75,14 +96,21 @@ export const formatRange = (range: Range | null, options: FormatRangeOptions = {
   const { unit, flags = [], bounds = true, ascii = false } = options;
   if (range === null) return 'unknown';
 
-  const suffix = unit ? ` ${unit}` : '';
   const lowerBound = flags.includes('thinking-unknown');
   const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
-
   const prefix = lowerBound ? (ascii ? '>= ' : '≥ ') : estimated ? '~' : '';
-  const central = `${prefix}${displayNumber(range.central)}${suffix}`;
+
+  // The whole range is shown in one unit, chosen by the central value, so the
+  // three numbers can be compared without doing arithmetic.
+  const scaled = unit ? scaleUnit(range.central, unit) : { value: range.central, unit: '' };
+  const divisor = unit && scaled.unit !== unit ? range.central / scaled.value : 1;
+  const suffix = scaled.unit ? ` ${scaled.unit}` : '';
+
+  const central = `${prefix}${displayNumber(scaled.value)}${suffix}`;
   if (!bounds) return central;
-  return `${central} [ ${displayNumber(range.low)} to ${displayNumber(range.high)} ]`;
+  const low = displayNumber(range.low / divisor);
+  const high = displayNumber(range.high / divisor);
+  return `${central} [ ${low} to ${high} ]`;
 };
 
 /** One line of plain English saying why a figure is uncertain. */

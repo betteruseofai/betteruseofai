@@ -307,6 +307,23 @@ def display_number(value: float) -> str:
     return f"{base}e{power[0]}{power[1:].lstrip('0') or '0'}"
 
 
+# Steps a figure up to a larger unit once it stops being readable. An agent
+# session reaches thousands of watt hours, and "7111 Wh" is a number nobody
+# pictures. Plain factors of a thousand, so the reader can convert back.
+_SCALES: dict[str, list[tuple[float, str, float]]] = {
+    "Wh": [(1000, "kWh", 1000)],
+    "mL": [(1000, "L", 1000)],
+    "g": [(1000, "kg", 1000)],
+}
+
+
+def scale_unit(value: float, unit: str) -> tuple[float, str]:
+    for at, larger, divide in _SCALES.get(unit, []):
+        if abs(value) >= at:
+            return value / divide, larger
+    return value, unit
+
+
 def format_range(
     value: Range | None,
     unit: str = "",
@@ -317,14 +334,22 @@ def format_range(
     if value is None:
         return "unknown"
     flags = flags or []
-    suffix = f" {unit}" if unit else ""
     lower_bound = "thinking-unknown" in flags
     estimated = "tokens-estimated" in flags or "derived-rate" in flags
     prefix = (">= " if ascii_only else "≥ ") if lower_bound else ("~" if estimated else "")
-    central = f"{prefix}{display_number(value.central)}{suffix}"
+
+    # The whole range is shown in one unit, chosen by the central value, so the
+    # three numbers can be compared without doing arithmetic.
+    scaled, scaled_unit = scale_unit(value.central, unit) if unit else (value.central, "")
+    divisor = value.central / scaled if unit and scaled_unit != unit and scaled else 1.0
+    suffix = f" {scaled_unit}" if scaled_unit else ""
+
+    central = f"{prefix}{display_number(scaled)}{suffix}"
     if not bounds:
         return central
-    return f"{central} [ {display_number(value.low)} to {display_number(value.high)} ]"
+    low = display_number(value.low / divisor)
+    high = display_number(value.high / divisor)
+    return f"{central} [ {low} to {high} ]"
 
 
 def table(
@@ -355,7 +380,10 @@ def table(
 
 
 def short(value: Range | None, unit: str) -> str:
-    return "unknown" if value is None else f"{display_number(value.central)} {unit}"
+    if value is None:
+        return "unknown"
+    scaled, scaled_unit = scale_unit(value.central, unit)
+    return f"{display_number(scaled)} {scaled_unit}"
 
 
 def readout(context: Context, totals: Aggregate) -> list[str]:

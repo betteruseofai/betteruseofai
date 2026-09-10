@@ -1,7 +1,6 @@
-import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 
+import datasetBundle from '@betteruseofai/dataset';
 import { estimate } from '@betteruseofai/core';
 import type { CarbonBasis, Dataset, Estimate, UsageEvent, WaterScope } from '@betteruseofai/core';
 import { readClaudeCode, readCodex } from '@betteruseofai/readers';
@@ -29,11 +28,13 @@ export interface Context {
   sources: string[];
 }
 
-export const loadDataset = (): Dataset => {
-  const require = createRequire(import.meta.url);
-  const entry = require.resolve('@betteruseofai/dataset');
-  return JSON.parse(readFileSync(join(dirname(entry), 'dataset.json'), 'utf8')) as Dataset;
-};
+/*
+ * Imported as a module rather than read off disk. Reading the file needed
+ * createRequire, which esbuild cannot follow, so the plugin bundle came out
+ * unable to find its own dataset. Importing it means the numbers travel with
+ * the code, which is what the no-network promise requires anyway.
+ */
+export const loadDataset = (): Dataset => datasetBundle as unknown as Dataset;
 
 const WATER_SCOPES: WaterScope[] = ['on-site', 'on-site + off-site', 'lifecycle'];
 

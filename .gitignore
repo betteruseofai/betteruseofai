@@ -40,3 +40,4 @@ Thumbs.db
 # committed on purpose, so there is no ignore for design/shots
 packages/tokens/fonts/
 fixtures/cli/output/
+apps/claude-code-plugin/dist/

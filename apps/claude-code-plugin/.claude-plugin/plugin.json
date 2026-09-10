@@ -1,0 +1,9 @@
+{
+  "name": "betteruseofai",
+  "version": "0.0.0",
+  "description": "See the energy, water and carbon behind your Claude Code sessions, worked out on your own machine.",
+  "author": { "name": "Anirudh Sharma" },
+  "homepage": "https://betteruseofai.org",
+  "license": "MIT",
+  "keywords": ["energy", "water", "carbon", "usage"]
+}
