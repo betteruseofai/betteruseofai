@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design sheet</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../components.css" />
+    <style>
+      /*
+       * Layout for this sheet only. Nothing here belongs in components.css,
+       * because the sheet is scaffolding and the components are the product.
+       */
+      .sheet {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 var(--gutter) var(--space-9);
+      }
+      .sheet__section {
+        padding-block: var(--space-7);
+        border-top: var(--rule) solid var(--hairline);
+      }
+      .sheet__head {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-4);
+        margin-bottom: var(--space-5);
+      }
+      .sheet__title {
+        font-family: var(--font-mono);
+        font-size: var(--step--1);
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+      }
+      .cols {
+        display: grid;
+        gap: var(--space-6);
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      }
+      .swatch {
+        border: var(--rule) solid var(--hairline);
+      }
+      .swatch__chip {
+        height: 68px;
+      }
+      .swatch__meta {
+        font-family: var(--font-mono);
+        font-size: var(--step--2);
+        padding: var(--space-2);
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-2);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .specimen {
+        border-top: var(--rule) solid var(--hairline);
+        padding-top: var(--space-3);
+        margin-bottom: var(--space-5);
+      }
+      .specimen__tag {
+        font-family: var(--font-mono);
+        font-size: var(--step--2);
+        color: var(--muted);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: var(--space-2);
+      }
+      .stack {
+        display: grid;
+        gap: var(--space-5);
+      }
+      .sheet__foot {
+        padding-top: var(--space-6);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <nav class="buoa-nav">
+        <a class="buoa-nav__brand" href="#">Better Use of AI</a>
+        <a href="#" aria-current="page">Design</a>
+        <a href="#">Method</a>
+        <a href="#">Calculator</a>
+        <button class="buoa-themetoggle" id="theme" type="button">Dark</button>
+      </nav>
+
+      <section class="sheet__section" style="border-top: 0">
+        <p class="buoa-reviewgate">
+          Draft. This sheet shows the parts, not a page. Every word on it is unreviewed.
+        </p>
+        <h1>Your prompts have a water bill.</h1>
+        <p style="font-size: var(--step-1); color: var(--ink-2)">
+          Every component in one place, in both themes, so the system can be judged before a single
+          page gets built on top of it.
+        </p>
+      </section>
+
+      <!-- ------------------------------------------------------------ colour -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">01</span> / 09</span>
+          <span class="sheet__title">Ground and ink</span>
+        </div>
+        <div class="cols" id="swatches"></div>
+      </section>
+
+      <!-- -------------------------------------------------------------- type -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">02</span> / 09</span>
+          <span class="sheet__title">Type</span>
+        </div>
+
+        <div class="specimen">
+          <span class="specimen__tag">Display, Big Shoulders 800, step 5</span>
+          <h2 style="font-size: var(--step-5)">Nobody can see the meter.</h2>
+        </div>
+        <div class="specimen">
+          <span class="specimen__tag">Display, step 3</span>
+          <h3 style="font-size: var(--step-3)">Where the range comes from</h3>
+        </div>
+        <div class="specimen">
+          <span class="specimen__tag">Body, Schibsted Grotesk 400</span>
+          <p>
+            Published measurements of AI energy use disagree by an order of magnitude, mostly
+            because they draw the system boundary in different places. Google counts the water its
+            cooling towers evaporate. Mistral counts that, plus the water used generating the
+            electricity, plus the water embedded in building the hardware.
+          </p>
+          <p><em>Italic sits here, for a title or a term being introduced.</em></p>
+          <p><strong>Bold at 700 is the only emphasis weight.</strong></p>
+        </div>
+        <div class="specimen">
+          <span class="specimen__tag">Mono, IBM Plex Mono, tabular and slashed zero</span>
+          <p class="buoa-mono" style="letter-spacing: 0.04em">
+            0123456789 &middot; 0.24 Wh &middot; 45 mL &middot; 1.14 gCO2e &middot; 100 000 tokens
+          </p>
+        </div>
+      </section>
+
+      <!-- ----------------------------------------------------------- readouts -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">03</span> / 09</span>
+          <span class="sheet__title">Readout and range</span>
+        </div>
+        <div class="cols">
+          <div>
+            <div class="buoa-readout">
+              <span class="buoa-readout__label">Energy</span>
+              <span class="buoa-readout__figure"
+                >13.6<span class="buoa-readout__unit">Wh</span></span
+              >
+              <span class="buoa-readout__bounds">[ 6.81 to 40.9 ]</span>
+            </div>
+            <div class="buoa-rangebar" style="--buoa-low: 8%; --buoa-central: 33%; --buoa-high: 96%">
+              <div class="buoa-rangebar__band"></div>
+              <div class="buoa-rangebar__hazard"></div>
+              <div class="buoa-rangebar__tick"></div>
+            </div>
+            <div class="buoa-rangebar__scale"><span>6.81</span><span>13.6</span><span>40.9</span></div>
+          </div>
+
+          <div>
+            <div class="buoa-readout">
+              <span class="buoa-readout__label">Water, on-site and off-site</span>
+              <span class="buoa-readout__figure"
+                >&ge; 44.7<span class="buoa-readout__unit">mL</span></span
+              >
+              <span class="buoa-readout__bounds">[ 22.3 to 134 ] &middot; hidden reasoning not disclosed</span>
+            </div>
+            <div class="buoa-rangebar" style="--buoa-low: 8%; --buoa-central: 33%; --buoa-high: 96%">
+              <div class="buoa-rangebar__band"></div>
+              <div class="buoa-rangebar__hazard"></div>
+              <div class="buoa-rangebar__tick"></div>
+            </div>
+            <div class="buoa-rangebar__scale"><span>22.3</span><span>44.7</span><span>134</span></div>
+          </div>
+
+          <div>
+            <div class="buoa-readout buoa-readout--unknown">
+              <span class="buoa-readout__label">Carbon</span>
+              <span class="buoa-readout__figure">unknown</span>
+              <span class="buoa-readout__bounds">we do not recognise this model</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- -------------------------------------------------------------- tape -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">04</span> / 09</span>
+          <span class="sheet__title">Tape and meta strip</span>
+        </div>
+        <div class="buoa-tape">
+          Estimate &middot; not a measurement &middot; estimate &middot; not a measurement &middot;
+          estimate &middot; not a measurement &middot; estimate &middot; not a measurement &middot;
+          estimate &middot; not a measurement
+        </div>
+        <div class="buoa-metastrip" style="margin-top: var(--space-5)">
+          <span class="buoa-metastrip__item">Dataset 0.1.0</span>
+          <span class="buoa-metastrip__item">sha ae2643</span>
+          <span class="buoa-metastrip__item">2026-09-10 09:41:12 UTC</span>
+          <span class="buoa-metastrip__item">Telemetry: none</span>
+          <span class="buoa-metastrip__item">MIT</span>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- table -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">05</span> / 09</span>
+          <span class="sheet__title">Table, source chips and redaction</span>
+        </div>
+        <div class="buoa-scroll-x">
+        <table class="buoa-table">
+          <thead>
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">Boundary</th>
+              <th scope="col">Quality</th>
+              <th scope="col" style="text-align: right">Wh per prompt</th>
+              <th scope="col" style="text-align: right">mL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Google fleet median<details class="buoa-source">
+                  <summary>[1]</summary>
+                  <span class="buoa-source__body">
+                    Measuring the environmental impact of AI inference.
+                    <span class="buoa-source__meta">Google &middot; 21 August 2025 &middot; read 10 September 2026</span>
+                  </span>
+                </details>
+              </td>
+              <td>Data centre</td>
+              <td>4 of 5</td>
+              <td class="buoa-num">0.240</td>
+              <td class="buoa-num">0.260</td>
+            </tr>
+            <tr>
+              <td>
+                Mistral Large 2, life cycle<details class="buoa-source">
+                  <summary>[2]</summary>
+                  <span class="buoa-source__body">
+                    Our contribution to a global environmental standard for AI.
+                    <span class="buoa-source__meta">Mistral, Carbone 4 and ADEME &middot; 22 July 2025</span>
+                  </span>
+                </details>
+              </td>
+              <td>Life cycle</td>
+              <td>5 of 5</td>
+              <td class="buoa-num">unknown</td>
+              <td class="buoa-num">45.0</td>
+            </tr>
+            <tr>
+              <td>Claude, any current model</td>
+              <td>Server, scaled</td>
+              <td>2 of 5</td>
+              <td class="buoa-num">1.08</td>
+              <td class="buoa-num">3.55</td>
+            </tr>
+            <tr>
+              <td>What we send to a server</td>
+              <td colspan="4">
+                <button class="buoa-redacted" type="button" aria-expanded="false">nothing at all</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------ hazard -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">06</span> / 09</span>
+          <span class="sheet__title">Hazard, one per page</span>
+        </div>
+        <div class="buoa-hazard" style="max-width: var(--measure)">
+          <span class="buoa-hazard__label">Read this before quoting the number</span>
+          <p style="margin-bottom: 0">
+            Running a model on your own laptop is not automatically lighter. A data centre batches
+            hundreds of requests onto one accelerator. Your machine runs one, and draws power the
+            whole time it thinks.
+          </p>
+        </div>
+      </section>
+
+      <!-- --------------------------------------------------------- buttons -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">07</span> / 09</span>
+          <span class="sheet__title">Buttons, which are verbs</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-4)">
+          <a class="buoa-button" href="#">Run the numbers</a>
+          <a class="buoa-button buoa-button--quiet" href="#">Install the extension</a>
+          <a class="buoa-button buoa-button--quiet" href="#">Read the method</a>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- faq -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">08</span> / 09</span>
+          <span class="sheet__title">Questions worth asking</span>
+        </div>
+        <div class="buoa-faq" style="max-width: var(--measure)">
+          <details open>
+            <summary>Why is every figure a range?</summary>
+            <p>
+              Because the published measurements disagree by an order of magnitude, and a single
+              number would be a claim we cannot support.
+            </p>
+          </details>
+          <details>
+            <summary>What happens when you do not know the model?</summary>
+            <p>
+              We print the word unknown. Rounding a missing value down to nought would make the tool
+              lie in the flattering direction, which is the one direction it must never lie in.
+            </p>
+          </details>
+          <details>
+            <summary>Does any of this leave my machine?</summary>
+            <p>No. There is no backend, no account and no telemetry.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- --------------------------------------------------------- standby -->
+      <section class="sheet__section">
+        <div class="sheet__head">
+          <span class="buoa-index"><span class="buoa-index__current">09</span> / 09</span>
+          <span class="sheet__title">Standby, hairline and crosshair</span>
+        </div>
+        <div class="stack">
+          <div class="buoa-standby" style="max-width: var(--measure)">
+            <span class="buoa-standby__code">404</span>
+            That page is not here. The calculator, the method and the install routes all are.
+          </div>
+          <div class="buoa-grid-paper buoa-crosshair" style="height: 90px"></div>
+        </div>
+      </section>
+
+      <footer class="buoa-footer sheet__foot">
+        <p style="margin: 0">
+          Better Use of AI. MIT licensed. Nothing on this page has been through a copy review.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // The theme toggle, written the way the site will write it: an attribute on
+      // the root element, remembered in localStorage, disclosed on the privacy page.
+      const button = document.getElementById('theme');
+      const root = document.documentElement;
+      const apply = (theme) => {
+        root.setAttribute('data-theme', theme);
+        button.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      };
+      apply(localStorage.getItem('buoa-theme') || 'light');
+      button.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('buoa-theme', next);
+        apply(next);
+      });
+
+      // Redaction reveals on tap as well as on hover and focus.
+      for (const block of document.querySelectorAll('.buoa-redacted')) {
+        block.addEventListener('click', () => {
+          block.setAttribute('aria-expanded', block.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        });
+      }
+
+      // Swatches are built from tokens.json, so the sheet cannot drift from the tokens.
+      fetch('../tokens.json')
+        .then((response) => response.json())
+        .then((tokens) => {
+          const container = document.getElementById('swatches');
+          const theme = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          for (const [name, value] of Object.entries(tokens.colour[theme])) {
+            const cell = document.createElement('div');
+            cell.className = 'swatch';
+            cell.innerHTML =
+              '<div class="swatch__chip" style="background:' +
+              value +
+              '"></div><div class="swatch__meta"><span>' +
+              name +
+              '</span><span>' +
+              value +
+              '</span></div>';
+            container.append(cell);
+          }
+        })
+        .catch(() => {
+          // Opened straight off the file system, where fetch is blocked. The rest
+          // of the sheet is the part that matters, so this fails quietly.
+          document.getElementById('swatches').innerHTML =
+            '<p class="buoa-mono">Swatches need the sheet served over http.</p>';
+        });
+    </script>
+  </body>
+</html>

@@ -41,3 +41,4 @@ Thumbs.db
 # assistant config, local only: the public repo names no AI tooling
 CLAUDE.md
 .claude/
+packages/tokens/fonts/

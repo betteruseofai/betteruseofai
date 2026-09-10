@@ -1,0 +1,637 @@
+/*
+ * Component CSS shared by the website and the extension.
+ *
+ * The class names are the contract. The extension popup re-implements these
+ * components in Preact against the same names, so the two read as one system
+ * without sharing a component library.
+ *
+ * Rules that hold everywhere: no rounded corners, no gradients apart from the
+ * hazard stripe, every number in mono with tabular figures, and no band ever
+ * distinguished by colour alone.
+ */
+
+/* ------------------------------------------------------------------ base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-5);
+  line-height: 0.9;
+}
+h2 {
+  font-size: var(--step-4);
+}
+h3 {
+  font-size: var(--step-2);
+}
+
+p {
+  margin: 0 0 var(--space-4);
+  max-width: var(--measure);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-strong);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.buoa-mono,
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ------------------------------------------------------------- hairlines */
+
+.buoa-hairline {
+  border: 0;
+  border-top: var(--rule) solid var(--hairline);
+  margin: 0;
+  height: 0;
+}
+
+/*
+ * The paper grid. Twelve columns of visible rule with a crosshair at each
+ * intersection, so the page shows its own structure rather than floating.
+ */
+.buoa-grid-paper {
+  position: relative;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--hairline) 0,
+      var(--hairline) var(--rule),
+      transparent var(--rule),
+      transparent calc(100% / 12)
+    );
+  background-position: left top;
+}
+
+.buoa-crosshair {
+  position: relative;
+}
+
+.buoa-crosshair::before,
+.buoa-crosshair::after {
+  content: '+';
+  position: absolute;
+  left: -0.32em;
+  color: var(--border-ui);
+  font-family: var(--font-mono);
+  font-size: var(--step-0);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.buoa-crosshair::before {
+  top: 0;
+}
+
+.buoa-crosshair::after {
+  bottom: 0;
+}
+
+/* -------------------------------------------------------------- readout */
+
+.buoa-readout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.buoa-readout__label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.buoa-readout__figure {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-weight: 500;
+  font-size: var(--step-4);
+  line-height: 1;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.buoa-readout__unit {
+  font-size: var(--step-1);
+  color: var(--muted);
+}
+
+.buoa-readout__bounds {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* A figure we cannot give is a word, never a nought. */
+.buoa-readout--unknown .buoa-readout__figure {
+  color: var(--muted);
+  font-size: var(--step-2);
+  text-transform: lowercase;
+}
+
+/* -------------------------------------------------------------- rangebar */
+
+.buoa-rangebar {
+  --buoa-low: 0%;
+  --buoa-central: 50%;
+  --buoa-high: 100%;
+  position: relative;
+  height: 1.25rem;
+  background: var(--bg-sunken);
+  border: var(--rule) solid var(--hairline);
+  margin-top: var(--space-3);
+}
+
+.buoa-rangebar__band {
+  position: absolute;
+  inset-block: 0;
+  left: var(--buoa-low);
+  width: calc(var(--buoa-high) - var(--buoa-low));
+  background: var(--accent-tint);
+  border-inline: var(--rule) solid var(--accent);
+}
+
+/*
+ * The upper band is hatched as well as tinted, so it still reads as the
+ * uncertain end for anyone who cannot separate the two colours.
+ */
+.buoa-rangebar__hazard {
+  position: absolute;
+  inset-block: 0;
+  left: var(--buoa-central);
+  width: calc(var(--buoa-high) - var(--buoa-central));
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--hazard) 0,
+    var(--hazard) 1.5px,
+    transparent 1.5px,
+    transparent 5px
+  );
+  opacity: 0.7;
+}
+
+/* The central mark runs past the bar on both sides, so it reads at a glance. */
+.buoa-rangebar__tick {
+  position: absolute;
+  inset-block: -6px;
+  left: var(--buoa-central);
+  width: 3px;
+  margin-left: -1px;
+  background: var(--accent);
+}
+
+.buoa-rangebar__scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--muted);
+  margin-top: var(--space-2);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/*
+ * A figure we do not have gets no bar. An empty trough still reads as a value
+ * of nothing, which is the one impression this project must never give.
+ */
+.buoa-readout--unknown + .buoa-rangebar,
+.buoa-rangebar--absent {
+  display: none;
+}
+
+/* ------------------------------------------------------------- metastrip */
+
+.buoa-metastrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-top: var(--rule) solid var(--hairline);
+  padding-top: var(--space-2);
+}
+
+.buoa-metastrip__item::after {
+  content: '·';
+  margin-left: var(--space-3);
+  color: var(--hairline);
+}
+
+.buoa-metastrip__item:last-child::after {
+  content: '';
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ tape */
+
+/* A strip of repeated text that says what the numbers are and are not. */
+.buoa-tape {
+  overflow: hidden;
+  white-space: nowrap;
+  border-block: var(--rule) solid var(--hairline);
+  padding: var(--space-2) 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  user-select: none;
+}
+
+/* --------------------------------------------------------------- index */
+
+.buoa-index {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.buoa-index__current {
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------- redacted */
+
+/*
+ * An ink block over text we deliberately do not have, or do not collect. It
+ * reveals on hover, on focus and on tap, and it is a button so a keyboard can
+ * reach it.
+ */
+.buoa-redacted {
+  appearance: none;
+  border: 0;
+  padding: 0 0.25em;
+  font: inherit;
+  color: transparent;
+  background: var(--ink);
+  cursor: pointer;
+  transition: color var(--tempo) var(--ease), background var(--tempo) var(--ease);
+}
+
+.buoa-redacted:hover,
+.buoa-redacted:focus-visible,
+.buoa-redacted[aria-expanded='true'] {
+  color: var(--ink);
+  background: var(--accent-tint);
+}
+
+/* --------------------------------------------------------------- hazard */
+
+.buoa-hazard {
+  border: var(--rule) solid var(--hazard);
+  padding: var(--space-4);
+  background: var(--bg-raised);
+  position: relative;
+}
+
+.buoa-hazard::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--hazard) 0,
+    var(--hazard) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.buoa-hazard__label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hazard);
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+/* ------------------------------------------------------------ sourcechip */
+
+.buoa-source {
+  display: inline;
+}
+
+.buoa-source > summary {
+  display: inline;
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--accent);
+  vertical-align: super;
+}
+
+.buoa-source > summary::-webkit-details-marker {
+  display: none;
+}
+
+.buoa-source__body {
+  display: block;
+  margin: var(--space-2) 0;
+  padding: var(--space-3);
+  border-left: 2px solid var(--accent);
+  background: var(--bg-raised);
+  font-size: var(--step--1);
+  max-width: var(--measure);
+}
+
+.buoa-source__meta {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ------------------------------------------------------------------ faq */
+
+.buoa-faq > details {
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.buoa-faq > details > summary {
+  cursor: pointer;
+  padding: var(--space-4) 0;
+  font-weight: 700;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.buoa-faq > details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.buoa-faq > details > summary::after {
+  content: '+';
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.buoa-faq > details[open] > summary::after {
+  content: '–';
+}
+
+/* ----------------------------------------------------------------- table */
+
+.buoa-scroll-x {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.buoa-table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.buoa-table th,
+.buoa-table td {
+  text-align: left;
+  padding: var(--space-3) var(--space-4) var(--space-3) 0;
+  border-top: var(--rule) solid var(--hairline);
+  vertical-align: top;
+}
+
+.buoa-table th {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.buoa-table td.buoa-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  text-align: right;
+  padding-right: 0;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+/*
+ * A button is a mono uppercase verb with an object. Never "Get started".
+ */
+.buoa-button {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-5);
+  border: var(--rule) solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--tempo-fast) var(--ease);
+}
+
+.buoa-button:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--bg);
+}
+
+.buoa-button--quiet {
+  background: transparent;
+  color: var(--accent);
+}
+
+.buoa-button--quiet:hover {
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+}
+
+/* ------------------------------------------------------------- standby */
+
+/* The no-script fallback and the 404. */
+.buoa-standby {
+  border: var(--rule) solid var(--border-ui);
+  padding: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  background: var(--bg-sunken);
+}
+
+.buoa-standby__code {
+  display: block;
+  font-size: var(--step-3);
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--space-3);
+}
+
+/* ------------------------------------------------------------ reviewgate */
+
+/* Every page carries this until a human has read the copy on it. */
+.buoa-reviewgate {
+  border: var(--rule) solid var(--hazard);
+  border-left-width: 4px;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hazard);
+  background: var(--bg-raised);
+}
+
+/* -------------------------------------------------------------- nav, foot */
+
+.buoa-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  border-bottom: var(--rule) solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.buoa-nav__brand {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--ink);
+  margin-right: auto;
+}
+
+/*
+ * Below the point where the bar wraps, the brand takes a row of its own and the
+ * links sit under it. Letting flex-wrap decide put the brand, one link and the
+ * theme toggle on three different rows in an order nobody would choose.
+ */
+@media (max-width: 34rem) {
+  .buoa-nav {
+    gap: var(--space-3) var(--space-4);
+  }
+
+  .buoa-nav__brand {
+    flex: 1 0 100%;
+    margin-right: 0;
+    margin-bottom: var(--space-2);
+  }
+
+  .buoa-themetoggle {
+    margin-left: auto;
+  }
+}
+
+.buoa-nav a {
+  text-decoration: none;
+  color: var(--ink-2);
+}
+
+.buoa-nav a:hover,
+.buoa-nav a[aria-current='page'] {
+  color: var(--accent);
+}
+
+.buoa-footer {
+  border-top: var(--rule) solid var(--hairline);
+  padding: var(--space-6) 0;
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- themetoggle */
+
+.buoa-themetoggle {
+  appearance: none;
+  border: var(--rule) solid var(--border-ui);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+
+.buoa-themetoggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* -------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

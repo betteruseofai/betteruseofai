@@ -1,0 +1,56 @@
+/*
+ * Self-hosted faces. Nothing here reaches a font CDN, which is why the privacy
+ * page can say the site makes no third-party requests beyond the one analytics
+ * beacon.
+ *
+ * Six faces, 116 kB, latin subset. Fewer weights than we first planned; see the
+ * note in scripts/copy-fonts.mjs for what was dropped and why.
+ */
+
+@font-face {
+  font-family: 'Big Shoulders';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./fonts/big-shoulders-latin-800-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/schibsted-grotesk-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/schibsted-grotesk-latin-400-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/schibsted-grotesk-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+}

@@ -13,6 +13,7 @@ export default defineConfig({
       },
       'packages/dataset',
       'packages/core',
+      'packages/tokens',
     ],
   },
 });

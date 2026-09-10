@@ -1,0 +1,33 @@
+{
+  "name": "@betteruseofai/tokens",
+  "version": "0.0.0",
+  "description": "Design tokens, self-hosted fonts and component CSS shared by the website and the extension.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "*.css",
+    "tokens.json",
+    "fonts/",
+    "design"
+  ],
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./fonts.css": "./fonts.css",
+    "./components.css": "./components.css",
+    "./tokens.json": "./tokens.json"
+  },
+  "scripts": {
+    "build": "node scripts/copy-fonts.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "shoot": "node scripts/shoot.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/big-shoulders": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/schibsted-grotesk": "^5.3.0"
+  }
+}
