@@ -1067,6 +1067,7 @@
       "id": "proxy.claude-opus",
       "modelIds": [
         "claude-opus-5",
+        "claude-opus-4.8",
         "claude-opus-4.1",
         "claude-fable-5.1"
       ],

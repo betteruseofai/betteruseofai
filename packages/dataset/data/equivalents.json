@@ -16,7 +16,10 @@
         "date": "2025",
         "retrieved": "2026-09-10"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      },
       "notes": "9 W for one second is 0.0025 Wh."
     },
     {
@@ -34,7 +37,10 @@
         "retrieved": "2026-09-10",
         "licence": "public domain"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      },
       "notes": "0.019 kWh per charge."
     },
     {
@@ -72,7 +78,10 @@
         "date": "2009-01",
         "retrieved": "2026-09-10"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      },
       "notes": "Seventeen years old and quoted constantly. We keep it because the comparison is the one people reach for, and we mark it stale wherever it appears."
     },
     {
@@ -89,7 +98,10 @@
         "date": "2019",
         "retrieved": "2026-09-10"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "glass-of-water",
@@ -106,7 +118,10 @@
         "retrieved": "2026-09-10",
         "licence": "public domain"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "water-bottle",
@@ -122,7 +137,10 @@
         "date": "2019",
         "retrieved": "2026-09-10"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "car-metre",
@@ -160,7 +178,10 @@
         "retrieved": "2026-09-10",
         "licence": "public domain"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "search-carbon",
@@ -177,7 +198,112 @@
         "date": "2009-01",
         "retrieved": "2026-09-10"
       },
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
+    },
+    {
+      "id": "household-day",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 7400,
+      "singular": "day of electricity for an average home",
+      "plural": "days of electricity for an average home",
+      "source": {
+        "title": "Typical Domestic Consumption Values, medium electricity user",
+        "url": "https://www.ofgem.gov.uk/information-consumers/energy-advice-households/average-gas-and-electricity-use-explained",
+        "publisher": "Ofgem",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "2,700 kWh a year works out at 7.4 kWh a day. Check the current TDCV figure before launch."
+      },
+      "notes": "The comparison that lands in range for a week of agent sessions, where a phone charge does not."
+    },
+    {
+      "id": "washing-cycle",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 700,
+      "singular": "load of washing",
+      "plural": "loads of washing",
+      "source": {
+        "title": "Energy use of domestic appliances",
+        "url": "https://energysavingtrust.org.uk/",
+        "publisher": "Energy Saving Trust",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "About 0.7 kWh for a 40 degree cycle. Worth replacing with a cited figure."
+      }
+    },
+    {
+      "id": "shower-minute",
+      "quantity": "water",
+      "unitPer": "mL",
+      "amount": 10000,
+      "singular": "minute in the shower",
+      "plural": "minutes in the shower",
+      "source": {
+        "title": "Water use at home",
+        "url": "https://waterwise.org.uk/save-water/",
+        "publisher": "Waterwise",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Around 10 litres a minute for a mixer shower."
+      }
+    },
+    {
+      "id": "bath",
+      "quantity": "water",
+      "unitPer": "mL",
+      "amount": 80000,
+      "singular": "bath",
+      "plural": "baths",
+      "source": {
+        "title": "Water use at home",
+        "url": "https://waterwise.org.uk/save-water/",
+        "publisher": "Waterwise",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Around 80 litres for a full bath."
+      }
+    },
+    {
+      "id": "car-kilometre",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 244,
+      "singular": "kilometre driven in an average petrol car",
+      "plural": "kilometres driven in an average petrol car",
+      "source": {
+        "title": "Greenhouse gas reporting: conversion factors 2025 to 2026, average car, petrol",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "publisher": "Department for Energy Security and Net Zero",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "Open Government Licence v3.0"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "The same factor as car-metre, a thousand times over, so the pair covers both a single prompt and a week of sessions."
+      }
     }
   ]
 }

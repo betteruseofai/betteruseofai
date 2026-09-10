@@ -1,0 +1,86 @@
+/**
+ * Help text, written by hand so it follows the project copy rules. British
+ * English, short sentences, no generic phrasing, and no exclamation marks.
+ */
+
+export const VERSION = '0.0.0';
+
+export const USAGE = `betteruseofai
+
+  See the energy, water and carbon behind your own agent sessions. Everything is
+  worked out on this machine. Nothing is sent anywhere.
+
+USAGE
+  betteruseofai <command> [options]
+
+COMMANDS
+  summary          What your sessions cost, grouped by day, week, model or session
+  sessions         Every session, with its total
+  session <id>     The report for one session, including its heaviest turns
+  export           Every turn as a row, for a spreadsheet
+  models           Which models we know, what measures them, and how good that measure is
+  statusline       Read a status line payload on stdin and print one line
+  hook <event>     Read a hook payload on stdin and print hook JSON
+  doctor           Check the things that go wrong, and say what to do about each
+
+OPTIONS
+  --since <when>          7d, 24h, 2w, or an ISO timestamp
+  --until <when>          An ISO timestamp
+  --by <bucket>           day, week, model, surface, session, hosting or all
+  --source <names>        claude-code, codex, or both separated by a comma
+  --dir <path>            Read transcripts from here instead of the usual place
+  --region <code>         Grid to price the carbon against. Run "models --all" for the list
+  --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle
+  --carbon-basis <basis>  location-based (the default) or provider-reported
+  --format <format>       table, json or csv, depending on the command
+  --json                  Same as --format json
+  --now <iso>             Pretend it is this moment, so a fixture run is repeatable
+  --ascii                 Avoid characters a plain terminal cannot draw
+  --no-color              No escape codes
+  --all                   Show the regions as well, on the models command
+  --cheap                 On the status line, read the cached total and parse nothing
+  -h, --help              This text
+  -v, --version           The version and the dataset it ships with
+
+A NOTE ON THE FIGURES
+  Every figure is a range, because the published measurements of AI energy use
+  disagree by an order of magnitude. Where we do not know something we say so: an
+  unrecognised model reads "unknown", and a model that hid its reasoning tokens
+  gives a lower bound rather than a total. Run "session <id>" to see which
+  sources a figure rests on.
+`;
+
+export const COMMAND_HELP: Record<string, string> = {
+  summary: `betteruseofai summary
+
+  What your sessions cost. Defaults to grouping by day.
+
+  betteruseofai summary --since 7d
+  betteruseofai summary --since 30d --by model
+  betteruseofai summary --by session --region GB --json
+`,
+  session: `betteruseofai session <id>
+
+  The report for one session: what it cost, which model did most of it, its
+  heaviest turns, and why the figures are uncertain. A partial id is enough.
+
+  betteruseofai sessions
+  betteruseofai session ba71e9d8
+`,
+  export: `betteruseofai export
+
+  Every turn as a row. An unknown figure is an empty cell, never a zero, because
+  a spreadsheet will happily sum a column of zeroes into a total that is a lie.
+
+  betteruseofai export --since 30d > turns.csv
+  betteruseofai export --format json
+`,
+  doctor: `betteruseofai doctor
+
+  Checks where your transcripts are, whether we recognise the models in them,
+  and whether any lines could not be read.
+
+  betteruseofai doctor
+  betteruseofai doctor --json
+`,
+};

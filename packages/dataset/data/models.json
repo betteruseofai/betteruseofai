@@ -4,14 +4,24 @@
   "models": [
     {
       "id": "claude-opus-5",
-      "aliases": ["claude-opus-5", "opus-5", "opus 5", "claude opus 5", "claude-opus-5-latest"],
+      "aliases": [
+        "claude-opus-5",
+        "opus-5",
+        "opus 5",
+        "claude opus 5",
+        "claude-opus-5-latest"
+      ],
       "provider": "anthropic",
       "family": "claude-5",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Claude Opus 5",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
       "provenance": {
         "method": "recalled-pending-refetch",
@@ -21,16 +31,29 @@
     },
     {
       "id": "claude-sonnet-5",
-      "aliases": ["claude-sonnet-5", "sonnet-5", "sonnet 5", "claude sonnet 5", "claude-sonnet-5-latest"],
+      "aliases": [
+        "claude-sonnet-5",
+        "sonnet-5",
+        "sonnet 5",
+        "claude sonnet 5",
+        "claude-sonnet-5-latest"
+      ],
       "provider": "anthropic",
       "family": "claude-5",
       "tier": "mid",
       "ordinal": 1,
       "displayName": "Claude Sonnet 5",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "claude-haiku-4.5",
@@ -48,7 +71,11 @@
       "ordinal": 2,
       "displayName": "Claude Haiku 4.5",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.2, "central": 1.0, "high": 4 },
+      "thinkingRatio": {
+        "low": 0.2,
+        "central": 1.0,
+        "high": 4
+      },
       "hosting": "cloud",
       "released": "2025-10-01",
       "provenance": {
@@ -59,14 +86,24 @@
     },
     {
       "id": "claude-fable-5.1",
-      "aliases": ["claude-fable-5-1", "claude-fable-5.1", "fable-5.1", "fable 5.1", "claude fable 5.1"],
+      "aliases": [
+        "claude-fable-5-1",
+        "claude-fable-5.1",
+        "fable-5.1",
+        "fable 5.1",
+        "claude fable 5.1"
+      ],
       "provider": "anthropic",
       "family": "claude-fable",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Claude Fable 5.1",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
       "provenance": {
         "method": "recalled-pending-refetch",
@@ -75,30 +112,81 @@
       }
     },
     {
+      "id": "claude-opus-4.8",
+      "aliases": [
+        "claude-opus-4-8",
+        "claude-opus-4.8",
+        "opus-4.8",
+        "opus 4.8",
+        "claude opus 4.8"
+      ],
+      "provider": "anthropic",
+      "family": "claude-4",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Opus 4.8",
+      "reasoning": true,
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-10",
+        "note": "Found by running the doctor command against real transcripts on the author's machine, which reported 58 turns on an unrecognised claude-opus-4-8."
+      }
+    },
+    {
       "id": "claude-opus-4.1",
-      "aliases": ["claude-opus-4-1", "claude-opus-4.1", "opus-4.1", "claude-opus-4-1-20250805"],
+      "aliases": [
+        "claude-opus-4-1",
+        "claude-opus-4.1",
+        "opus-4.1",
+        "claude-opus-4-1-20250805"
+      ],
       "provider": "anthropic",
       "family": "claude-4",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Claude Opus 4.1",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "claude-sonnet-4",
-      "aliases": ["claude-sonnet-4", "claude-sonnet-4-20250514", "sonnet-4", "sonnet 4"],
+      "aliases": [
+        "claude-sonnet-4",
+        "claude-sonnet-4-20250514",
+        "sonnet-4",
+        "sonnet 4"
+      ],
       "provider": "anthropic",
       "family": "claude-4",
       "tier": "mid",
       "ordinal": 1,
       "displayName": "Claude Sonnet 4",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "claude-3.7-sonnet",
@@ -114,7 +202,11 @@
       "ordinal": 0,
       "displayName": "Claude 3.7 Sonnet",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
       "released": "2025-02-19",
       "provenance": {
@@ -139,11 +231,18 @@
       "reasoning": false,
       "hosting": "cloud",
       "released": "2024-10-22",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "claude-3.5-haiku",
-      "aliases": ["claude-3-5-haiku-20241022", "claude-3-5-haiku", "claude-3.5-haiku"],
+      "aliases": [
+        "claude-3-5-haiku-20241022",
+        "claude-3-5-haiku",
+        "claude-3.5-haiku"
+      ],
       "provider": "anthropic",
       "family": "claude-3.x",
       "tier": "small",
@@ -151,19 +250,29 @@
       "displayName": "Claude 3.5 Haiku",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
-
     {
       "id": "gpt-5.6",
-      "aliases": ["gpt-5.6", "gpt-5-6", "gpt 5.6"],
+      "aliases": [
+        "gpt-5.6",
+        "gpt-5-6",
+        "gpt 5.6"
+      ],
       "provider": "openai",
       "family": "gpt-5",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "GPT-5.6",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
       "hosting": "cloud",
       "provenance": {
         "method": "source-appendix",
@@ -173,46 +282,84 @@
     },
     {
       "id": "gpt-5",
-      "aliases": ["gpt-5", "gpt5", "gpt 5", "gpt-5-latest"],
+      "aliases": [
+        "gpt-5",
+        "gpt5",
+        "gpt 5",
+        "gpt-5-latest"
+      ],
       "provider": "openai",
       "family": "gpt-5",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "GPT-5",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "o3",
-      "aliases": ["o3", "o3-2025-04-16", "openai-o3"],
+      "aliases": [
+        "o3",
+        "o3-2025-04-16",
+        "openai-o3"
+      ],
       "provider": "openai",
       "family": "o-series",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "o3",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
       "hosting": "cloud",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "o4-mini",
-      "aliases": ["o4-mini", "o4-mini-high", "o4 mini"],
+      "aliases": [
+        "o4-mini",
+        "o4-mini-high",
+        "o4 mini"
+      ],
       "provider": "openai",
       "family": "o-series",
       "tier": "mid",
       "ordinal": 1,
       "displayName": "o4-mini",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
       "hosting": "cloud",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gpt-4.1",
-      "aliases": ["gpt-4.1", "gpt-4-1", "gpt-4.1-2025-04-14"],
+      "aliases": [
+        "gpt-4.1",
+        "gpt-4-1",
+        "gpt-4.1-2025-04-14"
+      ],
       "provider": "openai",
       "family": "gpt-4.1",
       "tier": "frontier",
@@ -220,11 +367,17 @@
       "displayName": "GPT-4.1",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gpt-4.1-mini",
-      "aliases": ["gpt-4.1-mini", "gpt-4-1-mini"],
+      "aliases": [
+        "gpt-4.1-mini",
+        "gpt-4-1-mini"
+      ],
       "provider": "openai",
       "family": "gpt-4.1",
       "tier": "mid",
@@ -232,11 +385,17 @@
       "displayName": "GPT-4.1 mini",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gpt-4.1-nano",
-      "aliases": ["gpt-4.1-nano", "gpt-4-1-nano"],
+      "aliases": [
+        "gpt-4.1-nano",
+        "gpt-4-1-nano"
+      ],
       "provider": "openai",
       "family": "gpt-4.1",
       "tier": "nano",
@@ -244,11 +403,19 @@
       "displayName": "GPT-4.1 nano",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gpt-4o",
-      "aliases": ["gpt-4o", "gpt-4o-2024-08-06", "gpt-4o-latest", "chatgpt-4o-latest"],
+      "aliases": [
+        "gpt-4o",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-latest",
+        "chatgpt-4o-latest"
+      ],
       "provider": "openai",
       "family": "gpt-4o",
       "tier": "frontier",
@@ -257,11 +424,17 @@
       "reasoning": false,
       "hosting": "cloud",
       "released": "2024-05-13",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gpt-4o-mini",
-      "aliases": ["gpt-4o-mini", "gpt-4o-mini-2024-07-18"],
+      "aliases": [
+        "gpt-4o-mini",
+        "gpt-4o-mini-2024-07-18"
+      ],
       "provider": "openai",
       "family": "gpt-4o",
       "tier": "mid",
@@ -269,21 +442,35 @@
       "displayName": "GPT-4o mini",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
-
     {
       "id": "gemini-2.5-pro",
-      "aliases": ["gemini-2.5-pro", "gemini-2-5-pro", "gemini 2.5 pro", "models/gemini-2.5-pro"],
+      "aliases": [
+        "gemini-2.5-pro",
+        "gemini-2-5-pro",
+        "gemini 2.5 pro",
+        "models/gemini-2.5-pro"
+      ],
       "provider": "google",
       "family": "gemini-2.5",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Gemini 2.5 Pro",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gemini-2.5-flash",
@@ -300,7 +487,11 @@
       "ordinal": 1,
       "displayName": "Gemini 2.5 Flash",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.2, "central": 1.0, "high": 4 },
+      "thinkingRatio": {
+        "low": 0.2,
+        "central": 1.0,
+        "high": 4
+      },
       "hosting": "cloud",
       "provenance": {
         "method": "source-appendix",
@@ -310,7 +501,11 @@
     },
     {
       "id": "gemini-2.5-flash-lite",
-      "aliases": ["gemini-2.5-flash-lite", "gemini-2-5-flash-lite", "models/gemini-2.5-flash-lite"],
+      "aliases": [
+        "gemini-2.5-flash-lite",
+        "gemini-2-5-flash-lite",
+        "models/gemini-2.5-flash-lite"
+      ],
       "provider": "google",
       "family": "gemini-2.5",
       "tier": "small",
@@ -318,34 +513,60 @@
       "displayName": "Gemini 2.5 Flash-Lite",
       "reasoning": false,
       "hosting": "cloud",
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10"
+      }
     },
-
     {
       "id": "mistral-large-2",
-      "aliases": ["mistral-large-2", "mistral-large-2407", "mistral-large-latest", "mistral large 2"],
+      "aliases": [
+        "mistral-large-2",
+        "mistral-large-2407",
+        "mistral-large-latest",
+        "mistral large 2"
+      ],
       "provider": "mistral",
       "family": "mistral-large",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Mistral Large 2",
       "reasoning": false,
-      "activeParamsB": { "low": 123, "central": 123, "high": 123 },
+      "activeParamsB": {
+        "low": 123,
+        "central": 123,
+        "high": 123
+      },
       "hosting": "both",
       "released": "2024-07-24",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "deepseek-r1",
-      "aliases": ["deepseek-r1", "deepseek-reasoner", "DeepSeek-R1"],
+      "aliases": [
+        "deepseek-r1",
+        "deepseek-reasoner",
+        "DeepSeek-R1"
+      ],
       "provider": "deepseek",
       "family": "deepseek-r1",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "DeepSeek-R1",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
-      "activeParamsB": { "low": 37, "central": 37, "high": 37 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
+      "activeParamsB": {
+        "low": 37,
+        "central": 37,
+        "high": 37
+      },
       "hosting": "both",
       "provenance": {
         "method": "source-appendix",
@@ -355,108 +576,201 @@
     },
     {
       "id": "deepseek-r1-distill-llama-70b",
-      "aliases": ["deepseek-r1-distill-llama-70b", "DeepSeek-R1-Distill-Llama-70B"],
+      "aliases": [
+        "deepseek-r1-distill-llama-70b",
+        "DeepSeek-R1-Distill-Llama-70B"
+      ],
       "provider": "deepseek",
       "family": "deepseek-r1",
       "tier": "mid",
       "ordinal": 1,
       "displayName": "DeepSeek-R1 Distill Llama 70B",
       "reasoning": true,
-      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
-      "activeParamsB": { "low": 70, "central": 70, "high": 70 },
+      "thinkingRatio": {
+        "low": 0.5,
+        "central": 2.5,
+        "high": 10
+      },
+      "activeParamsB": {
+        "low": 70,
+        "central": 70,
+        "high": 70
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "llama-3.3-70b",
-      "aliases": ["llama-3.3-70b", "llama3.3:70b", "Llama-3.3-70B-Instruct", "meta-llama/Llama-3.3-70B-Instruct"],
+      "aliases": [
+        "llama-3.3-70b",
+        "llama3.3:70b",
+        "Llama-3.3-70B-Instruct",
+        "meta-llama/Llama-3.3-70B-Instruct"
+      ],
       "provider": "meta",
       "family": "llama-3.x",
       "tier": "frontier",
       "ordinal": 0,
       "displayName": "Llama 3.3 70B",
       "reasoning": false,
-      "activeParamsB": { "low": 70, "central": 70, "high": 70 },
+      "activeParamsB": {
+        "low": 70,
+        "central": 70,
+        "high": 70
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "llama-3.1-8b",
-      "aliases": ["llama-3.1-8b", "llama3.1:8b", "Llama-3.1-8B-Instruct", "meta-llama/Llama-3.1-8B-Instruct"],
+      "aliases": [
+        "llama-3.1-8b",
+        "llama3.1:8b",
+        "Llama-3.1-8B-Instruct",
+        "meta-llama/Llama-3.1-8B-Instruct"
+      ],
       "provider": "meta",
       "family": "llama-3.x",
       "tier": "small",
       "ordinal": 1,
       "displayName": "Llama 3.1 8B",
       "reasoning": false,
-      "activeParamsB": { "low": 8, "central": 8, "high": 8 },
+      "activeParamsB": {
+        "low": 8,
+        "central": 8,
+        "high": 8
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "llama-3.2-3b",
-      "aliases": ["llama-3.2-3b", "llama3.2:3b", "Llama-3.2-3B-Instruct"],
+      "aliases": [
+        "llama-3.2-3b",
+        "llama3.2:3b",
+        "Llama-3.2-3B-Instruct"
+      ],
       "provider": "meta",
       "family": "llama-3.x",
       "tier": "nano",
       "ordinal": 2,
       "displayName": "Llama 3.2 3B",
       "reasoning": false,
-      "activeParamsB": { "low": 3.2, "central": 3.2, "high": 3.2 },
+      "activeParamsB": {
+        "low": 3.2,
+        "central": 3.2,
+        "high": 3.2
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "qwen-2.5-7b",
-      "aliases": ["qwen-2.5-7b", "qwen2.5:7b", "Qwen2.5-7B-Instruct"],
+      "aliases": [
+        "qwen-2.5-7b",
+        "qwen2.5:7b",
+        "Qwen2.5-7B-Instruct"
+      ],
       "provider": "alibaba",
       "family": "qwen-2.5",
       "tier": "small",
       "ordinal": 0,
       "displayName": "Qwen 2.5 7B",
       "reasoning": false,
-      "activeParamsB": { "low": 7, "central": 7, "high": 7 },
+      "activeParamsB": {
+        "low": 7,
+        "central": 7,
+        "high": 7
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "mistral-7b",
-      "aliases": ["mistral-7b", "mistral:7b", "Mistral-7B-Instruct-v0.3"],
+      "aliases": [
+        "mistral-7b",
+        "mistral:7b",
+        "Mistral-7B-Instruct-v0.3"
+      ],
       "provider": "mistral",
       "family": "mistral-7b",
       "tier": "small",
       "ordinal": 0,
       "displayName": "Mistral 7B",
       "reasoning": false,
-      "activeParamsB": { "low": 7.2, "central": 7.2, "high": 7.2 },
+      "activeParamsB": {
+        "low": 7.2,
+        "central": 7.2,
+        "high": 7.2
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "gemma-2-9b",
-      "aliases": ["gemma-2-9b", "gemma2:9b", "google/gemma-2-9b-it"],
+      "aliases": [
+        "gemma-2-9b",
+        "gemma2:9b",
+        "google/gemma-2-9b-it"
+      ],
       "provider": "google",
       "family": "gemma-2",
       "tier": "small",
       "ordinal": 0,
       "displayName": "Gemma 2 9B",
       "reasoning": false,
-      "activeParamsB": { "low": 9, "central": 9, "high": 9 },
+      "activeParamsB": {
+        "low": 9,
+        "central": 9,
+        "high": 9
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     },
     {
       "id": "phi-3-mini",
-      "aliases": ["phi-3-mini", "phi3:mini", "Phi-3-mini-4k-instruct"],
+      "aliases": [
+        "phi-3-mini",
+        "phi3:mini",
+        "Phi-3-mini-4k-instruct"
+      ],
       "provider": "microsoft",
       "family": "phi-3",
       "tier": "nano",
       "ordinal": 0,
       "displayName": "Phi-3 mini",
       "reasoning": false,
-      "activeParamsB": { "low": 3.8, "central": 3.8, "high": 3.8 },
+      "activeParamsB": {
+        "low": 3.8,
+        "central": 3.8,
+        "high": 3.8
+      },
       "hosting": "both",
-      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10"
+      }
     }
   ]
 }

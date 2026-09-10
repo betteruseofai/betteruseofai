@@ -10,16 +10,19 @@ export interface EquivalentResult {
 }
 
 /**
- * How badly a count reads, lower being better.
+ * Ranking, in two parts, because one blended score kept making odd choices.
  *
- * Distance from one, in orders of magnitude, plus a penalty for landing below
- * it. Nine teaspoons of water is a picture; a fifth of a glass is arithmetic,
- * even though the two sit the same distance from one on a log scale.
+ * First a tier, which is a hard preference. A whole number of something beats a
+ * fraction of something bigger: nine teaspoons of water is a picture, a fifth
+ * of a glass is arithmetic. And a comparison we have marked stale is the last
+ * resort, so the seventeen year old search figure only appears when nothing
+ * else fits at all.
+ *
+ * Then, within a tier, distance from one in orders of magnitude.
  */
-const BELOW_ONE_PENALTY = 0.4;
+const tier = (count: number, stale: boolean): number => (stale ? 2 : 0) + (count < 1 ? 1 : 0);
 
-const score = (count: number): number =>
-  Math.abs(Math.log10(count)) + (count < 1 ? BELOW_ONE_PENALTY : 0);
+const distance = (count: number): number => Math.abs(Math.log10(count));
 
 /**
  * Picks the everyday comparisons that actually help.
@@ -42,8 +45,10 @@ export const equivalents = (
     .map((entry) => ({ entry, count: value / entry.amount }))
     .filter(({ count }) => count >= 0.1 && count <= 100)
     .sort((a, b) => {
-      const distance = score(a.count) - score(b.count);
-      if (distance !== 0) return distance;
+      const byTier = tier(a.count, a.entry.stale === true) - tier(b.count, b.entry.stale === true);
+      if (byTier !== 0) return byTier;
+      const byDistance = distance(a.count) - distance(b.count);
+      if (byDistance !== 0) return byDistance;
       return a.entry.id < b.entry.id ? -1 : 1;
     });
 

@@ -14,6 +14,8 @@ export default defineConfig({
       'packages/dataset',
       'packages/core',
       'packages/tokens',
+      'packages/readers',
+      'apps/cli-ts',
     ],
   },
 });

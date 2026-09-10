@@ -192,6 +192,21 @@ describe('equivalents', () => {
     expect(found.length).toBeGreaterThan(0);
   });
 
+  it('scale up to a week of agent sessions, not just a single chat prompt', () => {
+    // 17 kWh across a week of coding sessions. A phone charge does not help here.
+    const found = equivalents(17180, 'energy', dataset);
+    expect(found[0]?.id).toBe('household-day');
+    const water = equivalents(56350, 'water', dataset);
+    expect(water[0]?.id).toBe('shower-minute');
+  });
+
+  it('leave the stale search figure until nothing else fits', () => {
+    // 4 Wh is a fifth of a phone charge or thirteen searches. The search figure
+    // is seventeen years old, so the phone charge wins even though its count is
+    // further from one.
+    expect(equivalents(4, 'energy', dataset)[0]?.id).toBe('phone-charge');
+  });
+
   it('mark the seventeen year old search figure as stale', () => {
     const found = dataset.equivalents.find((entry) => entry.id === 'google-search');
     expect(found?.stale).toBe(true);

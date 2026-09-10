@@ -33,6 +33,18 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@22.20.2)(tsx@4.23.13)
 
+  apps/cli-ts:
+    dependencies:
+      '@betteruseofai/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@betteruseofai/dataset':
+        specifier: workspace:*
+        version: link:../../packages/dataset
+      '@betteruseofai/readers':
+        specifier: workspace:*
+        version: link:../../packages/readers
+
   packages/core:
     dependencies:
       '@betteruseofai/dataset':
@@ -47,6 +59,12 @@ importers:
       ajv-formats:
         specifier: ^3.0.1
         version: 3.0.1(ajv@8.20.0)
+
+  packages/readers:
+    dependencies:
+      '@betteruseofai/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/tokens:
     devDependencies:
