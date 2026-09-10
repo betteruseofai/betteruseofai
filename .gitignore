@@ -39,3 +39,4 @@ Thumbs.db
 # generated at build time from the font packages; the screenshots next door are
 # committed on purpose, so there is no ignore for design/shots
 packages/tokens/fonts/
+fixtures/cli/output/

@@ -193,17 +193,22 @@ for (const name of FILES) {
   }
 }
 
-const bundle = {
-  version,
-  builtFrom: FILES.reduce<Record<string, unknown>>((acc, name) => {
-    acc[name] = data[name];
-    return acc;
-  }, {}),
-};
-
-// The hash covers the data only, so it stays stable while the wrapper changes.
-const canonical = JSON.stringify(bundle.builtFrom);
-const sha256 = createHash('sha256').update(canonical).digest('hex');
+/*
+ * The hash covers the raw bytes of the source files, in a fixed order, with
+ * line endings normalised. Hashing a re-serialisation instead would be fragile:
+ * JavaScript writes 1.17e-6 where Python writes 1.17e-06, so the two languages
+ * would compute different hashes for identical data. The Python package copies
+ * this bundle in and recomputes the hash the same way, and refuses to build if
+ * the two disagree.
+ */
+const LF = '\n';
+const hash = createHash('sha256');
+for (const name of FILES) {
+  const raw = readFileSync(join(dataDir, `${name}.json`), 'utf8').split('\r\n').join(LF);
+  hash.update(name + LF);
+  hash.update(raw);
+}
+const sha256 = hash.digest('hex');
 
 const payload = {
   version,

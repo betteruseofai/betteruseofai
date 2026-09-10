@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "betteruseofai"
+version = "0.0.0"
+description = "See the energy, water and carbon behind your own agent sessions. Everything is computed on your machine."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Anirudh Sharma" }]
+keywords = ["llm", "energy", "water", "carbon", "claude-code", "codex"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Utilities",
+]
+dependencies = []
+
+[project.scripts]
+betteruseofai = "betteruseofai.cli:main"
+
+[project.urls]
+Homepage = "https://betteruseofai.org"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/betteruseofai"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/betteruseofai/data/dataset.json" = "betteruseofai/data/dataset.json"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
