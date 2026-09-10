@@ -36,9 +36,6 @@ Thumbs.db
 .env.*
 !.env.example
 
-# generated screenshots are committed on purpose, so no ignore for design/shots
-
-# assistant config, local only: the public repo names no AI tooling
-CLAUDE.md
-.claude/
+# generated at build time from the font packages; the screenshots next door are
+# committed on purpose, so there is no ignore for design/shots
 packages/tokens/fonts/
