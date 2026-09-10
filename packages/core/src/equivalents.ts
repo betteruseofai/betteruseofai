@@ -10,6 +10,18 @@ export interface EquivalentResult {
 }
 
 /**
+ * How badly a count reads, lower being better.
+ *
+ * Distance from one, in orders of magnitude, plus a penalty for landing below
+ * it. Nine teaspoons of water is a picture; a fifth of a glass is arithmetic,
+ * even though the two sit the same distance from one on a log scale.
+ */
+const BELOW_ONE_PENALTY = 0.4;
+
+const score = (count: number): number =>
+  Math.abs(Math.log10(count)) + (count < 1 ? BELOW_ONE_PENALTY : 0);
+
+/**
  * Picks the everyday comparisons that actually help.
  *
  * A comparison only earns its place when the count lands somewhere a person can
@@ -30,7 +42,7 @@ export const equivalents = (
     .map((entry) => ({ entry, count: value / entry.amount }))
     .filter(({ count }) => count >= 0.1 && count <= 100)
     .sort((a, b) => {
-      const distance = Math.abs(Math.log10(a.count)) - Math.abs(Math.log10(b.count));
+      const distance = score(a.count) - score(b.count);
       if (distance !== 0) return distance;
       return a.entry.id < b.entry.id ? -1 : 1;
     });

@@ -180,6 +180,18 @@ describe('equivalents', () => {
     }
   });
 
+  it('prefer a whole number of small things over a fraction of a big one', () => {
+    // 43.8 mL is nine teaspoons or a fifth of a glass. The teaspoons win.
+    const found = equivalents(43.8, 'water', dataset);
+    expect(found[0]?.id).toBe('teaspoon');
+    expect(found[0]?.count).toBeGreaterThan(1);
+  });
+
+  it('still take a count below one when nothing above it is in range', () => {
+    const found = equivalents(120, 'water', dataset);
+    expect(found.length).toBeGreaterThan(0);
+  });
+
   it('mark the seventeen year old search figure as stale', () => {
     const found = dataset.equivalents.find((entry) => entry.id === 'google-search');
     expect(found?.stale).toBe(true);
