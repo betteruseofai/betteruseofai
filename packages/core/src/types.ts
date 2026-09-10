@@ -154,7 +154,9 @@ export interface Calibration {
   version: string;
   tokenizer: {
     baseEncoding: string;
-    charsPerTokenFallback?: Range;
+    /** Characters per token, by content class. Measured, not guessed. */
+    charsPerTokenFallback?: Record<string, Range>;
+    charsPerTokenNotes?: string;
     providers: Record<
       string,
       { exact: boolean; contentClasses: Record<string, Range>; source?: Source; notes?: string }

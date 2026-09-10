@@ -4,9 +4,26 @@
   "tokenizer": {
     "baseEncoding": "o200k_base",
     "charsPerTokenFallback": {
-      "low": 3.0,
-      "central": 4.0,
-      "high": 5.0
+      "prose": {
+        "low": 4.2,
+        "central": 5.2,
+        "high": 6.3
+      },
+      "code": {
+        "low": 2.9,
+        "central": 3.81,
+        "high": 5.0
+      },
+      "maths": {
+        "low": 1.5,
+        "central": 2.21,
+        "high": 3.3
+      },
+      "non-latin": {
+        "low": 1.0,
+        "central": 2.49,
+        "high": 5.5
+      }
     },
     "providers": {
       "openai": {
@@ -108,7 +125,8 @@
         },
         "notes": "Gemini counts come out close to o200k, so the central values sit at or near one. Same caveat as the Anthropic row: recorded during research, not yet measured by a calibration run."
       }
-    }
+    },
+    "charsPerTokenNotes": "Measured against the o200k encoder over a small set of samples per class, not guessed. The central values are the pooled chars-per-token; the bounds are the per-sample spread padded by about a fifth, because the sample is small. The first version of this file carried one global range of 3 to 5, which was 43 per cent out on English prose and did not even bracket the real count."
   },
   "cachedReadShareOfInput": {
     "low": 0.0,

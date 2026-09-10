@@ -14,6 +14,7 @@ export default defineConfig({
       'packages/dataset',
       'packages/core',
       'packages/tokens',
+      'packages/tokenizers',
       'packages/readers',
       'apps/cli-ts',
       'apps/claude-code-plugin',

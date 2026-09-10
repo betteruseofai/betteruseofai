@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "sha256": "6ddf5837bd924787c0768d7416c0013358797af20fda9f71252d7a0f16110907",
+  "sha256": "124be1eb97152a5742c68228035f029ab560357ed9f160b835ded1786b9c6187",
   "models": [
     {
       "id": "claude-opus-5",
@@ -3085,9 +3085,26 @@
     "tokenizer": {
       "baseEncoding": "o200k_base",
       "charsPerTokenFallback": {
-        "low": 3,
-        "central": 4,
-        "high": 5
+        "prose": {
+          "low": 4.2,
+          "central": 5.2,
+          "high": 6.3
+        },
+        "code": {
+          "low": 2.9,
+          "central": 3.81,
+          "high": 5
+        },
+        "maths": {
+          "low": 1.5,
+          "central": 2.21,
+          "high": 3.3
+        },
+        "non-latin": {
+          "low": 1,
+          "central": 2.49,
+          "high": 5.5
+        }
       },
       "providers": {
         "openai": {
@@ -3189,7 +3206,8 @@
           },
           "notes": "Gemini counts come out close to o200k, so the central values sit at or near one. Same caveat as the Anthropic row: recorded during research, not yet measured by a calibration run."
         }
-      }
+      },
+      "charsPerTokenNotes": "Measured against the o200k encoder over a small set of samples per class, not guessed. The central values are the pooled chars-per-token; the bounds are the per-sample spread padded by about a fifth, because the sample is small. The first version of this file carried one global range of 3 to 5, which was 43 per cent out on English prose and did not even bracket the real count."
     },
     "cachedReadShareOfInput": {
       "low": 0,

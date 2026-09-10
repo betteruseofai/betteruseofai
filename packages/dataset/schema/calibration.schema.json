@@ -62,7 +62,14 @@
           }
         },
         "charsPerTokenFallback": {
-          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+          "type": "object",
+          "description": "Characters per token by content class, for the estimate that runs while somebody is still typing and cannot wait for the encoder. Measured against o200k, not guessed: the figure varies from about 5.2 on English prose to about 2.2 on mathematics, so one global number was wrong for every class at once.",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/nonNegativeRange"
+          }
+        },
+        "charsPerTokenNotes": {
+          "type": "string"
         }
       }
     },
