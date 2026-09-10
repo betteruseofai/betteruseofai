@@ -1,0 +1,13 @@
+event: content_block_start
+data: {"type":"content_block_start","index":0,"content_block":{"type":"thinking","thinking":""}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"Thinking about it."}}
+
+event: content_block_delta
+data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"A shorter answer with no model named anywhere in the stream."}}
+
+event: message_stop
+data: {"type":"message_stop"}
+
+data: [DONE]

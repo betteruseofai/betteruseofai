@@ -1,0 +1,16 @@
+event: message
+data: {"type":"message_stream_complete","conversation_id":"00000000-0000-4000-8000-0000000000aa"}
+
+event: message
+data: {"message":{"id":"m1","author":{"role":"assistant"},"content":{"content_type":"text","parts":[""]},"metadata":{"model_slug":"auto","resolved_model_slug":"gpt-4o"}}}
+
+event: message
+data: {"v":"The five points are as follows, ","p":"/message/content/parts/0","o":"append"}
+
+event: message
+data: {"v":"in the order they appear in the notes.","p":"/message/content/parts/0","o":"append"}
+
+event: message
+data: {"message":{"metadata":{"resolved_model_slug":"gpt-4o","is_complete":true}}}
+
+data: [DONE]

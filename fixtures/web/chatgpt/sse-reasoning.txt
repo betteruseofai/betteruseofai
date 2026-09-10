@@ -1,0 +1,7 @@
+event: message
+data: {"message":{"id":"m2","author":{"role":"assistant"},"content":{"content_type":"thoughts","thoughts":[{"summary":"Working through it"}]},"metadata":{"resolved_model_slug":"o3"}}}
+
+event: message
+data: {"message":{"id":"m3","author":{"role":"assistant"},"content":{"content_type":"text","parts":["The answer, after some thought."]},"metadata":{"resolved_model_slug":"o3"}}}
+
+data: [DONE]

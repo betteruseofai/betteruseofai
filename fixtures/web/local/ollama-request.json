@@ -1,0 +1,10 @@
+{
+  "model": "llama3.1:8b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is the capital of Australia"
+    }
+  ],
+  "stream": true
+}

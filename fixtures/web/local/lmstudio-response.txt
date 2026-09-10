@@ -1,0 +1,3 @@
+data: {"model":"qwen2.5:7b","choices":[{"delta":{"content":"Canberra."}}]}
+data: {"model":"qwen2.5:7b","choices":[{"delta":{}}],"usage":{"prompt_tokens":19,"completion_tokens":4}}
+data: [DONE]

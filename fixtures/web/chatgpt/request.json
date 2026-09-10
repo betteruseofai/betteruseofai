@@ -1,0 +1,20 @@
+{
+  "action": "next",
+  "messages": [
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "author": {
+        "role": "user"
+      },
+      "content": {
+        "content_type": "text",
+        "parts": [
+          "Summarise the notes below into five bullet points."
+        ]
+      }
+    }
+  ],
+  "conversation_id": "00000000-0000-4000-8000-0000000000aa",
+  "model": "auto",
+  "timezone_offset_min": 0
+}
