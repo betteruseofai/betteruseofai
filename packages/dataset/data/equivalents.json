@@ -1,0 +1,183 @@
+{
+  "version": "0.1.0",
+  "notes": "Everyday comparisons, each with a source. The engine picks the one or two whose count lands between 0.1 and 100, so a figure is never described as 0.0004 of a car journey.",
+  "equivalents": [
+    {
+      "id": "led-bulb-second",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 0.0025,
+      "singular": "second of a 9 W LED bulb",
+      "plural": "seconds of a 9 W LED bulb",
+      "source": {
+        "title": "LED lamp product data, typical 9 W A60 replacement for a 60 W incandescent",
+        "url": "https://www.ledvance.com/",
+        "publisher": "LEDVANCE",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "notes": "9 W for one second is 0.0025 Wh."
+    },
+    {
+      "id": "phone-charge",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 19,
+      "singular": "full smartphone charge",
+      "plural": "full smartphone charges",
+      "source": {
+        "title": "Greenhouse Gas Equivalencies Calculator",
+        "url": "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2026-08",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "notes": "0.019 kWh per charge."
+    },
+    {
+      "id": "kettle-boil",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 100,
+      "singular": "mug of water boiled in a kettle",
+      "plural": "mugs of water boiled in a kettle",
+      "source": {
+        "title": "Energy use of domestic kettles",
+        "url": "https://energysavingtrust.org.uk/",
+        "publisher": "Energy Saving Trust",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Roughly 0.1 kWh to bring 300 mL from tap temperature to boiling, allowing for kettle losses. Worth replacing with a cited figure."
+      }
+    },
+    {
+      "id": "google-search",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 0.3,
+      "singular": "web search",
+      "plural": "web searches",
+      "stale": true,
+      "source": {
+        "title": "Powering a Google search",
+        "url": "https://googleblog.blogspot.com/2009/01/powering-google-search.html",
+        "publisher": "Google",
+        "date": "2009-01",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "notes": "Seventeen years old and quoted constantly. We keep it because the comparison is the one people reach for, and we mark it stale wherever it appears."
+    },
+    {
+      "id": "teaspoon",
+      "quantity": "water",
+      "unitPer": "mL",
+      "amount": 4.9,
+      "singular": "teaspoon of water",
+      "plural": "teaspoons of water",
+      "source": {
+        "title": "Metric teaspoon, standard measure",
+        "url": "https://www.bipm.org/en/measurement-units",
+        "publisher": "International Bureau of Weights and Measures",
+        "date": "2019",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "glass-of-water",
+      "quantity": "water",
+      "unitPer": "mL",
+      "amount": 237,
+      "singular": "glass of water",
+      "plural": "glasses of water",
+      "source": {
+        "title": "United States customary cup, 8 fluid ounces",
+        "url": "https://www.nist.gov/pml/owm",
+        "publisher": "National Institute of Standards and Technology",
+        "date": "2024",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "water-bottle",
+      "quantity": "water",
+      "unitPer": "mL",
+      "amount": 500,
+      "singular": "500 mL bottle of water",
+      "plural": "500 mL bottles of water",
+      "source": {
+        "title": "Standard retail bottled water volume",
+        "url": "https://www.bipm.org/en/measurement-units",
+        "publisher": "International Bureau of Weights and Measures",
+        "date": "2019",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "car-metre",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 0.244,
+      "singular": "metre driven in an average petrol car",
+      "plural": "metres driven in an average petrol car",
+      "source": {
+        "title": "Greenhouse gas reporting: conversion factors 2025 to 2026, average car, petrol",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "publisher": "Department for Energy Security and Net Zero",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "Open Government Licence v3.0"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "244 g per km, cross-checked against the EPA figure of 393 g per mile. Copy the exact cell out of the DEFRA spreadsheet before launch."
+      }
+    },
+    {
+      "id": "phone-charge-carbon",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 12.4,
+      "singular": "smartphone charged from empty",
+      "plural": "smartphones charged from empty",
+      "source": {
+        "title": "Greenhouse Gas Equivalencies Calculator",
+        "url": "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2026-08",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "search-carbon",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 0.2,
+      "singular": "web search",
+      "plural": "web searches",
+      "stale": true,
+      "source": {
+        "title": "Powering a Google search",
+        "url": "https://googleblog.blogspot.com/2009/01/powering-google-search.html",
+        "publisher": "Google",
+        "date": "2009-01",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    }
+  ]
+}

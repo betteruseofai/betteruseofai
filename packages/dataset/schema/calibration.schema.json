@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://betteruseofai.org/schema/calibration.schema.json",
+  "title": "Calibration",
+  "description": "Constants the engine needs that are not benchmark rows: tokenizer ratios, cache pricing, hidden context factors, and the output to input energy weight.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "tokenizer",
+    "cachedReadShareOfInput",
+    "cacheWriteShareOfInput",
+    "outputToInputEnergyWeight",
+    "hiddenContextFactor",
+    "derivedRowWidening"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "tokenizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseEncoding",
+        "providers"
+      ],
+      "properties": {
+        "baseEncoding": {
+          "type": "string"
+        },
+        "providers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "exact",
+              "contentClasses"
+            ],
+            "properties": {
+              "exact": {
+                "type": "boolean",
+                "description": "True when we run the provider's own encoding, so no ratio is applied."
+              },
+              "contentClasses": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "common.schema.json#/$defs/nonNegativeRange"
+                }
+              },
+              "source": {
+                "$ref": "common.schema.json#/$defs/source"
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "charsPerTokenFallback": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        }
+      }
+    },
+    "cachedReadShareOfInput": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "No provider publishes the energy cost of a cache hit. The low bound is zero on purpose."
+    },
+    "cacheWriteShareOfInput": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange"
+    },
+    "outputToInputEnergyWeight": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "How much more energy an output token costs than an input token. Used to split a per prompt figure."
+    },
+    "derivedRowWidening": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "Multipliers applied to low and high when a per token rate was derived rather than measured."
+    },
+    "assumedTokenCountWidening": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "Extra widening when a per prompt row did not publish its token counts."
+    },
+    "hiddenContextFactor": {
+      "type": "object",
+      "description": "Web apps hide their system prompts and retrieved context, so counted input is a lower bound. Keyed by surface.",
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/nonNegativeRange"
+      }
+    },
+    "localPue": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "Facility overhead for a model running on your own machine. There is no data centre, so this sits at one."
+    }
+  }
+}

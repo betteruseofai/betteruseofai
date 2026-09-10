@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://betteruseofai.org/schema/models.schema.json",
+  "title": "Models",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "models"],
+  "properties": {
+    "version": { "type": "string" },
+    "notes": { "type": "string" },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/model" }
+    }
+  },
+  "$defs": {
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "aliases",
+        "provider",
+        "family",
+        "tier",
+        "ordinal",
+        "displayName",
+        "reasoning"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([-.][a-z0-9]+)*$",
+          "description": "Our stable identifier. Not necessarily any provider's API string."
+        },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Every raw string a reader or site adapter might see for this model. Matched case insensitively."
+        },
+        "provider": {
+          "enum": [
+            "anthropic",
+            "openai",
+            "google",
+            "mistral",
+            "meta",
+            "deepseek",
+            "alibaba",
+            "microsoft",
+            "other"
+          ]
+        },
+        "family": {
+          "type": "string",
+          "description": "The ladder this model sits on. A downgrade recommendation moves to ordinal + 1 within the same family."
+        },
+        "tier": { "enum": ["frontier", "mid", "small", "nano"] },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Rung on the family ladder. 0 is the largest model offered in that family."
+        },
+        "displayName": { "type": "string", "minLength": 1 },
+        "reasoning": {
+          "type": "boolean",
+          "description": "Whether the model can spend hidden thinking tokens. Drives the thinking-unknown flag."
+        },
+        "thinkingRatio": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange",
+          "description": "Thinking tokens as a multiple of visible output tokens, when the count is not disclosed."
+        },
+        "activeParamsB": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange",
+          "description": "Active parameters in billions. Known for open models, estimated for closed ones."
+        },
+        "hosting": { "enum": ["cloud", "local", "both"] },
+        "released": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "deprecated": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

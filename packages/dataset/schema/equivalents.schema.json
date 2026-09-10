@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://betteruseofai.org/schema/equivalents.schema.json",
+  "title": "Equivalents",
+  "description": "Everyday comparisons for a quantity of energy, water or carbon. Each carries its own source, because a comparison with no provenance is decoration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "equivalents"],
+  "properties": {
+    "version": { "type": "string" },
+    "notes": { "type": "string" },
+    "equivalents": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/equivalent" }
+    }
+  },
+  "$defs": {
+    "equivalent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "quantity", "unitPer", "amount", "singular", "plural", "source", "provenance"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "quantity": { "enum": ["energy", "water", "carbon"] },
+        "unitPer": {
+          "enum": ["Wh", "mL", "g"],
+          "description": "The unit the amount is expressed in, matching the quantity."
+        },
+        "amount": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "How much of the quantity one of these represents. Divide the figure by this to get a count."
+        },
+        "singular": { "type": "string", "minLength": 1 },
+        "plural": { "type": "string", "minLength": 1 },
+        "stale": {
+          "type": "boolean",
+          "description": "True for figures old enough that we must say so next to the number."
+        },
+        "source": { "$ref": "common.schema.json#/$defs/source" },
+        "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "version": "0.1.0",
+  "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
+  "tokenizer": {
+    "baseEncoding": "o200k_base",
+    "charsPerTokenFallback": {
+      "low": 3.0,
+      "central": 4.0,
+      "high": 5.0
+    },
+    "providers": {
+      "openai": {
+        "exact": true,
+        "contentClasses": {
+          "prose": {
+            "low": 1.0,
+            "central": 1.0,
+            "high": 1.0
+          },
+          "maths": {
+            "low": 1.0,
+            "central": 1.0,
+            "high": 1.0
+          },
+          "code": {
+            "low": 1.0,
+            "central": 1.0,
+            "high": 1.0
+          },
+          "non-latin": {
+            "low": 1.0,
+            "central": 1.0,
+            "high": 1.0
+          }
+        },
+        "source": {
+          "title": "tiktoken, o200k_base encoding",
+          "url": "https://github.com/openai/tiktoken",
+          "publisher": "OpenAI",
+          "date": "2024",
+          "retrieved": "2026-09-10",
+          "licence": "MIT"
+        }
+      },
+      "anthropic": {
+        "exact": false,
+        "contentClasses": {
+          "prose": {
+            "low": 1.08,
+            "central": 1.16,
+            "high": 1.26
+          },
+          "maths": {
+            "low": 1.12,
+            "central": 1.21,
+            "high": 1.34
+          },
+          "code": {
+            "low": 1.18,
+            "central": 1.3,
+            "high": 1.45
+          },
+          "non-latin": {
+            "low": 1.02,
+            "central": 1.1,
+            "high": 1.22
+          }
+        },
+        "source": {
+          "title": "Ratio of Claude tokens to o200k tokens, recorded during project research",
+          "url": "https://docs.claude.com/en/docs/build-with-claude/token-counting",
+          "publisher": "Better Use of AI research notes, against the documented count-tokens endpoint",
+          "date": "2026-09",
+          "retrieved": "2026-09-10"
+        },
+        "notes": "Roughly 16 per cent more tokens than o200k on English prose, 21 per cent on maths and 30 per cent on Python. These came out of the project research rather than a run of scripts/calibrate.ts, which does not exist yet. The spread around each central value is ours. Replace these with measured factors before the extension ships."
+      },
+      "google": {
+        "exact": false,
+        "contentClasses": {
+          "prose": {
+            "low": 0.95,
+            "central": 1.0,
+            "high": 1.1
+          },
+          "maths": {
+            "low": 0.95,
+            "central": 1.0,
+            "high": 1.12
+          },
+          "code": {
+            "low": 0.95,
+            "central": 1.02,
+            "high": 1.15
+          },
+          "non-latin": {
+            "low": 0.9,
+            "central": 1.0,
+            "high": 1.15
+          }
+        },
+        "source": {
+          "title": "Ratio of Gemini tokens to o200k tokens, recorded during project research",
+          "url": "https://ai.google.dev/gemini-api/docs/tokens",
+          "publisher": "Better Use of AI research notes, against the documented count-tokens endpoint",
+          "date": "2026-09",
+          "retrieved": "2026-09-10"
+        },
+        "notes": "Gemini counts come out close to o200k, so the central values sit at or near one. Same caveat as the Anthropic row: recorded during research, not yet measured by a calibration run."
+      }
+    }
+  },
+  "cachedReadShareOfInput": {
+    "low": 0.0,
+    "central": 0.1,
+    "high": 0.5
+  },
+  "cacheWriteShareOfInput": {
+    "low": 1.0,
+    "central": 1.0,
+    "high": 1.25
+  },
+  "outputToInputEnergyWeight": {
+    "low": 4.0,
+    "central": 8.0,
+    "high": 15.0
+  },
+  "derivedRowWidening": {
+    "low": 0.5,
+    "central": 1.0,
+    "high": 2.0
+  },
+  "assumedTokenCountWidening": {
+    "low": 0.7,
+    "central": 1.0,
+    "high": 1.5
+  },
+  "hiddenContextFactor": {
+    "api": {
+      "low": 1.0,
+      "central": 1.0,
+      "high": 1.0
+    },
+    "claude-code": {
+      "low": 1.0,
+      "central": 1.0,
+      "high": 1.05
+    },
+    "codex-cli": {
+      "low": 1.0,
+      "central": 1.0,
+      "high": 1.05
+    },
+    "claude-web": {
+      "low": 1.0,
+      "central": 1.4,
+      "high": 2.5
+    },
+    "chatgpt-web": {
+      "low": 1.0,
+      "central": 1.5,
+      "high": 3.0
+    },
+    "gemini-web": {
+      "low": 1.0,
+      "central": 1.4,
+      "high": 2.5
+    },
+    "local-webui": {
+      "low": 1.0,
+      "central": 1.0,
+      "high": 1.1
+    }
+  },
+  "localPue": {
+    "low": 1.0,
+    "central": 1.0,
+    "high": 1.0
+  }
+}

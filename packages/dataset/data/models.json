@@ -1,0 +1,462 @@
+{
+  "version": "0.1.0",
+  "notes": "Deliberately incomplete. A model that is not here resolves to null and renders as unknown, which is the correct behaviour. Rows get added as readers and site adapters meet real strings in the wild. Ordinal is the rung on the family ladder, 0 being the largest model on offer in that family; a downgrade recommendation moves to ordinal + 1 within the same family, so a family with one rung produces no downgrade.",
+  "models": [
+    {
+      "id": "claude-opus-5",
+      "aliases": ["claude-opus-5", "opus-5", "opus 5", "claude opus 5", "claude-opus-5-latest"],
+      "provider": "anthropic",
+      "family": "claude-5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Opus 5",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Identifier taken from the Claude Code environment description. Release date not recorded."
+      }
+    },
+    {
+      "id": "claude-sonnet-5",
+      "aliases": ["claude-sonnet-5", "sonnet-5", "sonnet 5", "claude sonnet 5", "claude-sonnet-5-latest"],
+      "provider": "anthropic",
+      "family": "claude-5",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Claude Sonnet 5",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "claude-haiku-4.5",
+      "aliases": [
+        "claude-haiku-4-5-20251001",
+        "claude-haiku-4-5",
+        "claude-haiku-4.5",
+        "haiku-4.5",
+        "haiku 4.5",
+        "claude haiku 4.5"
+      ],
+      "provider": "anthropic",
+      "family": "claude-5",
+      "tier": "small",
+      "ordinal": 2,
+      "displayName": "Claude Haiku 4.5",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.2, "central": 1.0, "high": 4 },
+      "hosting": "cloud",
+      "released": "2025-10-01",
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Sits on the current ladder alongside the Claude 5 models even though its own version number is 4.5."
+      }
+    },
+    {
+      "id": "claude-fable-5.1",
+      "aliases": ["claude-fable-5-1", "claude-fable-5.1", "fable-5.1", "fable 5.1", "claude fable 5.1"],
+      "provider": "anthropic",
+      "family": "claude-fable",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Fable 5.1",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Kept on its own ladder because its position relative to Opus and Sonnet is not confirmed. That means no downgrade target, which is the safe default."
+      }
+    },
+    {
+      "id": "claude-opus-4.1",
+      "aliases": ["claude-opus-4-1", "claude-opus-4.1", "opus-4.1", "claude-opus-4-1-20250805"],
+      "provider": "anthropic",
+      "family": "claude-4",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Opus 4.1",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "claude-sonnet-4",
+      "aliases": ["claude-sonnet-4", "claude-sonnet-4-20250514", "sonnet-4", "sonnet 4"],
+      "provider": "anthropic",
+      "family": "claude-4",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Claude Sonnet 4",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "claude-3.7-sonnet",
+      "aliases": [
+        "claude-3-7-sonnet-20250219",
+        "claude-3-7-sonnet",
+        "claude-3.7-sonnet",
+        "claude 3.7 sonnet"
+      ],
+      "provider": "anthropic",
+      "family": "claude-3.x",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude 3.7 Sonnet",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "released": "2025-02-19",
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Measured directly by Jegham and colleagues, so this is one of the few Anthropic models with a real row."
+      }
+    },
+    {
+      "id": "claude-3.5-sonnet",
+      "aliases": [
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620",
+        "claude-3-5-sonnet",
+        "claude-3.5-sonnet"
+      ],
+      "provider": "anthropic",
+      "family": "claude-3.x",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Claude 3.5 Sonnet",
+      "reasoning": false,
+      "hosting": "cloud",
+      "released": "2024-10-22",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "claude-3.5-haiku",
+      "aliases": ["claude-3-5-haiku-20241022", "claude-3-5-haiku", "claude-3.5-haiku"],
+      "provider": "anthropic",
+      "family": "claude-3.x",
+      "tier": "small",
+      "ordinal": 2,
+      "displayName": "Claude 3.5 Haiku",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+
+    {
+      "id": "gpt-5.6",
+      "aliases": ["gpt-5.6", "gpt-5-6", "gpt 5.6"],
+      "provider": "openai",
+      "family": "gpt-5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "GPT-5.6",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Named in the Codex CLI cache-write issue referenced in the plan. No published energy figure of its own."
+      }
+    },
+    {
+      "id": "gpt-5",
+      "aliases": ["gpt-5", "gpt5", "gpt 5", "gpt-5-latest"],
+      "provider": "openai",
+      "family": "gpt-5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "GPT-5",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "o3",
+      "aliases": ["o3", "o3-2025-04-16", "openai-o3"],
+      "provider": "openai",
+      "family": "o-series",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "o3",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "hosting": "cloud",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "o4-mini",
+      "aliases": ["o4-mini", "o4-mini-high", "o4 mini"],
+      "provider": "openai",
+      "family": "o-series",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "o4-mini",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "hosting": "cloud",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gpt-4.1",
+      "aliases": ["gpt-4.1", "gpt-4-1", "gpt-4.1-2025-04-14"],
+      "provider": "openai",
+      "family": "gpt-4.1",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "GPT-4.1",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gpt-4.1-mini",
+      "aliases": ["gpt-4.1-mini", "gpt-4-1-mini"],
+      "provider": "openai",
+      "family": "gpt-4.1",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "GPT-4.1 mini",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gpt-4.1-nano",
+      "aliases": ["gpt-4.1-nano", "gpt-4-1-nano"],
+      "provider": "openai",
+      "family": "gpt-4.1",
+      "tier": "nano",
+      "ordinal": 2,
+      "displayName": "GPT-4.1 nano",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gpt-4o",
+      "aliases": ["gpt-4o", "gpt-4o-2024-08-06", "gpt-4o-latest", "chatgpt-4o-latest"],
+      "provider": "openai",
+      "family": "gpt-4o",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "GPT-4o",
+      "reasoning": false,
+      "hosting": "cloud",
+      "released": "2024-05-13",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gpt-4o-mini",
+      "aliases": ["gpt-4o-mini", "gpt-4o-mini-2024-07-18"],
+      "provider": "openai",
+      "family": "gpt-4o",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "GPT-4o mini",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+
+    {
+      "id": "gemini-2.5-pro",
+      "aliases": ["gemini-2.5-pro", "gemini-2-5-pro", "gemini 2.5 pro", "models/gemini-2.5-pro"],
+      "provider": "google",
+      "family": "gemini-2.5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Gemini 2.5 Pro",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.3, "central": 1.5, "high": 6 },
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "aliases": [
+        "gemini-2.5-flash",
+        "gemini-2-5-flash",
+        "gemini 2.5 flash",
+        "models/gemini-2.5-flash",
+        "gemini-apps-default"
+      ],
+      "provider": "google",
+      "family": "gemini-2.5",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Gemini 2.5 Flash",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.2, "central": 1.0, "high": 4 },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Treated as the model behind the median Gemini Apps prompt that Google measured."
+      }
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "aliases": ["gemini-2.5-flash-lite", "gemini-2-5-flash-lite", "models/gemini-2.5-flash-lite"],
+      "provider": "google",
+      "family": "gemini-2.5",
+      "tier": "small",
+      "ordinal": 2,
+      "displayName": "Gemini 2.5 Flash-Lite",
+      "reasoning": false,
+      "hosting": "cloud",
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+
+    {
+      "id": "mistral-large-2",
+      "aliases": ["mistral-large-2", "mistral-large-2407", "mistral-large-latest", "mistral large 2"],
+      "provider": "mistral",
+      "family": "mistral-large",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Mistral Large 2",
+      "reasoning": false,
+      "activeParamsB": { "low": 123, "central": 123, "high": 123 },
+      "hosting": "both",
+      "released": "2024-07-24",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "deepseek-r1",
+      "aliases": ["deepseek-r1", "deepseek-reasoner", "DeepSeek-R1"],
+      "provider": "deepseek",
+      "family": "deepseek-r1",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "DeepSeek-R1",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "activeParamsB": { "low": 37, "central": 37, "high": 37 },
+      "hosting": "both",
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Mixture of experts. Active parameters, not the 671 billion total."
+      }
+    },
+    {
+      "id": "deepseek-r1-distill-llama-70b",
+      "aliases": ["deepseek-r1-distill-llama-70b", "DeepSeek-R1-Distill-Llama-70B"],
+      "provider": "deepseek",
+      "family": "deepseek-r1",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "DeepSeek-R1 Distill Llama 70B",
+      "reasoning": true,
+      "thinkingRatio": { "low": 0.5, "central": 2.5, "high": 10 },
+      "activeParamsB": { "low": 70, "central": 70, "high": 70 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "llama-3.3-70b",
+      "aliases": ["llama-3.3-70b", "llama3.3:70b", "Llama-3.3-70B-Instruct", "meta-llama/Llama-3.3-70B-Instruct"],
+      "provider": "meta",
+      "family": "llama-3.x",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Llama 3.3 70B",
+      "reasoning": false,
+      "activeParamsB": { "low": 70, "central": 70, "high": 70 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "llama-3.1-8b",
+      "aliases": ["llama-3.1-8b", "llama3.1:8b", "Llama-3.1-8B-Instruct", "meta-llama/Llama-3.1-8B-Instruct"],
+      "provider": "meta",
+      "family": "llama-3.x",
+      "tier": "small",
+      "ordinal": 1,
+      "displayName": "Llama 3.1 8B",
+      "reasoning": false,
+      "activeParamsB": { "low": 8, "central": 8, "high": 8 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "llama-3.2-3b",
+      "aliases": ["llama-3.2-3b", "llama3.2:3b", "Llama-3.2-3B-Instruct"],
+      "provider": "meta",
+      "family": "llama-3.x",
+      "tier": "nano",
+      "ordinal": 2,
+      "displayName": "Llama 3.2 3B",
+      "reasoning": false,
+      "activeParamsB": { "low": 3.2, "central": 3.2, "high": 3.2 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "qwen-2.5-7b",
+      "aliases": ["qwen-2.5-7b", "qwen2.5:7b", "Qwen2.5-7B-Instruct"],
+      "provider": "alibaba",
+      "family": "qwen-2.5",
+      "tier": "small",
+      "ordinal": 0,
+      "displayName": "Qwen 2.5 7B",
+      "reasoning": false,
+      "activeParamsB": { "low": 7, "central": 7, "high": 7 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "mistral-7b",
+      "aliases": ["mistral-7b", "mistral:7b", "Mistral-7B-Instruct-v0.3"],
+      "provider": "mistral",
+      "family": "mistral-7b",
+      "tier": "small",
+      "ordinal": 0,
+      "displayName": "Mistral 7B",
+      "reasoning": false,
+      "activeParamsB": { "low": 7.2, "central": 7.2, "high": 7.2 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "gemma-2-9b",
+      "aliases": ["gemma-2-9b", "gemma2:9b", "google/gemma-2-9b-it"],
+      "provider": "google",
+      "family": "gemma-2",
+      "tier": "small",
+      "ordinal": 0,
+      "displayName": "Gemma 2 9B",
+      "reasoning": false,
+      "activeParamsB": { "low": 9, "central": 9, "high": 9 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    },
+    {
+      "id": "phi-3-mini",
+      "aliases": ["phi-3-mini", "phi3:mini", "Phi-3-mini-4k-instruct"],
+      "provider": "microsoft",
+      "family": "phi-3",
+      "tier": "nano",
+      "ordinal": 0,
+      "displayName": "Phi-3 mini",
+      "reasoning": false,
+      "activeParamsB": { "low": 3.8, "central": 3.8, "high": 3.8 },
+      "hosting": "both",
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" }
+    }
+  ]
+}

@@ -1,0 +1,720 @@
+{
+  "version": "0.1.0",
+  "notes": "Published measurements of inference energy, water and carbon. They disagree by an order of magnitude, mostly because they draw the system boundary in different places, so every row records its boundary, its methodology and a quality score, and nothing here is averaged across sources. Rows transcribed from the researched appendix in PLAN.md on 2026-09-10 and not yet re-fetched from the source files carry a provenance of source-appendix.",
+  "benchmarks": [
+    {
+      "id": "google.gemini-apps.2025-median",
+      "modelIds": ["gemini-2.5-flash"],
+      "shape": "per-prompt",
+      "perPrompt": {
+        "energyWh": { "low": 0.1, "central": 0.24, "high": 0.72 },
+        "referenceInputTokens": { "low": 40, "central": 200, "high": 900 },
+        "referenceOutputTokens": { "low": 60, "central": 300, "high": 1000 },
+        "tokenCountsPublished": false
+      },
+      "pue": { "low": 1.09, "central": 1.09, "high": 1.09 },
+      "energyIncludesPue": true,
+      "waterOnsiteLPerKwh": { "low": 1.15, "central": 1.15, "high": 1.15 },
+      "carbonGPerKwh": { "low": 94, "central": 94, "high": 94 },
+      "carbonBasis": "market-based",
+      "methodology": "provider-measured",
+      "boundary": "datacenter",
+      "source": {
+        "title": "Measuring the environmental impact of AI inference",
+        "url": "https://arxiv.org/abs/2508.15734",
+        "publisher": "Google",
+        "date": "2025-08-21",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-08-21",
+      "qualityScore": 4,
+      "notes": "Median text prompt across the Gemini Apps fleet: 0.24 Wh, 0.26 mL, 0.03 gCO2e. The low bound is Google's own narrow accelerator-only figure of 0.10 Wh; the high bound is three times the median, because a fleet median says nothing about the tail. Breakdown: TPU 0.14, host CPU and DRAM 0.06, idle 0.02, overhead 0.02 Wh. Water follows from the energy and a WUE of 1.15 L/kWh, which reproduces the published 0.26 mL. The 94 gCO2e/kWh is market-based and flatters the result by roughly three and a half times against the location-based 345, so it is only used when the reader asks for provider-reported carbon. Google did not publish the token counts behind the median prompt, so the reference counts here are ours."
+    },
+    {
+      "id": "openai.altman-statement.2025",
+      "modelIds": ["gpt-5"],
+      "shape": "per-prompt",
+      "perPrompt": {
+        "energyWh": { "low": 0.1, "central": 0.34, "high": 3.0 },
+        "directWaterMl": { "low": 0.1, "central": 0.32, "high": 3.0 },
+        "referenceInputTokens": { "low": 40, "central": 200, "high": 900 },
+        "referenceOutputTokens": { "low": 60, "central": 300, "high": 1000 },
+        "tokenCountsPublished": false
+      },
+      "pue": { "low": 1.0, "central": 1.12, "high": 1.2 },
+      "energyIncludesPue": true,
+      "methodology": "provider-statement",
+      "boundary": "datacenter",
+      "source": {
+        "title": "The Gentle Singularity",
+        "url": "https://blog.samaltman.com/the-gentle-singularity",
+        "publisher": "Sam Altman",
+        "date": "2025-06",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-06-01",
+      "qualityScore": 2,
+      "notes": "A blog sentence, not a measurement. No model, no boundary, no date, no method, and no audit. The range is wide on purpose and the quality score is low on purpose. We keep the row because it is the only first-party OpenAI number that exists, and because readers will have seen it quoted. The boundary is recorded as datacenter only so the engine has something to work with; the source did not say."
+    },
+    {
+      "id": "mistral.large-2.lca.2025",
+      "modelIds": ["mistral-large-2"],
+      "shape": "per-prompt",
+      "perPrompt": {
+        "directCarbonG": { "low": 0.8, "central": 1.14, "high": 1.6 },
+        "directWaterMl": { "low": 32, "central": 45, "high": 63 },
+        "referenceInputTokens": { "low": 40, "central": 200, "high": 900 },
+        "referenceOutputTokens": { "low": 400, "central": 400, "high": 400 },
+        "tokenCountsPublished": false
+      },
+      "pue": { "low": 1.0, "central": 1.0, "high": 1.0 },
+      "energyIncludesPue": true,
+      "methodology": "provider-measured",
+      "boundary": "lifecycle",
+      "source": {
+        "title": "Our contribution to a global environmental standard for AI",
+        "url": "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai",
+        "publisher": "Mistral AI, with Carbone 4 and ADEME",
+        "date": "2025-07-22",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-07-22",
+      "qualityScore": 5,
+      "notes": "The most complete assessment anyone has published, reviewed by Resilio and Hubblo. One 400-token Le Chat reply: 1.14 gCO2e, 45 mL, 0.16 mg Sb-eq. Training cost 20,400 tCO2e and 281,000 cubic metres. The water figure is about 170 times Google's because it counts manufacturing and the water used generating the electricity, not just on-site cooling. Carbon and water are published directly and already include the embodied share, so the engine uses them as they are rather than deriving them from energy. Mistral did not publish an energy figure per reply, and only the output token count was given, so the input reference is ours. The plus or minus 40 per cent on the direct values is our uncertainty, not the study's."
+    },
+
+    {
+      "id": "jegham.gpt-4o",
+      "modelIds": ["gpt-4o"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.423 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 1.215 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 2.875 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Version 6 of the preprint."
+      },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "Inferred from latency times rated DGX power times an assumed utilisation, on Azure infrastructure. Sizes of the closed models are guesses, so this is much better for ranking models against each other than for absolute values. The quoted energy is at server level and the engine applies the PUE of 1.12 on top. The uncertainty multipliers of one half and two are ours."
+    },
+    {
+      "id": "jegham.gpt-4.1",
+      "modelIds": ["gpt-4.1"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.871 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 3.161 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 4.833 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3
+    },
+    {
+      "id": "jegham.gpt-4.1-nano",
+      "modelIds": ["gpt-4.1-nano"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.207 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 0.575 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 0.827 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "The cheapest model measured, and about four times lighter than GPT-4.1 on a short prompt. This row is what most downgrade recommendations point at."
+    },
+    {
+      "id": "jegham.o3",
+      "modelIds": ["o3"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 1.177 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 5.153 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 12.222 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "Between two point eight and four point three times GPT-4o for the same prompt, which is the clearest published measurement of what hidden reasoning costs. The thinking tokens are already inside these numbers."
+    },
+    {
+      "id": "jegham.o4-mini",
+      "modelIds": ["o4-mini"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 3.649 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 7.38 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 7.237 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "Measured on the high reasoning effort setting. A mini model that costs more than o3 on a short prompt, because the reasoning budget dominates. It is a useful warning that smaller is not automatically lighter once thinking is switched on. The long-prompt figure sits slightly below the medium one, which the fit will smooth over."
+    },
+    {
+      "id": "jegham.claude-3.7-sonnet",
+      "modelIds": ["claude-3.7-sonnet"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.95 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 2.989 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 5.671 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "carbonGPerKwh": { "low": 287, "central": 287, "high": 287 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "Measured on AWS, so the multipliers differ from the OpenAI rows. Anthropic has published nothing first-party, so this row is the anchor for every Claude proxy in this file."
+    },
+    {
+      "id": "jegham.claude-3.5-sonnet",
+      "modelIds": ["claude-3.5-sonnet"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.973 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 3.638 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 7.772 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "carbonGPerKwh": { "low": 287, "central": 287, "high": 287 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3
+    },
+    {
+      "id": "jegham.deepseek-r1",
+      "modelIds": ["deepseek-r1"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 2.353 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 4.331 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 7.41 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "carbonGPerKwh": { "low": 350, "central": 350, "high": 350 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3,
+      "notes": "Served on Azure. An open model run in somebody else's data centre, so it counts as cloud here even though the weights are downloadable."
+    },
+    {
+      "id": "jegham.llama-3.3-70b",
+      "modelIds": ["llama-3.3-70b"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "short", "inputTokens": 100, "outputTokens": 300, "energyWh": 0.237 },
+          { "label": "medium", "inputTokens": 1000, "outputTokens": 1000, "energyWh": 0.76 },
+          { "label": "long", "inputTokens": 10000, "outputTokens": 1500, "energyWh": 1.447 }
+        ],
+        "relativeUncertainty": { "low": 0.5, "central": 1.0, "high": 2.0 }
+      },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "carbonGPerKwh": { "low": 287, "central": 287, "high": 287 },
+      "carbonBasis": "location-based",
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 3
+    },
+
+    {
+      "id": "epoch.gpt-4o.2025",
+      "modelIds": ["gpt-4o"],
+      "shape": "per-query-set",
+      "perQuerySet": {
+        "points": [
+          { "label": "typical", "inputTokens": 100, "outputTokens": 500, "energyWh": 0.3 },
+          { "label": "long context", "inputTokens": 10000, "outputTokens": 500, "energyWh": 2.5 },
+          { "label": "very long context", "inputTokens": 100000, "outputTokens": 500, "energyWh": 40 }
+        ],
+        "relativeUncertainty": { "low": 0.4, "central": 1.0, "high": 2.5 }
+      },
+      "pue": { "low": 1.1, "central": 1.12, "high": 1.2 },
+      "energyIncludesPue": true,
+      "methodology": "independent-benchmark",
+      "boundary": "server",
+      "source": {
+        "title": "How much energy does ChatGPT use?",
+        "url": "https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use",
+        "publisher": "Epoch AI",
+        "date": "2025-02-07",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-02-07",
+      "qualityScore": 3,
+      "notes": "A bottom-up estimate assuming an H100 at 1,500 W including overhead and 10 per cent utilisation. The value of this row is the shape rather than the level: a hundred thousand token context costs over a hundred times a short prompt, which is the single most useful thing to know about long-context habits. The stated overhead means we do not apply PUE again."
+    },
+    {
+      "id": "microsoft.oviedo.2026",
+      "modelIds": ["gpt-4o"],
+      "shape": "per-prompt",
+      "perPrompt": {
+        "energyWh": { "low": 0.16, "central": 0.31, "high": 0.6 },
+        "directWaterMl": { "low": 0.0, "central": 0.03, "high": 0.067 },
+        "referenceInputTokens": { "low": 40, "central": 200, "high": 900 },
+        "referenceOutputTokens": { "low": 100, "central": 300, "high": 700 },
+        "tokenCountsPublished": false
+      },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": true,
+      "methodology": "independent-benchmark",
+      "boundary": "datacenter",
+      "source": {
+        "title": "Energy and water footprint of large language model inference",
+        "url": "https://arxiv.org/abs/2509.20241",
+        "publisher": "Oviedo and colleagues, Microsoft Research, in Joule",
+        "date": "2026-04",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2509.20241"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-09-24",
+      "qualityScore": 3,
+      "notes": "Median 0.31 Wh per query with an interquartile range of 0.16 to 0.60. Simulation rather than fleet telemetry, and written by people at the vendor whose cloud is being measured, so it is corroboration rather than independent evidence. The same paper puts test-time scaling with fifteen times longer output at 3.91 Wh, which is the number to reach for when a reasoning model is in play."
+    },
+    {
+      "id": "huggingface.energy-score.v2.r1-distill-70b",
+      "modelIds": ["deepseek-r1-distill-llama-70b"],
+      "shape": "per-prompt",
+      "perPrompt": {
+        "energyWh": { "low": 0.0495, "central": 0.5, "high": 7.627 },
+        "referenceInputTokens": { "low": 100, "central": 100, "high": 100 },
+        "referenceOutputTokens": { "low": 200, "central": 500, "high": 4000 },
+        "tokenCountsPublished": false
+      },
+      "pue": { "low": 1.0, "central": 1.15, "high": 1.4 },
+      "energyIncludesPue": false,
+      "methodology": "independent-benchmark",
+      "boundary": "accelerator-only",
+      "source": {
+        "title": "AI Energy Score, version 2",
+        "url": "https://huggingface.co/spaces/AIEnergyScore/Leaderboard",
+        "publisher": "Hugging Face",
+        "date": "2025-12-04",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-12-04",
+      "qualityScore": 4,
+      "notes": "Measured on an H100 at batch size one in FP16, GPU only, so no idle draw and no facility overhead. The spread here is real rather than sloppy: with reasoning switched off this model draws 49.5 Wh per thousand queries, and with reasoning on it draws 7,627, a factor of over one hundred and fifty. Any single central value for a reasoning model is a fiction, which is why the low and high are the two measured modes."
+    },
+
+    {
+      "id": "ecologits.parametric.cloud",
+      "modelIds": [
+        "llama-3.3-70b",
+        "llama-3.1-8b",
+        "llama-3.2-3b",
+        "qwen-2.5-7b",
+        "mistral-7b",
+        "gemma-2-9b",
+        "phi-3-mini",
+        "mistral-large-2",
+        "deepseek-r1",
+        "deepseek-r1-distill-llama-70b"
+      ],
+      "shape": "parametric",
+      "parametric": {
+        "model": "ecologits",
+        "coefficients": {
+          "alphaKwhPerTokenPerB": 1.17e-6,
+          "betaPerB": -0.0112,
+          "gammaKwhPerToken": 4.05e-5
+        },
+        "serverBaseW": { "low": 1000, "central": 1200, "high": 1400 },
+        "gpuCount": 8
+      },
+      "pue": { "low": 1.09, "central": 1.15, "high": 1.2 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.09, "central": 0.5, "high": 0.99 },
+      "methodology": "parametric-model",
+      "boundary": "server",
+      "source": {
+        "title": "EcoLogits: Evaluating the environmental impacts of generative AI",
+        "url": "https://joss.theoj.org/papers/10.21105/joss.07471",
+        "publisher": "Journal of Open Source Software",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "doi": "10.21105/joss.07471",
+        "licence": "MPL-2.0 for the code, paper CC BY 4.0"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-01-01",
+      "qualityScore": 3,
+      "notes": "Energy per output token as alpha times e to the beta B times active parameters, plus gamma, where B is active parameters in billions. The fallback for any open-weight model with no measurement of its own. We follow the EcoLogits method and cite it; none of their code is copied into this repository."
+    },
+    {
+      "id": "ecologits.parametric.local",
+      "modelIds": [
+        "llama-3.3-70b",
+        "llama-3.1-8b",
+        "llama-3.2-3b",
+        "qwen-2.5-7b",
+        "mistral-7b",
+        "gemma-2-9b",
+        "phi-3-mini",
+        "deepseek-r1-distill-llama-70b"
+      ],
+      "shape": "parametric",
+      "parametric": {
+        "model": "ecologits",
+        "coefficients": {
+          "alphaKwhPerTokenPerB": 1.17e-6,
+          "betaPerB": -0.0112,
+          "gammaKwhPerToken": 4.05e-5
+        },
+        "serverBaseW": { "low": 10, "central": 120, "high": 410 },
+        "gpuCount": 1
+      },
+      "pue": { "low": 1.0, "central": 1.0, "high": 1.0 },
+      "energyIncludesPue": true,
+      "waterOnsiteLPerKwh": { "low": 0.0, "central": 0.0, "high": 0.0 },
+      "methodology": "parametric-model",
+      "boundary": "server",
+      "source": {
+        "title": "GreenBench: energy measurements of local LLM inference on Apple silicon",
+        "url": "https://arxiv.org/abs/2608.28667",
+        "publisher": "GreenBench",
+        "date": "2026",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2608.28667"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Coefficients are EcoLogits. The base power range is set from the GreenBench Apple silicon measurements at the low end and desktop GPU draw at the high end."
+      },
+      "validFrom": "2026-01-01",
+      "qualityScore": 3,
+      "notes": "The same formula for a model on your own machine. There is no data centre, so the PUE is one and the on-site cooling water is zero; the water that remains comes from generating the electricity, which the region factor supplies. The base power spans an M4 Pro laptop at around 10 W to a desktop with an RTX 4090 pulling 280 to 410 W, which is the widest honest range we can give without knowing the machine. Reference points: Llama 3.2 3B at 0.09 J per token and Qwen 2.5 7B at 0.20 J per token on an M4 Pro, and Llama 3.1 8B at about 0.29 J per token on a 4090."
+    },
+
+    {
+      "id": "proxy.claude-opus",
+      "modelIds": ["claude-opus-5", "claude-opus-4.1", "claude-fable-5.1"],
+      "shape": "proxy",
+      "proxyOf": "jegham.claude-3.7-sonnet",
+      "proxyFactor": { "low": 1.0, "central": 2.0, "high": 4.5 },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "methodology": "proxy",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "The scaling factor is ours, not the paper's."
+      },
+      "validFrom": "2025-05-14",
+      "qualityScore": 2,
+      "notes": "Anthropic publishes no per-query figures at all, so every current Claude model is scaled from the one measured Sonnet. Opus-class models are assumed to cost between one and four and a half times a 3.7 Sonnet query, centred on two. That is a guess with a shape, and any estimate built on it carries the proxy-row flag so it can never be mistaken for a measurement."
+    },
+    {
+      "id": "proxy.claude-sonnet",
+      "modelIds": ["claude-sonnet-5", "claude-sonnet-4"],
+      "shape": "proxy",
+      "proxyOf": "jegham.claude-3.7-sonnet",
+      "proxyFactor": { "low": 0.7, "central": 1.1, "high": 2.0 },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "methodology": "proxy",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 2
+    },
+    {
+      "id": "proxy.claude-haiku",
+      "modelIds": ["claude-haiku-4.5", "claude-3.5-haiku"],
+      "shape": "proxy",
+      "proxyOf": "jegham.claude-3.7-sonnet",
+      "proxyFactor": { "low": 0.1, "central": 0.3, "high": 0.7 },
+      "pue": { "low": 1.14, "central": 1.14, "high": 1.14 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.18, "central": 0.18, "high": 0.18 },
+      "methodology": "proxy",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 2
+    },
+    {
+      "id": "proxy.gpt-5.6",
+      "modelIds": ["gpt-5.6"],
+      "shape": "proxy",
+      "proxyOf": "jegham.o3",
+      "proxyFactor": { "low": 0.3, "central": 0.8, "high": 2.0 },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "methodology": "proxy",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2026-01-01",
+      "qualityScore": 2,
+      "notes": "Scaled from o3 because both are reasoning models on the same infrastructure. The central factor below one assumes some efficiency gain per generation, which is the kind of assumption that should be replaced by a measurement as soon as one exists."
+    },
+    {
+      "id": "proxy.gpt-4.1-mini",
+      "modelIds": ["gpt-4.1-mini", "gpt-4o-mini"],
+      "shape": "proxy",
+      "proxyOf": "jegham.gpt-4.1-nano",
+      "proxyFactor": { "low": 1.2, "central": 2.0, "high": 3.5 },
+      "pue": { "low": 1.12, "central": 1.12, "high": 1.12 },
+      "energyIncludesPue": false,
+      "waterOnsiteLPerKwh": { "low": 0.3, "central": 0.3, "high": 0.3 },
+      "methodology": "proxy",
+      "boundary": "server",
+      "source": {
+        "title": "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference",
+        "url": "https://arxiv.org/abs/2505.09598",
+        "publisher": "Jegham, Abdelatti, Elmoubarki and Hendawi",
+        "date": "2025-11-24",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2505.09598"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-05-14",
+      "qualityScore": 2,
+      "notes": "Interpolated between the measured nano and full rows, closer to nano."
+    },
+    {
+      "id": "proxy.gemini-2.5-pro",
+      "modelIds": ["gemini-2.5-pro"],
+      "shape": "proxy",
+      "proxyOf": "google.gemini-apps.2025-median",
+      "proxyFactor": { "low": 2.0, "central": 6.0, "high": 20.0 },
+      "pue": { "low": 1.09, "central": 1.09, "high": 1.09 },
+      "energyIncludesPue": true,
+      "waterOnsiteLPerKwh": { "low": 1.15, "central": 1.15, "high": 1.15 },
+      "methodology": "proxy",
+      "boundary": "datacenter",
+      "source": {
+        "title": "Measuring the environmental impact of AI inference",
+        "url": "https://arxiv.org/abs/2508.15734",
+        "publisher": "Google",
+        "date": "2025-08-21",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-08-21",
+      "qualityScore": 2,
+      "notes": "Google measured a fleet median dominated by its smallest, fastest model. A Pro query with thinking on is a different animal, and the factor here is wide because we have nothing better. The high end of twenty is set by the ratio between a Flash-class and a reasoning-frontier query in the independent benchmarks."
+    },
+    {
+      "id": "proxy.gemini-2.5-flash-lite",
+      "modelIds": ["gemini-2.5-flash-lite"],
+      "shape": "proxy",
+      "proxyOf": "google.gemini-apps.2025-median",
+      "proxyFactor": { "low": 0.2, "central": 0.4, "high": 0.8 },
+      "pue": { "low": 1.09, "central": 1.09, "high": 1.09 },
+      "energyIncludesPue": true,
+      "waterOnsiteLPerKwh": { "low": 1.15, "central": 1.15, "high": 1.15 },
+      "methodology": "proxy",
+      "boundary": "datacenter",
+      "source": {
+        "title": "Measuring the environmental impact of AI inference",
+        "url": "https://arxiv.org/abs/2508.15734",
+        "publisher": "Google",
+        "date": "2025-08-21",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": { "method": "source-appendix", "recorded": "2026-09-10" },
+      "validFrom": "2025-08-21",
+      "qualityScore": 2
+    }
+  ]
+}

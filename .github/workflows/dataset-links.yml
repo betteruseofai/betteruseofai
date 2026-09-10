@@ -1,0 +1,50 @@
+name: dataset links
+
+# A source that has moved is a number nobody can check. This runs weekly and opens
+# nothing automatically; it fails loudly and a human decides what to do.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: collect every source url in the dataset
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const urls = new Set();
+            const walk = (v) => {
+              if (!v || typeof v !== 'object') return;
+              if (typeof v.url === 'string' && v.publisher) urls.add(v.url);
+              for (const child of Object.values(v)) walk(child);
+            };
+            for (const f of ['models','benchmarks','regions','equivalents','calibration']) {
+              walk(JSON.parse(fs.readFileSync('packages/dataset/data/' + f + '.json', 'utf8')));
+            }
+            fs.writeFileSync('urls.txt', [...urls].sort().join('\n') + '\n');
+            console.log('found ' + urls.size + ' distinct sources');
+          "
+          cat urls.txt
+
+      - name: check each one responds
+        run: |
+          fail=0
+          while read -r url; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' -L --max-time 30 -A 'betteruseofai-link-check' "$url" || echo 000)
+            if [ "$code" -ge 400 ] || [ "$code" = "000" ]; then
+              echo "DEAD  $code  $url"
+              fail=1
+            else
+              echo "ok    $code  $url"
+            fi
+          done < urls.txt
+          exit $fail

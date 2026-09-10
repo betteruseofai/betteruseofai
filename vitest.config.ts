@@ -11,6 +11,7 @@ export default defineConfig({
           environment: 'node',
         },
       },
+      'packages/dataset',
     ],
   },
 });

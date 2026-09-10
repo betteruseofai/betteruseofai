@@ -1,0 +1,31 @@
+{
+  "name": "@betteruseofai/dataset",
+  "version": "0.0.0",
+  "description": "Published benchmarks for the energy, water and carbon cost of language model inference, with sources.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "data",
+    "schema",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./dataset.json": "./dist/dataset.json",
+    "./schema/*": "./schema/*"
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  }
+}

@@ -1,0 +1,439 @@
+{
+  "version": "0.1.0",
+  "defaultRegion": "WORLD",
+  "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
+  "regions": [
+    {
+      "code": "WORLD",
+      "name": "World average",
+      "kind": "world",
+      "continent": "Global",
+      "gridGco2PerKwh": { "low": 400, "central": 445, "high": 500 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "waterSource": {
+        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
+        "url": "https://arxiv.org/abs/2304.03271",
+        "publisher": "Li, Yang, Islam and Ren",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2304.03271"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Written from memory of the Ember yearly figure for 2024. Refresh from the CSV before launch."
+      }
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "kind": "country",
+      "continent": "North America",
+      "gridGco2PerKwh": { "low": 330, "central": 349.7, "high": 375 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2023,
+      "source": {
+        "title": "eGRID2023 summary tables",
+        "url": "https://www.epa.gov/egrid",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "waterSource": {
+        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
+        "url": "https://arxiv.org/abs/2304.03271",
+        "publisher": "Li, Yang, Islam and Ren",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2304.03271"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "770.884 lb CO2e per MWh, converted to 349.7 g per kWh."
+      }
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "kind": "country",
+      "continent": "Asia",
+      "gridGco2PerKwh": { "low": 680, "central": 710, "high": 745 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2025,
+      "source": {
+        "title": "CO2 Baseline Database for the Indian Power Sector, version 21.0",
+        "url": "https://cea.nic.in/cdm-co2-baseline-database/",
+        "publisher": "Central Electricity Authority, Government of India",
+        "date": "2025-12",
+        "retrieved": "2026-09-10"
+      },
+      "waterSource": {
+        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
+        "url": "https://arxiv.org/abs/2304.03271",
+        "publisher": "Li, Yang, Islam and Ren",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "doi": "10.48550/arXiv.2304.03271"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "0.710 tCO2 per MWh weighted average."
+      }
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 105, "central": 124, "high": 145 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 35, "central": 44, "high": 60 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 300, "central": 344, "high": 390 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 235, "central": 272, "high": 310 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Worth carrying because a large share of European cloud inference lands here."
+      }
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 220, "central": 256, "high": 295 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 18, "central": 24, "high": 40 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 110, "central": 130, "high": 155 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": { "low": 560, "central": 620, "high": 680 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "kind": "country",
+      "continent": "North America",
+      "gridGco2PerKwh": { "low": 100, "central": 120, "high": 145 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "kind": "country",
+      "continent": "South America",
+      "gridGco2PerKwh": { "low": 90, "central": 110, "high": 140 },
+      "waterOffsiteLPerKwh": { "low": 2.0, "central": 6.0, "high": 15.0 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Low carbon, high water. A grid dominated by hydro loses a great deal of water to reservoir evaporation, so the off-site range here is deliberately higher than the default."
+      }
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "kind": "country",
+      "continent": "Asia",
+      "gridGco2PerKwh": { "low": 420, "central": 460, "high": 500 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "kind": "country",
+      "continent": "Asia",
+      "gridGco2PerKwh": { "low": 450, "central": 490, "high": 530 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "kind": "country",
+      "continent": "Asia",
+      "gridGco2PerKwh": { "low": 490, "central": 530, "high": 580 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "kind": "country",
+      "continent": "Oceania",
+      "gridGco2PerKwh": { "low": 480, "central": 524, "high": 570 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "kind": "country",
+      "continent": "Africa",
+      "gridGco2PerKwh": { "low": 650, "central": 700, "high": 760 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Yearly Electricity Data",
+        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "publisher": "Ember",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+    },
+    {
+      "code": "US-CAMX",
+      "name": "California, WECC (eGRID CAMX)",
+      "kind": "subregion",
+      "continent": "North America",
+      "gridGco2PerKwh": { "low": 190, "central": 210, "high": 235 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2023,
+      "source": {
+        "title": "eGRID2023 subregion tables",
+        "url": "https://www.epa.gov/egrid",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Subregion value not yet read out of the eGRID spreadsheet."
+      }
+    },
+    {
+      "code": "US-SRVC",
+      "name": "Virginia and the Carolinas, SERC (eGRID SRVC)",
+      "kind": "subregion",
+      "continent": "North America",
+      "gridGco2PerKwh": { "low": 260, "central": 290, "high": 325 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2023,
+      "source": {
+        "title": "eGRID2023 subregion tables",
+        "url": "https://www.epa.gov/egrid",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2025",
+        "retrieved": "2026-09-10",
+        "licence": "public domain"
+      },
+      "provenance": {
+        "method": "recalled-pending-refetch",
+        "recorded": "2026-09-10",
+        "note": "Northern Virginia carries more data centre load than anywhere else on earth, which is why this subregion is here. Value not yet read out of the spreadsheet."
+      }
+    },
+    {
+      "code": "GOOGLE-FLEET",
+      "name": "Google data centre fleet",
+      "kind": "provider-fleet",
+      "continent": "Global",
+      "gridGco2PerKwh": { "low": 345, "central": 345, "high": 345 },
+      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "year": 2024,
+      "source": {
+        "title": "Measuring the environmental impact of AI inference",
+        "url": "https://arxiv.org/abs/2508.15734",
+        "publisher": "Google",
+        "date": "2025-08-21",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-09-10",
+        "note": "Google's own location-based fleet average. Their market-based figure of 94 lives on the benchmark row instead, because it is a claim about procurement rather than about a grid."
+      }
+    }
+  ]
+}
