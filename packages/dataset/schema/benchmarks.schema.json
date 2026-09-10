@@ -4,14 +4,23 @@
   "title": "Benchmarks",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "benchmarks"],
+  "required": [
+    "version",
+    "benchmarks"
+  ],
   "properties": {
-    "version": { "type": "string" },
-    "notes": { "type": "string" },
+    "version": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
     "benchmarks": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/benchmarkRow" }
+      "items": {
+        "$ref": "#/$defs/benchmarkRow"
+      }
     }
   },
   "$defs": {
@@ -32,35 +41,63 @@
         "qualityScore"
       ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+([-.][a-z0-9]+)*$" },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([-.][a-z0-9]+)*$"
+        },
         "modelIds": {
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Model ids this row applies to. Checked against models.json by the build script."
         },
-        "shape": { "enum": ["per-token", "per-prompt", "per-query-set", "parametric", "proxy"] },
-        "perToken": { "$ref": "#/$defs/perToken" },
-        "perPrompt": { "$ref": "#/$defs/perPrompt" },
-        "perQuerySet": { "$ref": "#/$defs/perQuerySet" },
-        "parametric": { "$ref": "#/$defs/parametric" },
-
-        "pue": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
+        "shape": {
+          "enum": [
+            "per-token",
+            "per-prompt",
+            "per-query-set",
+            "parametric",
+            "proxy"
+          ]
+        },
+        "perToken": {
+          "$ref": "#/$defs/perToken"
+        },
+        "perPrompt": {
+          "$ref": "#/$defs/perPrompt"
+        },
+        "perQuerySet": {
+          "$ref": "#/$defs/perQuerySet"
+        },
+        "parametric": {
+          "$ref": "#/$defs/parametric"
+        },
+        "pue": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
         "energyIncludesPue": {
           "type": "boolean",
           "description": "True when the quoted energy already carries facility overhead, so the engine must not apply pue again."
         },
-        "waterOnsiteLPerKwh": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
+        "waterOnsiteLPerKwh": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
         "carbonGPerKwh": {
           "$ref": "common.schema.json#/$defs/nonNegativeRange",
           "description": "Grid intensity the source itself used. Applied only when the reader explicitly asks for provider-reported carbon. The default is the location-based factor for the region."
         },
-        "carbonBasis": { "enum": ["market-based", "location-based"] },
+        "carbonBasis": {
+          "enum": [
+            "market-based",
+            "location-based"
+          ]
+        },
         "embodiedShareOfTotal": {
           "$ref": "common.schema.json#/$defs/nonNegativeRange",
           "description": "Manufacturing and training share of the lifecycle total, for rows whose boundary is lifecycle."
         },
-
         "methodology": {
           "enum": [
             "provider-measured",
@@ -70,65 +107,185 @@
             "proxy"
           ]
         },
-        "boundary": { "enum": ["accelerator-only", "server", "datacenter", "lifecycle"] },
+        "boundary": {
+          "enum": [
+            "accelerator-only",
+            "server",
+            "datacenter",
+            "lifecycle"
+          ]
+        },
         "proxyOf": {
           "type": "string",
           "description": "For proxy rows, the benchmark row this one is scaled from."
         },
-        "proxyFactor": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
-
-        "source": { "$ref": "common.schema.json#/$defs/source" },
-        "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
-        "validFrom": { "$ref": "common.schema.json#/$defs/isoDate" },
-        "validTo": { "$ref": "common.schema.json#/$defs/isoDate" },
-        "qualityScore": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "notes": { "type": "string" }
+        "proxyFactor": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
+        "source": {
+          "$ref": "common.schema.json#/$defs/source"
+        },
+        "provenance": {
+          "$ref": "common.schema.json#/$defs/provenance"
+        },
+        "validFrom": {
+          "$ref": "common.schema.json#/$defs/isoDate"
+        },
+        "validTo": {
+          "$ref": "common.schema.json#/$defs/isoDate"
+        },
+        "qualityScore": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "notes": {
+          "type": "string"
+        },
+        "hosting": {
+          "enum": [
+            "cloud",
+            "local"
+          ],
+          "description": "Whether this row describes inference in somebody else's data centre or on the user's own machine. Defaults to cloud when absent."
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "shape": { "const": "per-token" } }, "required": ["shape"] },
-          "then": { "required": ["perToken"] }
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "per-token"
+              }
+            },
+            "required": [
+              "shape"
+            ]
+          },
+          "then": {
+            "required": [
+              "perToken"
+            ]
+          }
         },
         {
-          "if": { "properties": { "shape": { "const": "per-prompt" } }, "required": ["shape"] },
-          "then": { "required": ["perPrompt"] }
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "per-prompt"
+              }
+            },
+            "required": [
+              "shape"
+            ]
+          },
+          "then": {
+            "required": [
+              "perPrompt"
+            ]
+          }
         },
         {
-          "if": { "properties": { "shape": { "const": "per-query-set" } }, "required": ["shape"] },
-          "then": { "required": ["perQuerySet"] }
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "per-query-set"
+              }
+            },
+            "required": [
+              "shape"
+            ]
+          },
+          "then": {
+            "required": [
+              "perQuerySet"
+            ]
+          }
         },
         {
-          "if": { "properties": { "shape": { "const": "parametric" } }, "required": ["shape"] },
-          "then": { "required": ["parametric"] }
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "parametric"
+              }
+            },
+            "required": [
+              "shape"
+            ]
+          },
+          "then": {
+            "required": [
+              "parametric"
+            ]
+          }
         },
         {
-          "if": { "properties": { "shape": { "const": "proxy" } }, "required": ["shape"] },
-          "then": { "required": ["proxyOf", "proxyFactor"] }
+          "if": {
+            "properties": {
+              "shape": {
+                "const": "proxy"
+              }
+            },
+            "required": [
+              "shape"
+            ]
+          },
+          "then": {
+            "required": [
+              "proxyOf",
+              "proxyFactor"
+            ]
+          }
         },
         {
-          "if": { "properties": { "methodology": { "const": "proxy" } }, "required": ["methodology"] },
-          "then": { "required": ["proxyOf", "proxyFactor"] }
+          "if": {
+            "properties": {
+              "methodology": {
+                "const": "proxy"
+              }
+            },
+            "required": [
+              "methodology"
+            ]
+          },
+          "then": {
+            "required": [
+              "proxyOf",
+              "proxyFactor"
+            ]
+          }
         }
       ]
     },
-
     "perToken": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["energyWhPerInputToken", "energyWhPerOutputToken"],
+      "required": [
+        "energyWhPerInputToken",
+        "energyWhPerOutputToken"
+      ],
       "properties": {
-        "energyWhPerInputToken": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
-        "energyWhPerOutputToken": { "$ref": "common.schema.json#/$defs/nonNegativeRange" }
+        "energyWhPerInputToken": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
+        "energyWhPerOutputToken": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        }
       }
     },
-
     "perPrompt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["referenceInputTokens", "referenceOutputTokens", "tokenCountsPublished"],
+      "required": [
+        "referenceInputTokens",
+        "referenceOutputTokens",
+        "tokenCountsPublished"
+      ],
       "description": "One published figure for one exchange. Needs reference token counts before it can become a per token rate.",
       "properties": {
-        "energyWh": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
+        "energyWh": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
         "directWaterMl": {
           "$ref": "common.schema.json#/$defs/nonNegativeRange",
           "description": "Water published directly rather than derived from energy. Used as published, at the boundary of the row."
@@ -137,24 +294,41 @@
           "$ref": "common.schema.json#/$defs/nonNegativeRange",
           "description": "Carbon published directly rather than derived from energy."
         },
-        "referenceInputTokens": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
-        "referenceOutputTokens": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
+        "referenceInputTokens": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
+        "referenceOutputTokens": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
         "tokenCountsPublished": {
           "type": "boolean",
           "description": "False when we had to assume the reference token counts. The engine widens the result further when false."
         }
       },
       "anyOf": [
-        { "required": ["energyWh"] },
-        { "required": ["directWaterMl"] },
-        { "required": ["directCarbonG"] }
+        {
+          "required": [
+            "energyWh"
+          ]
+        },
+        {
+          "required": [
+            "directWaterMl"
+          ]
+        },
+        {
+          "required": [
+            "directCarbonG"
+          ]
+        }
       ]
     },
-
     "perQuerySet": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["points"],
+      "required": [
+        "points"
+      ],
       "description": "Several measured points at different prompt sizes, fitted to wh = a + bIn * input + bOut * output.",
       "properties": {
         "points": {
@@ -163,12 +337,27 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["inputTokens", "outputTokens", "energyWh"],
+            "required": [
+              "inputTokens",
+              "outputTokens",
+              "energyWh"
+            ],
             "properties": {
-              "label": { "type": "string" },
-              "inputTokens": { "type": "number", "minimum": 0 },
-              "outputTokens": { "type": "number", "minimum": 0 },
-              "energyWh": { "type": "number", "minimum": 0 }
+              "label": {
+                "type": "string"
+              },
+              "inputTokens": {
+                "type": "number",
+                "minimum": 0
+              },
+              "outputTokens": {
+                "type": "number",
+                "minimum": 0
+              },
+              "energyWh": {
+                "type": "number",
+                "minimum": 0
+              }
             }
           }
         },
@@ -178,25 +367,46 @@
         }
       }
     },
-
     "parametric": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["model", "coefficients"],
+      "required": [
+        "model",
+        "coefficients"
+      ],
       "properties": {
-        "model": { "enum": ["ecologits"] },
+        "model": {
+          "enum": [
+            "ecologits"
+          ]
+        },
         "coefficients": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["alphaKwhPerTokenPerB", "betaPerB", "gammaKwhPerToken"],
+          "required": [
+            "alphaKwhPerTokenPerB",
+            "betaPerB",
+            "gammaKwhPerToken"
+          ],
           "properties": {
-            "alphaKwhPerTokenPerB": { "type": "number" },
-            "betaPerB": { "type": "number" },
-            "gammaKwhPerToken": { "type": "number" }
+            "alphaKwhPerTokenPerB": {
+              "type": "number"
+            },
+            "betaPerB": {
+              "type": "number"
+            },
+            "gammaKwhPerToken": {
+              "type": "number"
+            }
           }
         },
-        "serverBaseW": { "$ref": "common.schema.json#/$defs/nonNegativeRange" },
-        "gpuCount": { "type": "integer", "minimum": 1 }
+        "serverBaseW": {
+          "$ref": "common.schema.json#/$defs/nonNegativeRange"
+        },
+        "gpuCount": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     }
   }

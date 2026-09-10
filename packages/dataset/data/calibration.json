@@ -176,5 +176,10 @@
     "low": 1.0,
     "central": 1.0,
     "high": 1.0
+  },
+  "parametricWidening": {
+    "low": 0.4,
+    "central": 1.0,
+    "high": 5.0
   }
 }

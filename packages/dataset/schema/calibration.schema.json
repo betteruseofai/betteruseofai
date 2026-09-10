@@ -95,6 +95,10 @@
     "localPue": {
       "$ref": "common.schema.json#/$defs/nonNegativeRange",
       "description": "Facility overhead for a model running on your own machine. There is no data centre, so this sits at one."
+    },
+    "parametricWidening": {
+      "$ref": "common.schema.json#/$defs/nonNegativeRange",
+      "description": "Multipliers for a rate that came out of a formula rather than a measurement. Wider than derivedRowWidening because the formula's unit convention is not fully pinned down; see the dataset changelog."
     }
   }
 }

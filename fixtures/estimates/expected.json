@@ -1,0 +1,569 @@
+{
+  "datasetVersion": "0.1.0",
+  "datasetSha256": "ae2643ab739f5fe5a495c5c9ff74dabd2a676dcf8b7938cdf7a6a10848ff214a",
+  "results": {
+    "unknown-model": {
+      "modelId": null,
+      "energyWh": null,
+      "waterMl": null,
+      "carbonG": null,
+      "basis": {
+        "benchmarkRowId": null,
+        "benchmarkParentId": null,
+        "methodology": null,
+        "boundary": null,
+        "regionCode": "WORLD",
+        "thinkingHandling": "unknown-model",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": null,
+        "flags": [
+          "model-unknown",
+          "region-default"
+        ],
+        "sourceUrls": []
+      }
+    },
+    "synthetic-transcript-line": {
+      "modelId": null,
+      "energyWh": null,
+      "waterMl": null,
+      "carbonG": null,
+      "basis": {
+        "benchmarkRowId": null,
+        "benchmarkParentId": null,
+        "methodology": null,
+        "boundary": null,
+        "regionCode": "WORLD",
+        "thinkingHandling": "unknown-model",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": null,
+        "flags": [
+          "model-unknown",
+          "region-default"
+        ],
+        "sourceUrls": []
+      }
+    },
+    "measured-per-query-set": {
+      "modelId": "claude-3.7-sonnet",
+      "energyWh": {
+        "low": "0.5415",
+        "central": "1.083",
+        "high": "2.166"
+      },
+      "waterMl": {
+        "low": "0.63897",
+        "central": "3.55224",
+        "high": "12.3029"
+      },
+      "carbonG": {
+        "low": "0.178695",
+        "central": "0.378725",
+        "high": "0.81225"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.claude-3.7-sonnet",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "US",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://www.epa.gov/egrid"
+        ]
+      }
+    },
+    "thinking-unknown": {
+      "modelId": "claude-opus-5",
+      "energyWh": {
+        "low": "1.47675",
+        "central": "13.6282",
+        "high": "165.262"
+      },
+      "waterMl": {
+        "low": "1.74256",
+        "central": "44.7005",
+        "high": "938.689"
+      },
+      "carbonG": {
+        "low": "0.155059",
+        "central": "1.6899",
+        "high": "23.963"
+      },
+      "basis": {
+        "benchmarkRowId": "proxy.claude-opus",
+        "benchmarkParentId": "jegham.claude-3.7-sonnet",
+        "methodology": "proxy",
+        "boundary": "server",
+        "regionCode": "GB",
+        "thinkingHandling": "estimated",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "1200",
+          "high": "4800"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "input-partial",
+          "proxy-row",
+          "thinking-unknown",
+          "tokens-estimated"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2505.09598",
+          "https://ember-energy.org/data/yearly-electricity-data/"
+        ]
+      }
+    },
+    "thinking-reported": {
+      "modelId": "claude-opus-5",
+      "energyWh": {
+        "low": "3.34018",
+        "central": "13.3607",
+        "high": "60.2736"
+      },
+      "waterMl": {
+        "low": "3.94141",
+        "central": "43.8231",
+        "high": "342.354"
+      },
+      "carbonG": {
+        "low": "0.350718",
+        "central": "1.65673",
+        "high": "8.73968"
+      },
+      "basis": {
+        "benchmarkRowId": "proxy.claude-opus",
+        "benchmarkParentId": "jegham.claude-3.7-sonnet",
+        "methodology": "proxy",
+        "boundary": "server",
+        "regionCode": "GB",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "1200",
+          "central": "1200",
+          "high": "1200"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "input-partial",
+          "proxy-row"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2505.09598",
+          "https://ember-energy.org/data/yearly-electricity-data/"
+        ]
+      }
+    },
+    "cache-heavy-agent-turn": {
+      "modelId": "claude-sonnet-5",
+      "energyWh": {
+        "low": "1.28871",
+        "central": "10.207",
+        "high": "110.449"
+      },
+      "waterMl": {
+        "low": "1.52067",
+        "central": "33.4788",
+        "high": "627.353"
+      },
+      "carbonG": {
+        "low": "0.425273",
+        "central": "3.56937",
+        "high": "41.4185"
+      },
+      "basis": {
+        "benchmarkRowId": "proxy.claude-sonnet",
+        "benchmarkParentId": "jegham.claude-3.7-sonnet",
+        "methodology": "proxy",
+        "boundary": "server",
+        "regionCode": "US",
+        "thinkingHandling": "estimated",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "1350",
+          "high": "5400"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "input-partial",
+          "proxy-row",
+          "thinking-unknown"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://www.epa.gov/egrid"
+        ]
+      }
+    },
+    "per-prompt-derived": {
+      "modelId": "gemini-2.5-flash",
+      "energyWh": {
+        "low": "0.035",
+        "central": "0.247385",
+        "high": "2.40923"
+      },
+      "waterMl": {
+        "low": "0.07525",
+        "central": "1.05138",
+        "high": "16.0214"
+      },
+      "carbonG": {
+        "low": "0.012075",
+        "central": "0.0853477",
+        "high": "0.831185"
+      },
+      "basis": {
+        "benchmarkRowId": "google.gemini-apps.2025-median",
+        "benchmarkParentId": null,
+        "methodology": "provider-measured",
+        "boundary": "datacenter",
+        "regionCode": "GOOGLE-FLEET",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 4,
+        "flags": [
+          "assumed-token-counts",
+          "derived-rate",
+          "input-partial",
+          "tokens-estimated"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2508.15734",
+          "https://arxiv.org/abs/2508.15734"
+        ]
+      }
+    },
+    "provider-reported-carbon": {
+      "modelId": "gemini-2.5-flash",
+      "energyWh": {
+        "low": "0.035",
+        "central": "0.247385",
+        "high": "2.40923"
+      },
+      "waterMl": {
+        "low": "0.07525",
+        "central": "1.05138",
+        "high": "16.0214"
+      },
+      "carbonG": {
+        "low": "0.00329",
+        "central": "0.0232542",
+        "high": "0.226468"
+      },
+      "basis": {
+        "benchmarkRowId": "google.gemini-apps.2025-median",
+        "benchmarkParentId": null,
+        "methodology": "provider-measured",
+        "boundary": "datacenter",
+        "regionCode": "GOOGLE-FLEET",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "provider-reported",
+        "qualityScore": 4,
+        "flags": [
+          "assumed-token-counts",
+          "derived-rate",
+          "input-partial",
+          "tokens-estimated"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2508.15734",
+          "https://arxiv.org/abs/2508.15734"
+        ]
+      }
+    },
+    "lifecycle-direct-figures": {
+      "modelId": "mistral-large-2",
+      "energyWh": null,
+      "waterMl": {
+        "low": "32",
+        "central": "45",
+        "high": "63"
+      },
+      "carbonG": {
+        "low": "0.8",
+        "central": "1.14",
+        "high": "1.6"
+      },
+      "basis": {
+        "benchmarkRowId": "mistral.large-2.lca.2025",
+        "benchmarkParentId": null,
+        "methodology": "provider-measured",
+        "boundary": "lifecycle",
+        "regionCode": "FR",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "lifecycle",
+        "carbonBasis": "location-based",
+        "qualityScore": 5,
+        "flags": [
+          "no-energy-figure",
+          "scaled-direct-figure"
+        ],
+        "sourceUrls": [
+          "https://ember-energy.org/data/yearly-electricity-data/",
+          "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai"
+        ]
+      }
+    },
+    "water-scope-onsite": {
+      "modelId": "gpt-4o",
+      "energyWh": {
+        "low": "0.6804",
+        "central": "1.3608",
+        "high": "2.7216"
+      },
+      "waterMl": {
+        "low": "0.20412",
+        "central": "0.40824",
+        "high": "0.81648"
+      },
+      "carbonG": {
+        "low": "0.224532",
+        "central": "0.475872",
+        "high": "1.0206"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.gpt-4o",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "US",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "on-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://www.epa.gov/egrid"
+        ]
+      }
+    },
+    "water-scope-both": {
+      "modelId": "gpt-4o",
+      "energyWh": {
+        "low": "0.6804",
+        "central": "1.3608",
+        "high": "2.7216"
+      },
+      "waterMl": {
+        "low": "0.88452",
+        "central": "4.62672",
+        "high": "15.7853"
+      },
+      "carbonG": {
+        "low": "0.224532",
+        "central": "0.475872",
+        "high": "1.0206"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.gpt-4o",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "US",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://www.epa.gov/egrid"
+        ]
+      }
+    },
+    "parametric-local": {
+      "modelId": "llama-3.1-8b",
+      "energyWh": {
+        "low": "0.00863418",
+        "central": "0.0233025",
+        "high": "0.138588"
+      },
+      "waterMl": {
+        "low": "0.00863418",
+        "central": "0.0722376",
+        "high": "0.762236"
+      },
+      "carbonG": {
+        "low": "0.00587124",
+        "central": "0.0165447",
+        "high": "0.103248"
+      },
+      "basis": {
+        "benchmarkRowId": "ecologits.parametric.local",
+        "benchmarkParentId": null,
+        "methodology": "parametric-model",
+        "boundary": "server",
+        "regionCode": "IN",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [
+          "input-partial",
+          "parametric-rate"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2608.28667",
+          "https://cea.nic.in/cdm-co2-baseline-database/"
+        ]
+      }
+    },
+    "long-context": {
+      "modelId": "gpt-4o",
+      "energyWh": {
+        "low": "7.67006",
+        "central": "15.3401",
+        "high": "30.6802"
+      },
+      "waterMl": {
+        "low": "9.97108",
+        "central": "52.1564",
+        "high": "177.945"
+      },
+      "carbonG": {
+        "low": "3.06802",
+        "central": "6.82635",
+        "high": "15.3401"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.gpt-4o",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "WORLD",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://ember-energy.org/data/yearly-electricity-data/"
+        ]
+      }
+    },
+    "no-region-given": {
+      "modelId": "gpt-4.1-nano",
+      "energyWh": {
+        "low": "0.174828",
+        "central": "0.349656",
+        "high": "0.699312"
+      },
+      "waterMl": {
+        "low": "0.227276",
+        "central": "1.18883",
+        "high": "4.05601"
+      },
+      "carbonG": {
+        "low": "0.0699312",
+        "central": "0.155597",
+        "high": "0.349656"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.gpt-4.1-nano",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "WORLD",
+        "thinkingHandling": "not-applicable",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [
+          "region-default"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://ember-energy.org/data/yearly-electricity-data/"
+        ]
+      }
+    },
+    "reasoning-frontier": {
+      "modelId": "o3",
+      "energyWh": {
+        "low": "6.84744",
+        "central": "13.6949",
+        "high": "27.3897"
+      },
+      "waterMl": {
+        "low": "8.90167",
+        "central": "46.5626",
+        "high": "158.861"
+      },
+      "carbonG": {
+        "low": "4.65626",
+        "central": "9.72336",
+        "high": "20.4054"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.o3",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "IN",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2304.03271",
+          "https://arxiv.org/abs/2505.09598",
+          "https://cea.nic.in/cdm-co2-baseline-database/"
+        ]
+      }
+    }
+  }
+}

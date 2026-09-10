@@ -1,0 +1,26 @@
+{
+  "name": "@betteruseofai/core",
+  "version": "0.0.0",
+  "description": "Isomorphic engine that turns token counts into energy, water and carbon ranges with their sources.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "fixtures": "tsx scripts/write-fixtures.ts"
+  },
+  "dependencies": {
+    "@betteruseofai/dataset": "workspace:*"
+  }
+}
