@@ -4,97 +4,370 @@
     {
       "name": "summary-default",
       "why": "The commonest thing anyone will type.",
-      "argv": ["summary", "--json", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-by-model",
       "why": "Grouping changes the bucket keys and the ordering.",
-      "argv": ["summary", "--json", "--by", "model", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--by",
+        "model",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-by-week",
       "why": "Week bucketing does date arithmetic, which the two languages do differently.",
-      "argv": ["summary", "--json", "--by", "week", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--by",
+        "week",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-by-session",
       "why": "Session grouping and its ordering.",
-      "argv": ["summary", "--json", "--by", "session", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--by",
+        "session",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-region-india",
       "why": "A different grid factor, so every carbon figure changes.",
-      "argv": ["summary", "--json", "--region", "IN", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--region",
+        "IN",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-water-onsite",
       "why": "The narrow water boundary.",
-      "argv": ["summary", "--json", "--water-scope", "on-site", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--water-scope",
+        "on-site",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-water-lifecycle",
       "why": "The widest boundary, which brings the embodied uplift into play.",
-      "argv": ["summary", "--json", "--water-scope", "lifecycle", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--water-scope",
+        "lifecycle",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-provider-carbon",
       "why": "The market-based factor, which is opt in.",
-      "argv": ["summary", "--json", "--carbon-basis", "provider-reported", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--carbon-basis",
+        "provider-reported",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-since-window",
       "why": "A relative window resolved against the injected clock.",
-      "argv": ["summary", "--json", "--since", "30d", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--since",
+        "30d",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-empty-window",
       "why": "A window with nothing in it must produce the same nothing on both sides.",
-      "argv": ["summary", "--json", "--since", "2027-01-01T00:00:00.000Z", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--since",
+        "2027-01-01T00:00:00.000Z",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "summary-codex",
       "why": "The Codex reader, including the replay whose running total goes backwards.",
-      "argv": ["summary", "--json", "--by", "session", "--now", "{NOW}", "--source", "codex", "--dir", "{CODEX_DIR}"]
+      "argv": [
+        "summary",
+        "--json",
+        "--by",
+        "session",
+        "--now",
+        "{NOW}",
+        "--source",
+        "codex",
+        "--dir",
+        "{CODEX_DIR}"
+      ]
     },
     {
       "name": "sessions-claude",
       "why": "Session listing and its ordering.",
-      "argv": ["sessions", "--json", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "sessions",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "session-alpha",
       "why": "The full report, including the heaviest turns and every flag.",
-      "argv": ["session", "session-alpha", "--json", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "session",
+        "session-alpha",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "session-beta",
       "why": "A cache-heavy session and a subagent turn.",
-      "argv": ["session", "session-beta", "--json", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "session",
+        "session-beta",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "export-json",
       "why": "Every turn, every token count, every flag.",
-      "argv": ["export", "--format", "json", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "export",
+        "--format",
+        "json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "export-csv",
       "why": "The spreadsheet form, where an unknown figure has to be an empty cell on both sides.",
-      "argv": ["export", "--format", "csv", "--now", "{NOW}", "--source", "claude-code", "--dir", "{CLAUDE_DIR}"]
+      "argv": [
+        "export",
+        "--format",
+        "csv",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     },
     {
       "name": "export-csv-codex",
       "why": "The same for rollouts.",
-      "argv": ["export", "--format", "csv", "--now", "{NOW}", "--source", "codex", "--dir", "{CODEX_DIR}"]
+      "argv": [
+        "export",
+        "--format",
+        "csv",
+        "--now",
+        "{NOW}",
+        "--source",
+        "codex",
+        "--dir",
+        "{CODEX_DIR}"
+      ]
     },
     {
       "name": "models",
       "why": "The whole model table, which row measures each one, and every downgrade target.",
-      "argv": ["models", "--json", "--now", "{NOW}"]
+      "argv": [
+        "models",
+        "--json",
+        "--now",
+        "{NOW}"
+      ]
     },
     {
       "name": "models-all",
       "why": "The regions as well.",
-      "argv": ["models", "--json", "--all", "--now", "{NOW}"]
+      "argv": [
+        "models",
+        "--json",
+        "--all",
+        "--now",
+        "{NOW}"
+      ]
+    },
+    {
+      "name": "recommend-arithmetic",
+      "why": "A sum we answer locally, and the answer has to be identical.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "17 * 23"
+      ]
+    },
+    {
+      "name": "recommend-conversion",
+      "why": "A conversion, where the two languages round independently.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "5 km in miles"
+      ]
+    },
+    {
+      "name": "recommend-rewrite",
+      "why": "A downgrade with a priced saving, which runs the whole engine.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--model",
+        "claude-opus-5",
+        "Rewrite this paragraph so it reads more plainly and loses the jargon."
+      ]
+    },
+    {
+      "name": "recommend-veto",
+      "why": "A veto, including the wording of the reason.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "Explain why this deadlock happens and derive the ordering that prevents it."
+      ]
+    },
+    {
+      "name": "recommend-local",
+      "why": "The local tier, which only appears once the user has said they have one.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--local",
+        "Turn this list of names into title case."
+      ]
+    },
+    {
+      "name": "recommend-bottom-of-ladder",
+      "why": "Nothing smaller to move to.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--model",
+        "claude-haiku-4.5",
+        "What is the capital of Australia"
+      ]
+    },
+    {
+      "name": "recommend-deep-conversation",
+      "why": "Depth changes the answer, and both sides must read the flag the same way.",
+      "argv": [
+        "recommend",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--depth",
+        "12",
+        "Rewrite that last paragraph more plainly."
+      ]
     }
   ]
 }

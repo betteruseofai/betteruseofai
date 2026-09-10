@@ -27,17 +27,33 @@ export {
 } from './format.js';
 export type { FormatRangeOptions } from './format.js';
 
-import type { Dataset } from './types.js';
+export {
+  createRecommender,
+  extractFeatures,
+  readArithmetic,
+  readUnitConversion,
+  DEFAULT_RULES,
+  DEFAULT_HINT_THRESHOLD,
+  DEFAULT_REPORT_THRESHOLD,
+  VETO_THRESHOLD,
+} from './recommender/index.js';
+export type {
+  Recommender,
+  Recommendation,
+  RecommenderOptions,
+  RecommendInput,
+  Rule,
+  RuleContext,
+  RuleKind,
+  RuleResult,
+  Savings,
+  Features,
+  Arithmetic,
+  UnitConversion,
+  FeatureInput,
+} from './recommender/index.js';
 
-/**
- * The recommender lands in a later step. Its factory signature is reserved here
- * so adding it does not churn this file or anyone's imports.
- */
-export interface RecommenderOptions {
-  dataset: Dataset;
-  /** Optional machine learning hook, blended in as one more rule. */
-  classifier?: unknown;
-}
+import type { Dataset } from './types.js';
 
 /** Reads the dataset version out of a bundle, for display in a meta strip. */
 export const datasetVersionOf = (dataset: Dataset): string => dataset.version;

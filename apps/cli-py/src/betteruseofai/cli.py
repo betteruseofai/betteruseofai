@@ -20,14 +20,17 @@ from .canonical import SCHEMA_VERSION, canonical_json, canonical_number
 from .engine import Range, downgrade_target, get_model, load_dataset, select_benchmark
 from .estimate import Estimate, UsageEvent, estimate
 from .readers import default_claude_dir, default_codex_dir, read_claude_code, read_codex
+from .recommender import create_recommender
 
 VERSION = "0.0.0"
 
 VALUE_FLAGS = {
     "since", "until", "by", "region", "format", "source", "dir", "now",
-    "water-scope", "carbon-basis", "limit", "interval",
+    "water-scope", "carbon-basis", "limit", "interval", "model", "depth",
 }  # fmt: skip
-SWITCH_FLAGS = {"json", "no-color", "help", "version", "ascii", "cheap", "all", "verbose"}
+SWITCH_FLAGS = {
+    "json", "no-color", "help", "version", "ascii", "cheap", "all", "verbose", "local",
+}  # fmt: skip
 
 WATER_SCOPES = ("on-site", "on-site + off-site", "lifecycle")
 BUCKETS = ("day", "week", "model", "surface", "session", "hosting", "all")
@@ -46,6 +49,7 @@ COMMANDS
   session <id>     The report for one session, including its heaviest turns
   export           Every turn as a row, for a spreadsheet
   models           Which models we know, what measures them, and how good that measure is
+  recommend <text> Ask what a prompt needs, without sending it anywhere
   doctor           Check the things that go wrong, and say what to do about each
 
 OPTIONS
@@ -63,6 +67,9 @@ OPTIONS
   --ascii                 Avoid characters a plain terminal cannot draw
   --no-color              No escape codes
   --all                   Show the regions as well, on the models command
+  --model <id>            The model a recommendation is measured against
+  --depth <n>             How many turns into the conversation a prompt sits
+  --local                 Say that you run models locally, so that can be suggested
   -h, --help              This text
   -v, --version           The version and the dataset it ships with
 
@@ -1041,8 +1048,85 @@ def cmd_doctor(context: Context, args: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def cmd_recommend(context: Context, args: dict[str, Any]) -> str:
+    """Ask what a prompt needs, without sending it anywhere.
+
+    The prompt is read, measured, and dropped. It is never stored and never
+    sent.
+    """
+    prompt = " ".join(args["positional"])
+    if not prompt.strip():
+        raise ValueError(
+            'Give me a prompt to look at. For example: betteruseofai recommend "17 * 23"'
+        )
+
+    depth = args["flags"].get("depth")
+    recommender = create_recommender(
+        # Only offered when the user has said they run models locally.
+        context.dataset,
+        has_local_model=bool(args["flags"].get("local")),
+    )
+    result = recommender.recommend(
+        prompt,
+        model_id=args["flags"].get("model") or "claude-opus-5",
+        surface="api",
+        conversation_depth=int(depth) if depth else 0,
+    )
+
+    if context.json:
+        return emit_json(
+            context,
+            {
+                "command": "recommend",
+                "recommendation": {
+                    "kind": result.kind,
+                    "ruleId": result.rule_id,
+                    "confidence": canonical_number(result.confidence),
+                    "reasons": result.reasons,
+                    "target": result.target,
+                    "answer": result.answer,
+                    "vetoedBy": result.vetoed_by,
+                    "explanation": result.explanation,
+                    "showAsHint": result.show_as_hint,
+                    "showInReport": result.show_in_report,
+                    "estimatedSavings": (
+                        {
+                            "energyWh": range_out(result.estimated_savings.energy_wh),
+                            "waterMl": range_out(result.estimated_savings.water_ml),
+                            "carbonG": range_out(result.estimated_savings.carbon_g),
+                        }
+                        if result.estimated_savings
+                        else None
+                    ),
+                },
+            },
+        )
+
+    lines = [result.explanation]
+    saving = result.estimated_savings
+    if saving and saving.energy_wh:
+        lines.append("")
+        lines.append(
+            paint(
+                context,
+                "dim",
+                f"  That swap would save roughly {saving.energy_wh.central:.2f} Wh, "
+                f"{saving.water_ml.central:.1f} mL and {saving.carbon_g.central:.2f} g "
+                "on a turn of this shape. The reply length is a guess, so treat it as a "
+                "rough figure.",
+            )
+        )
+    if not result.show_as_hint and result.show_in_report:
+        lines.append("")
+        lines.append(
+            paint(context, "dim", "  Not confident enough to interrupt you before you send.")
+        )
+    return "\n".join(lines)
+
+
 COMMANDS = {
     "summary": cmd_summary,
+    "recommend": cmd_recommend,
     "sessions": cmd_sessions,
     "session": cmd_session,
     "export": cmd_export,

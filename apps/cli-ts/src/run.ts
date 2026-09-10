@@ -1,5 +1,6 @@
 import { parseArgs } from './args.js';
 import { doctor, exportEvents, models } from './commands/misc.js';
+import { recommend } from './commands/recommend.js';
 import { session, sessions } from './commands/sessions.js';
 import { hook, statusline } from './commands/statusline.js';
 import { summary } from './commands/summary.js';
@@ -71,6 +72,8 @@ export const run = async (argv: string[]): Promise<RunResult> => {
         return ok(models(context, args));
       case 'doctor':
         return ok(await doctor(context, args));
+      case 'recommend':
+        return ok(recommend(context, args));
       case 'statusline':
         // A status line that fails must print nothing rather than an error, or
         // the error becomes the status line.

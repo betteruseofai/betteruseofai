@@ -2,7 +2,14 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { aggregate, displayNumber, estimate, formatRange, getModel } from '@betteruseofai/core';
+import {
+  aggregate,
+  createRecommender,
+  displayNumber,
+  estimate,
+  formatRange,
+  getModel,
+} from '@betteruseofai/core';
 import type { Estimate, UsageEvent } from '@betteruseofai/core';
 import { readClaudeCodeIncremental } from '@betteruseofai/readers';
 import type { IncrementalState } from '@betteruseofai/readers';
@@ -246,9 +253,41 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
     );
   }
 
-  if (event === 'PostModelSwitch' || event === 'SessionStart' || event === 'UserPromptSubmit') {
-    // The recommender lands in the next step. Until it does, these hooks are
-    // deliberately silent rather than guessing.
+  if (event === 'UserPromptSubmit') {
+    const prompt = input.prompt ?? '';
+    if (prompt.trim() === '') return say(null);
+
+    /*
+     * A coding session is the worst place to be interrupted, so the bar here is
+     * higher than the default and two rules are muted outright. no-llm.arithmetic
+     * would fire on a line of a calculation being discussed, and
+     * downgrade.short-simple on a one-line follow-up that only makes sense with
+     * the whole session behind it. A nudge that fires wrongly gets the feature
+     * switched off, and then nothing is measured at all.
+     */
+    const recommender = createRecommender({
+      dataset: context.dataset,
+      hintThreshold: 0.75,
+      muted: ['no-llm.arithmetic', 'no-llm.unit-conversion', 'downgrade.short-simple'],
+    });
+
+    const advice = recommender.recommend({
+      prompt,
+      modelId: input.model?.id ?? null,
+      surface: 'claude-code',
+    });
+
+    if (!advice.showAsHint) return say(null);
+
+    const saving = advice.estimatedSavings?.energyWh;
+    if (!saving) return say(advice.explanation);
+    // The explanation ends in a full stop, so the saving becomes its own sentence
+    // rather than being bolted on after the punctuation.
+    return say(`${advice.explanation} That would save roughly ${displayNumber(saving.central)} Wh.`);
+  }
+
+  if (event === 'PostModelSwitch' || event === 'SessionStart') {
+    // Nothing to say. The switch is recorded by the next Stop hook anyway.
     return say(null);
   }
 

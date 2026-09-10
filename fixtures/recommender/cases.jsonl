@@ -1,0 +1,27 @@
+{"name":"arithmetic-plain","prompt":"17 * 23","expect":{"kind":"no-llm","ruleId":"no-llm.arithmetic","answer":"391","showAsHint":true}}
+{"name":"arithmetic-question","prompt":"what is 1234 + 5678?","expect":{"kind":"no-llm","ruleId":"no-llm.arithmetic","answer":"6912","showAsHint":true}}
+{"name":"arithmetic-brackets","prompt":"calculate (12 + 8) * 3","expect":{"kind":"no-llm","ruleId":"no-llm.arithmetic","answer":"60","showAsHint":true}}
+{"name":"arithmetic-division","prompt":"144 / 12","expect":{"kind":"no-llm","ruleId":"no-llm.arithmetic","answer":"12","showAsHint":true}}
+{"name":"arithmetic-divide-by-zero","prompt":"5 / 0","expect":{"answer":null},"why":"No answer offered. The prompt may still be judged small enough for a lesser model, but we never hand back an infinity."}
+{"name":"arithmetic-not-really","prompt":"explain why 2 + 2 = 4 in Peano arithmetic","expect":{"kind":"keep","answer":null},"why":"Has digits and an operator, but it is a question about a proof."}
+{"name":"unit-conversion","prompt":"5 km in miles","expect":{"kind":"no-llm","ruleId":"no-llm.unit-conversion","showAsHint":true}}
+{"name":"unit-conversion-mixed-base","prompt":"5 km in kilograms","expect":{"answer":null},"why":"Length is not mass, so no answer is offered however short the prompt is."}
+{"name":"unit-conversion-unknown-unit","prompt":"5 furlongs in smoots","expect":{"answer":null},"why":"Units we do not carry get no confident answer."}
+{"name":"date-math","prompt":"how many days between 1 March and 14 June?","expect":{"kind":"no-llm","ruleId":"no-llm.date-math","answer":null},"why":"Suggested, but no answer offered: a wrong date is worse than none."}
+{"name":"rewrite","prompt":"Rewrite this paragraph so it reads more plainly and loses the jargon, keeping it about the same length as the original text here.","expect":{"kind":"downgrade","ruleId":"downgrade.rewrite-task","showAsHint":true}}
+{"name":"proofread","prompt":"Proofread the following and fix any spelling mistakes you find in it.","expect":{"kind":"downgrade","ruleId":"downgrade.rewrite-task","showAsHint":true}}
+{"name":"summarise","prompt":"Summarise the notes below into five bullet points for the team.","expect":{"kind":"downgrade","ruleId":"downgrade.summarise","showAsHint":true}}
+{"name":"translate","prompt":"Translate the following sentence into French.","expect":{"kind":"downgrade","ruleId":"downgrade.translate","showAsHint":true}}
+{"name":"extract","prompt":"Extract every email address from the text below and list them.","expect":{"kind":"downgrade","ruleId":"downgrade.classify-extract","showAsHint":true}}
+{"name":"short-simple","prompt":"What is the capital of Australia","expect":{"kind":"downgrade","ruleId":"downgrade.short-simple","showAsHint":true}}
+{"name":"weak-signal-report-only","prompt":"Tell me about the history of the Dutch East India Company, its trading posts across the Indian Ocean, the way it was financed, and what eventually became of it, in a few paragraphs please.","expect":{"kind":"downgrade","ruleId":"downgrade.no-reasoning-cues","showAsHint":false,"showInReport":true},"why":"Too long for the short-simple rule, and weak on its own, so it belongs in the report rather than in an interruption."}
+{"name":"veto-deep-reasoning","prompt":"Explain why this deadlock happens and derive the ordering that prevents it.","expect":{"kind":"keep","vetoedBy":["keep.deep-reasoning"]}}
+{"name":"veto-long-code","prompt":"Rewrite this so it reads more plainly:\n```js\nfunction total(items) {\n  return items.reduce((sum, item) => sum + item.price, 0);\n}\n```","expect":{"kind":"keep","vetoedBy":["keep.long-code"]},"why":"A rewrite request, but there is a code block in it."}
+{"name":"veto-multi-step","prompt":"Summarise the report.\n- keep it under 200 words\n- name every author\n- flag anything that contradicts the earlier draft\n- suggest a title","expect":{"kind":"keep","vetoedBy":["keep.multi-step"]}}
+{"name":"veto-deep-conversation","prompt":"Rewrite that last paragraph more plainly.","conversationDepth":12,"expect":{"kind":"keep","vetoedBy":["keep.deep-conversation"]}}
+{"name":"arithmetic-survives-a-veto","prompt":"17 * 23","conversationDepth":12,"expect":{"kind":"no-llm","ruleId":"no-llm.arithmetic","answer":"391"},"why":"A veto stops a downgrade, not an answer we already have."}
+{"name":"local-not-offered","prompt":"What is the capital of Australia","hasLocalModel":false,"expect":{"kind":"downgrade"},"why":"Never suggest a tool the user has not said they have."}
+{"name":"local-offered","prompt":"Turn this list of names into title case.","hasLocalModel":true,"expect":{"kind":"local","ruleId":"local.small-task"},"why":"A tiny task outranks a downgrade once the user has said they run models locally, because it removes the data centre rather than shrinking the model inside it."}
+{"name":"empty","prompt":"   ","expect":{"kind":"keep","confidence":0}}
+{"name":"bottom-of-the-ladder","prompt":"What is the capital of Australia","modelId":"claude-haiku-4.5","expect":{"kind":"keep"},"why":"Nothing smaller to move to, so say nothing rather than naming a swap we cannot make."}
+{"name":"long-open-ended","prompt":"I am trying to work out whether to shard this table by tenant or by time, and I need to weigh the trade-offs against our query patterns and our retention policy.","expect":{"kind":"keep","vetoedBy":["keep.deep-reasoning"]}}

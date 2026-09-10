@@ -19,6 +19,7 @@ COMMANDS
   session <id>     The report for one session, including its heaviest turns
   export           Every turn as a row, for a spreadsheet
   models           Which models we know, what measures them, and how good that measure is
+  recommend <text> Ask what a prompt needs, without sending it anywhere
   statusline       Read a status line payload on stdin and print one line
   hook <event>     Read a hook payload on stdin and print hook JSON
   doctor           Check the things that go wrong, and say what to do about each
@@ -38,6 +39,9 @@ OPTIONS
   --ascii                 Avoid characters a plain terminal cannot draw
   --no-color              No escape codes
   --all                   Show the regions as well, on the models command
+  --model <id>            The model a recommendation is measured against
+  --depth <n>             How many turns into the conversation a prompt sits
+  --local                 Say that you run models locally, so that can be suggested
   --cheap                 On the status line, read the cached total and parse nothing
   -h, --help              This text
   -v, --version           The version and the dataset it ships with
@@ -74,6 +78,15 @@ export const COMMAND_HELP: Record<string, string> = {
 
   betteruseofai export --since 30d > turns.csv
   betteruseofai export --format json
+`,
+  recommend: `betteruseofai recommend <text>
+
+  Ask what a prompt needs. The prompt is read, measured, and dropped: it is
+  never stored and never sent anywhere.
+
+  betteruseofai recommend "17 * 23"
+  betteruseofai recommend "rewrite this so it is shorter"
+  betteruseofai recommend --model claude-opus-5 "explain why this deadlock happens"
 `,
   doctor: `betteruseofai doctor
 

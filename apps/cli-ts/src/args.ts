@@ -28,6 +28,8 @@ export const VALUE_FLAGS = new Set([
   'carbon-basis',
   'limit',
   'interval',
+  'model',
+  'depth',
 ]);
 
 export const SWITCH_FLAGS = new Set([
@@ -39,6 +41,7 @@ export const SWITCH_FLAGS = new Set([
   'cheap',
   'all',
   'verbose',
+  'local',
 ]);
 
 export const parseArgs = (argv: string[]): ParsedArgs => {

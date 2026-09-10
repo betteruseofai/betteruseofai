@@ -289,6 +289,47 @@ describe('the status line and the hooks', () => {
     expect(result.stdout).toBe('');
   });
 
+  it('nudges on a rewrite prompt but stays quiet on real engineering work', async () => {
+    const payload = (prompt: string) =>
+      JSON.stringify({
+        session_id: 'hint-test',
+        transcript_path: join(logs, 'claude-code', 'projects', 'example-project', 'session-alpha.jsonl'),
+        model: { id: 'claude-opus-5' },
+        prompt,
+      });
+
+    const speak = async (prompt: string) => {
+      const original = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
+      Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+      const text = payload(prompt);
+      // Feed the payload through a readable, the way Claude Code pipes it in.
+      const { Readable } = await import('node:stream');
+      const fake = Readable.from([Buffer.from(text)]);
+      Object.defineProperty(process, 'stdin', { value: fake, configurable: true });
+      try {
+        return await run(['hook', 'UserPromptSubmit', '--now', NOW]);
+      } finally {
+        if (original) Object.defineProperty(process.stdin, 'isTTY', original);
+      }
+    };
+
+    const nudged = JSON.parse((await speak('Rewrite this paragraph so it reads more plainly.')).stdout);
+    expect(nudged.systemMessage).toContain('downgrade.rewrite-task');
+    expect(nudged.systemMessage).toContain('save roughly');
+    // No comma after a full stop.
+    expect(nudged.systemMessage).not.toMatch(/\.\s*,/);
+
+    const quiet = JSON.parse(
+      (await speak('Explain why this deadlock happens and derive the ordering that prevents it.'))
+        .stdout,
+    );
+    expect(quiet.systemMessage).toBeUndefined();
+
+    // Muted inside a coding session: a sum on a line is usually being discussed.
+    const sum = JSON.parse((await speak('17 * 23')).stdout);
+    expect(sum.systemMessage).toBeUndefined();
+  });
+
   it('always answers a hook with valid json and a zero exit code', async () => {
     for (const event of ['Stop', 'UserPromptSubmit', 'PostModelSwitch', 'SomethingElse']) {
       const result = await withoutStdin(['hook', event]);
