@@ -288,3 +288,30 @@ def test_every_command_produces_canonical_json(command: str):
     assert parsed["header"]["schemaVersion"] == 1
     # Re-serialising through the canonical writer must give back the same bytes.
     assert canonical_json(parsed) == out + "\n"
+
+
+# --------------------------------------------------- the vendored dataset
+
+
+def test_the_vendored_dataset_is_the_one_in_the_repository():
+    """The Python package ships its own copy of the dataset, so it can drift.
+
+    This recomputes the hash straight from the source files, which needs no
+    build step, and compares it to what the vendored bundle claims. If someone
+    edits a data file and forgets to run the sync script, the two tools would
+    ship different numbers and this says so.
+    """
+    import hashlib
+
+    files = ("models", "benchmarks", "regions", "equivalents", "calibration")
+    data_dir = REPO / "packages" / "dataset" / "data"
+
+    digest = hashlib.sha256()
+    for name in files:
+        raw = (data_dir / f"{name}.json").read_text(encoding="utf-8").replace("\r\n", "\n")
+        digest.update((name + "\n").encode("utf-8"))
+        digest.update(raw.encode("utf-8"))
+
+    assert digest.hexdigest() == DATASET["sha256"], (
+        "The vendored dataset is out of date. Run: python scripts/sync-dataset.py"
+    )
