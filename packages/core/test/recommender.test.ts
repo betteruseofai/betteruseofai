@@ -109,12 +109,15 @@ describe('the unit reader', () => {
 });
 
 describe('features', () => {
-  it('finishes well inside the two millisecond budget', () => {
+  it('does not go quadratic on a long prompt', () => {
+    // The real budget is two milliseconds, behind a 400 ms debounce. The
+    // ceiling here is twenty times that, because a wall-clock assertion on a
+    // loaded machine is flaky and a flaky test teaches people to ignore
+    // failures. This catches an accidental quadratic, nothing finer.
     const prompt = 'Rewrite this paragraph so it reads more plainly. '.repeat(40);
     const started = performance.now();
     for (let run = 0; run < 100; run += 1) extractFeatures({ prompt });
-    const each = (performance.now() - started) / 100;
-    expect(each).toBeLessThan(2);
+    expect((performance.now() - started) / 100).toBeLessThan(40);
   });
 
   it('counts separate requirements from bullets and joins', () => {

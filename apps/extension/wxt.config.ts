@@ -78,6 +78,7 @@ export default defineConfig({
       alias: {
         '@betteruseofai/core': resolve(__dirname, '../../packages/core/src/index.ts'),
         '@betteruseofai/tokenizers': resolve(__dirname, '../../packages/tokenizers/src/index.ts'),
+        '@betteruseofai/ui-hint': resolve(__dirname, '../../packages/ui-hint/src/index.ts'),
         '@betteruseofai/tokens': resolve(__dirname, '../../packages/tokens'),
       },
     },

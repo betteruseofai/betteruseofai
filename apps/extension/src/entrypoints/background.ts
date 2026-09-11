@@ -1,5 +1,5 @@
 import datasetBundle from '@betteruseofai/dataset';
-import { aggregate } from '@betteruseofai/core';
+import { aggregate, createRecommender, displayNumber, scaleUnit } from '@betteruseofai/core';
 import type { Dataset } from '@betteruseofai/core';
 
 import { adapterById } from '../adapters/index.js';
@@ -120,6 +120,46 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
       await repriceAll(next, true);
       sendResponse(next);
       broadcast({ type: 'events:changed' });
+    })();
+    return true;
+  }
+
+  if (message.type === 'hint:ask') {
+    void (async () => {
+      const current = await settings.get();
+      if (!current.hintsEnabled) {
+        sendResponse({ show: false });
+        return;
+      }
+
+      const ask = message as unknown as { prompt: string; surface: string };
+      const recommender = createRecommender({
+        dataset,
+        hasLocalModel: current.hasLocalModel,
+        muted: current.mutedRules,
+      });
+      const advice = recommender.recommend({ prompt: ask.prompt, surface: ask.surface });
+
+      if (!advice.showAsHint) {
+        sendResponse({ show: false });
+        return;
+      }
+
+      const saving = advice.estimatedSavings?.energyWh;
+      const scaled = saving ? scaleUnit(saving.central, 'Wh') : null;
+      /*
+       * The hint prints the rule id as its own label, so the sentence does not
+       * need to open with it as well. The command line keeps the full form,
+       * where there is no label to carry it.
+       */
+      const sentence = advice.explanation.replace(/^Rule \S+ fired: /, '');
+      sendResponse({
+        show: true,
+        explanation: sentence.charAt(0).toUpperCase() + sentence.slice(1),
+        ruleId: advice.ruleId,
+        ...(scaled ? { saving: `about ${displayNumber(scaled.value)} ${scaled.unit} lighter` } : {}),
+        ...(advice.answer ? { answer: advice.answer } : {}),
+      });
     })();
     return true;
   }

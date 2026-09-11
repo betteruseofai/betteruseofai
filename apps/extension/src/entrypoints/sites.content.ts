@@ -1,3 +1,5 @@
+import { removeHint, showHint } from '@betteruseofai/ui-hint';
+
 import { adapterFor } from '../adapters/index.js';
 import type { CapturedTurn } from '../adapters/types.js';
 import { EVENT_NAME, fillModelFromPage, parseExchange, turnFromExchange } from '../lib/bridge.js';
@@ -92,9 +94,71 @@ export default defineContentScript({
       setTimeout(report, 1500);
     }
 
+    // ------------------------------------------------------- the composer hint
+
+    /*
+     * Cooldowns per rule, remembered across pages. Saying no to a nudge has to
+     * mean something, or the feature is an irritation rather than a help.
+     */
+    let cooldowns: Record<string, number> = {};
+    void browser.storage.local.get(['hintCooldowns']).then((stored) => {
+      cooldowns = (stored['hintCooldowns'] as Record<string, number>) ?? {};
+    });
+
+    document.addEventListener('buoa:dismiss', (event) => {
+      const detail = (event as CustomEvent).detail as { ruleId: string; until: number };
+      cooldowns = { ...cooldowns, [detail.ruleId]: detail.until };
+      void browser.storage.local.set({ hintCooldowns: cooldowns });
+    });
+
+    let debounce: ReturnType<typeof setTimeout> | undefined;
+
+    const considerDraft = (): void => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        const composer = adapter.findComposer(document);
+        if (!composer) return;
+
+        const draft = adapter.readDraft(document);
+        // Twelve characters, because anything shorter is somebody still
+        // starting a sentence and a nudge there is just noise.
+        if (draft.trim().length < 12) {
+          removeHint(document);
+          return;
+        }
+
+        void browser.runtime
+          .sendMessage({ type: 'hint:ask', prompt: draft, surface: adapter.surface })
+          .then((reply) => {
+            const advice = reply as
+              | { show: boolean; explanation: string; ruleId: string; saving?: string; answer?: string }
+              | undefined;
+            if (!advice?.show) {
+              removeHint(document);
+              return;
+            }
+            showHint(
+              composer,
+              {
+                explanation: advice.explanation,
+                ruleId: advice.ruleId,
+                ...(advice.saving ? { saving: advice.saving } : {}),
+                ...(advice.answer ? { answer: advice.answer } : {}),
+              },
+              cooldowns,
+            );
+          })
+          .catch(() => undefined);
+        // 400 ms after the last keystroke. The recommender itself runs in
+        // about two, so the wait is about not interrupting mid-thought.
+      }, 400);
+    };
+
+    document.addEventListener('input', considerDraft, { passive: true });
+
     context.onInvalidated(() => {
-      // The extension was updated or disabled. Nothing to clean up beyond the
-      // listener, which goes with the page.
+      clearTimeout(debounce);
+      removeHint(document);
     });
   },
 });
