@@ -17,6 +17,8 @@
     "version-packages": "changeset version && node scripts/sync-py-version.mjs",
     "postinstall": "simple-git-hooks",
     "parity": "node fixtures/run-parity.mjs",
+    "copy": "vale docs README.md CONTRIBUTING.md PLAN.md apps packages",
+    "copy:selftest": "node scripts/vale-selftest.mjs",
     "sync-dataset": "python apps/cli-py/scripts/sync-dataset.py"
   },
   "simple-git-hooks": {

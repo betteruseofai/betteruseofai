@@ -1,0 +1,38 @@
+name: copy
+
+# The copy rules in docs/STYLE.md, enforced. Vale is pinned so a new release
+# cannot change the verdict under us, and the self-test runs first: a rule set
+# that has quietly stopped matching is worse than no rule set.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: copy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vale:
+    name: the copy rules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: install vale
+        run: |
+          curl -sSL -o vale.tar.gz https://github.com/errata-ai/vale/releases/download/v3.21.0/vale_3.21.0_Linux_64-bit.tar.gz
+          tar -xzf vale.tar.gz vale
+          sudo install vale /usr/local/bin/vale
+          vale --version
+
+      - name: check the rules still catch things
+        run: node scripts/vale-selftest.mjs
+
+      - name: check the copy
+        run: vale docs README.md CONTRIBUTING.md PLAN.md apps packages

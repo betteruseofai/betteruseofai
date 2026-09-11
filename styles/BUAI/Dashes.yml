@@ -1,0 +1,9 @@
+extends: existence
+message: "Em and en dashes are out. Use a comma, a full stop, or brackets."
+level: error
+link: docs/STYLE.md
+nonword: true
+# A hyphen is fine. These two are not, wherever they appear.
+tokens:
+  - '—'
+  - '–'

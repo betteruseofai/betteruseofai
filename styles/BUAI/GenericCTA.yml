@@ -1,0 +1,16 @@
+extends: existence
+message: "'%s' is a generic call to action. Use a verb with an object."
+level: error
+ignorecase: true
+link: docs/STYLE.md
+tokens:
+  - get started
+  - learn more
+  - find out more
+  - read on
+  - click here
+  - discover more
+  - explore more
+  - see how it works
+  - try it now
+  - sign up today

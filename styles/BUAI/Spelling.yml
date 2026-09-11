@@ -1,0 +1,44 @@
+extends: substitution
+message: "British spelling: '%s' should be '%s'."
+level: error
+ignorecase: true
+link: docs/STYLE.md
+# Targeted rather than a full dictionary, so it runs with no network and no
+# aspell. These are the ones that actually turn up in this project's copy.
+# Vale matches on word boundaries already, so "unlabeled" and "programme"
+# are left alone.
+swap:
+  analyze: analyse
+  analyzed: analysed
+  analyzing: analysing
+  behavior: behaviour
+  behaviors: behaviours
+  canceled: cancelled
+  catalog: catalogue
+  center: centre
+  centers: centres
+  color: colour
+  colors: colours
+  defense: defence
+  dialog: dialogue
+  favor: favour
+  favorite: favourite
+  fueled: fuelled
+  gray: grey
+  labeled: labelled
+  liter: litre
+  liters: litres
+  minimize: minimise
+  modeling: modelling
+  normalize: normalise
+  normalized: normalised
+  optimize: optimise
+  optimized: optimised
+  organization: organisation
+  program: programme
+  realize: realise
+  realized: realised
+  recognize: recognise
+  summarize: summarise
+  traveled: travelled
+  visualize: visualise

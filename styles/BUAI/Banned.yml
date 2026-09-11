@@ -1,0 +1,51 @@
+extends: existence
+message: "'%s' is on the banned list in docs/STYLE.md."
+level: error
+ignorecase: true
+link: docs/STYLE.md
+tokens:
+  - delve
+  - delves
+  - delving
+  - leverage
+  - leverages
+  - leveraging
+  - seamless
+  - seamlessly
+  - robust
+  - empower
+  - empowers
+  - empowering
+  - unlock
+  - unlocks
+  - unlocking
+  # The noun is a real word in a test codebase (the parity harness), so only
+  # the verb sense is banned.
+  - harness(es|ing)? (the|its|our|your|this) 
+  - elevate
+  - elevates
+  - elevating
+  - supercharge
+  - supercharged
+  - game-changing
+  - game changer
+  - cutting-edge
+  - revolutionise
+  - revolutionises
+  - revolutionary
+  - journey
+  - landscape
+  - tapestry
+  - testament
+  - crucial
+  - vital
+  - in today's world
+  - it's worth noting
+  - worth noting that
+  - dive into
+  - deep dive
+  - at the end of the day
+  - needle-moving
+  - best-in-class
+  - world-class
+  - state-of-the-art

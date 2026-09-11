@@ -1,0 +1,9 @@
+extends: existence
+message: "'%s' reads as the figurative sense of navigate. Say what actually happens."
+level: warning
+ignorecase: true
+link: docs/STYLE.md
+# The literal sense is fine (navigating to a page). The figurative one is not.
+tokens:
+  - navigat(e|es|ing) the [a-z]+ (landscape|world|space|terrain|waters|complexit\w+)
+  - navigat(e|es|ing) (complexity|uncertainty|ambiguity|change|challenges)

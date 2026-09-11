@@ -1,0 +1,10 @@
+extends: existence
+message: "'%s' is the not-X-but-Y construction. Write the Y on its own."
+level: error
+ignorecase: true
+link: docs/STYLE.md
+tokens:
+  - "it's not [a-z]+[^.,;!?]{0,40}, it's"
+  - "it is not [a-z]+[^.,;!?]{0,40}, it is"
+  - "not (just|only|merely|simply) [a-z]+[^.;!?]{0,40}, but"
+  - "isn't (just|only|merely|simply|about)[^.;!?]{0,40}, it's"

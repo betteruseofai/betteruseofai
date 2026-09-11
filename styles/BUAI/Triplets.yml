@@ -1,0 +1,11 @@
+extends: existence
+message: "'%s' looks like a list of exactly three. Use two, or four, or more."
+level: warning
+ignorecase: true
+link: docs/STYLE.md
+nonword: true
+# A warning, not an error, because this one cannot be caught cleanly. The
+# leading character rules out a fourth item sitting in front of the match,
+# which is what a plain three-item pattern would otherwise flag.
+tokens:
+  - '[^,\s]\s+[a-z]+, [a-z]+,? and [a-z]+\b'

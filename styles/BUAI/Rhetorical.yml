@@ -1,0 +1,13 @@
+extends: existence
+message: "Rhetorical question in body copy. State the thing instead."
+level: error
+ignorecase: true
+link: docs/STYLE.md
+nonword: true
+# Headings ending in a question mark are allowed, which is what the FAQ is
+# made of. This catches the openers that only ever introduce an answer we
+# were always going to give.
+scope: paragraph
+tokens:
+  - '(^|\. )(so )?(what|why|how|who|where|when) (is|are|does|do|did|if|about|exactly)[^?.!]{0,60}\?'
+  - '(^|\. )(ever wonder|have you ever|did you know|sound familiar|but here.s the thing)'

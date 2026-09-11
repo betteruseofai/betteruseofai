@@ -1,7 +1,8 @@
 # Copy style
 
-> Status: draft. This page describes the rules. The voice itself is still waiting on writing samples
-> from Anirudh, and every page stays `status: draft` until those arrive and each page is reviewed.
+> Status: draft. This page describes the rules. The voice they serve is in `VOICE.md`, written
+> against samples supplied on 2026-09-11. Every page stays `status: draft` until each one has been
+> read by Anirudh.
 
 ## Voice
 
@@ -11,6 +12,10 @@ know something, we say we don't know.
 
 The register we're after is closer to a well-made instrument panel than to a product launch. Slightly
 cold, a bit dystopian, never breathless. Reference points: brikken.co, daoism.systems.
+
+See `VOICE.md` for the voice model itself, distilled from writing samples. The short version:
+concrete before abstract, deadpan, show the working, qualify rather than overstate, and say plainly
+when we don't know.
 
 ## Banned words
 
