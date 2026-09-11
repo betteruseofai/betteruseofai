@@ -1,5 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "rootDir": ".", "noEmit": true, "lib": ["ES2022", "DOM", "DOM.Iterable"], "types": [] },
-  "include": ["src", "test"]
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "rootDir": ".",
+    "noEmit": true,
+    "types": ["node"],
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["src", "test", "scripts", ".wxt/wxt.d.ts", "wxt.config.ts"]
 }

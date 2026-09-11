@@ -6,15 +6,25 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json --noEmit && echo built",
+    "build": "wxt build",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "dev": "wxt"
   },
   "dependencies": {
     "@betteruseofai/core": "workspace:*",
     "@betteruseofai/dataset": "workspace:*",
     "@betteruseofai/tokenizers": "workspace:*",
+    "@preact/signals": "^2.11.2",
     "idb": "^8.0.3",
-    "zod": "^3.25.76"
+    "preact": "^10.29.8",
+    "zod": "^3.25.76",
+    "@betteruseofai/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "wxt": "^0.21.4"
   }
 }

@@ -92,9 +92,15 @@ export interface FormatRangeOptions {
  * marked as one, because the alternative is a number that reads as complete
  * when it is not.
  */
-export const formatRange = (range: Range | null, options: FormatRangeOptions = {}): string => {
+export const formatRange = (
+  range: Range | null | undefined,
+  options: FormatRangeOptions = {},
+): string => {
   const { unit, flags = [], bounds = true, ascii = false } = options;
-  if (range === null) return 'unknown';
+  // Both shapes of absence. Null is a figure we could not work out; undefined
+  // is a field that is not there at all, which stored data from an older
+  // version can produce. A crash on the second is how this was found.
+  if (range === null || range === undefined) return 'unknown';
 
   const lowerBound = flags.includes('thinking-unknown');
   const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');

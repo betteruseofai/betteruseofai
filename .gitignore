@@ -41,3 +41,5 @@ Thumbs.db
 packages/tokens/fonts/
 fixtures/cli/output/
 apps/claude-code-plugin/dist/
+apps/extension/.output/
+apps/extension/.wxt/

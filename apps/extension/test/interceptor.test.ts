@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { EVENT_NAME, installInterceptor } from '../src/entrypoints/interceptor.js';
-import type { InterceptedExchange } from '../src/entrypoints/interceptor.js';
+import { EVENT_NAME, installInterceptor } from '../src/lib/interceptor.js';
+import type { InterceptedExchange } from '../src/lib/interceptor.js';
 
 /**
  * The interceptor is the part of this extension that has to be beyond argument.
