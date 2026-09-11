@@ -10,12 +10,13 @@
  * actually ships: the dev server rewrites paths and inlines styles.
  */
 
-import { createServer } from 'node:http';
-import { createReadStream, existsSync, mkdirSync, statSync } from 'node:fs';
-import { extname, join, dirname } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { chromium } from '@playwright/test';
+
+import { serve } from './serve.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, 'dist');
@@ -25,39 +26,6 @@ if (!existsSync(dist)) {
   console.error('No dist folder. Run the build first.');
   process.exit(1);
 }
-
-const TYPES = {
-  '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.woff2': 'font/woff2',
-  '.svg': 'image/svg+xml',
-  '.xml': 'application/xml',
-};
-
-const serve = () =>
-  new Promise((resolve) => {
-    const server = createServer((request, response) => {
-      const url = new URL(request.url ?? '/', 'http://localhost');
-      let path = join(dist, decodeURIComponent(url.pathname));
-
-      // Astro is set to build:format file, so /about is about.html.
-      if (!existsSync(path) || statSync(path).isDirectory()) {
-        if (existsSync(`${path}.html`)) path = `${path}.html`;
-        else if (existsSync(join(path, 'index.html'))) path = join(path, 'index.html');
-      }
-
-      if (!existsSync(path) || statSync(path).isDirectory()) {
-        response.writeHead(404).end('not here');
-        return;
-      }
-
-      response.writeHead(200, { 'content-type': TYPES[extname(path)] ?? 'application/octet-stream' });
-      createReadStream(path).pipe(response);
-    });
-    server.listen(0, '127.0.0.1', () => resolve(server));
-  });
 
 const PAGES = [
   ['landing', '/'],
@@ -79,9 +47,8 @@ const SIZES = [
   ['390', { width: 390, height: 844 }],
 ];
 
-const server = await serve();
-const { port } = server.address();
-const base = `http://127.0.0.1:${port}`;
+const server = await serve(dist);
+const base = server.url;
 
 mkdirSync(shots, { recursive: true });
 
@@ -118,6 +85,6 @@ for (const [sizeName, viewport] of SIZES) {
 }
 
 await browser.close();
-server.close();
+await server.close();
 
 console.log(`${taken} screenshots in apps/site/shots`);

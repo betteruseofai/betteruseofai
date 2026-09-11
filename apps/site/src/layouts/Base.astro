@@ -61,17 +61,13 @@ const full = `${title} · Better Use of AI`;
 
     <link rel="alternate" type="application/rss+xml" title="Better Use of AI" href="/rss.xml" />
 
-    <script is:inline>
-      // Runs before the first paint. Reads one key and sets one attribute.
-      try {
-        var saved = localStorage.getItem('buoa-theme');
-        if (saved === 'dark' || saved === 'light') {
-          document.documentElement.dataset.theme = saved;
-        }
-      } catch (error) {
-        // Site data switched off. The media query in tokens.css still applies.
-      }
-    </script>
+    {/*
+      A file, not an inline script, so the policy needs no exception for inline
+      execution. No defer and no module, so it blocks the parser and runs
+      before the first paint, which is the entire requirement: a dark page
+      must not flash white on the way in.
+    */}
+    <script src="/theme.js" is:inline></script>
 
     {
       beacon ? (

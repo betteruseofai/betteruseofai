@@ -6,12 +6,13 @@
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/headers.mjs",
     "preview": "astro preview",
     "typecheck": "astro check --minimumSeverity error",
     "shots": "node scripts/shoot.mjs",
     "copy": "node scripts/copy-lint.mjs",
-    "test": "node scripts/copy-lint.mjs"
+    "test": "node scripts/copy-lint.mjs",
+    "test:browser": "vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@playwright/test": "^1.63.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

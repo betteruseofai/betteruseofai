@@ -1,4 +1,4 @@
-name: copy
+name: site and copy
 
 # The copy rules in docs/STYLE.md, enforced. Vale is pinned so a new release
 # cannot change the verdict under us, and the self-test runs first: a rule set
@@ -10,7 +10,7 @@ on:
   pull_request:
 
 concurrency:
-  group: copy-${{ github.ref }}
+  group: site-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -53,3 +53,31 @@ jobs:
         env:
           REQUIRE_VALE: '1'
         run: node scripts/copy-lint.mjs
+
+  browser:
+    name: the site in a browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm turbo run build --filter=@betteruseofai/site...
+
+      - name: install a browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      # A browser launch is slow and flakes when it shares a machine with the
+      # unit tests, so this is its own job, like the extension's.
+      - name: accessibility, the policy, the calculator and the budgets
+        working-directory: apps/site
+        run: pnpm test:browser

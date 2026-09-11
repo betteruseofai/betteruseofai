@@ -11,10 +11,9 @@ import Hazard from '../components/Hazard.astro';
   here="/privacy"
 >
   <section class="band band--first">
-    <div class="band__head">
-      <Index n={1} of={5} />
-      <h2 class="band__title">The short version</h2>
-    </div>
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 20ch">
+      What we never collect.
+    </h1>
     <p class="lede">
       The extension and both command line tools make no network requests. This website loads one
       script, from Cloudflare, which counts page views. That is the whole list.
@@ -23,7 +22,7 @@ import Hazard from '../components/Hazard.astro';
 
   <section class="band">
     <div class="band__head">
-      <Index n={2} of={5} />
+      <Index n={1} of={4} />
       <h2 class="band__title">The tools</h2>
     </div>
 
@@ -50,7 +49,7 @@ import Hazard from '../components/Hazard.astro';
 
   <section class="band">
     <div class="band__head">
-      <Index n={3} of={5} />
+      <Index n={2} of={4} />
       <h2 class="band__title">This website</h2>
     </div>
 
@@ -85,7 +84,7 @@ import Hazard from '../components/Hazard.astro';
 
   <section class="band">
     <div class="band__head">
-      <Index n={4} of={5} />
+      <Index n={3} of={4} />
       <h2 class="band__title">Logs at the edge</h2>
     </div>
     <Hazard label="The one thing we cannot switch off">
@@ -100,7 +99,7 @@ import Hazard from '../components/Hazard.astro';
 
   <section class="band">
     <div class="band__head">
-      <Index n={5} of={5} />
+      <Index n={4} of={4} />
       <h2 class="band__title">If this changes</h2>
     </div>
     <div class="prose">
