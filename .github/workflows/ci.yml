@@ -36,6 +36,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Cheap, and it catches a class of damage that is invisible in an editor:
+      # an escape sequence that lost its backslash on the way through a shell.
+      - run: node scripts/check-control-chars.mjs
+
       - run: pnpm turbo run build
 
       - run: pnpm turbo run typecheck

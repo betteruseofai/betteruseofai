@@ -14,6 +14,7 @@
  *   - a word never runs into an inline tag, which Astro does silently when the
  *     tag sits at a line boundary
  *   - a page with figures on it has sources on it
+ *   - sentences average under twenty words, and none runs past thirty-six
  */
 
 import { execFileSync } from 'node:child_process';
@@ -111,6 +112,57 @@ for (const file of files) {
   const showsSources = /buoa-source|calc__why/.test(body);
   if (statesFigures && !showsSources) {
     problems.push(`${name}: prints figures with no source anywhere on the page.`);
+  }
+}
+
+// ------------------------------------------------------------ sentences
+
+/**
+ * The one rule in STYLE.md that is a number rather than a judgement: sentences
+ * average under twenty words.
+ *
+ * Measured over body copy only. Headings, tables, navigation and the source
+ * panels are all excluded, because running them together produces sentences
+ * nobody wrote and a figure nobody can act on.
+ */
+const MEAN_LIMIT = 20;
+const LONGEST_LIMIT = 36;
+
+const bodyCopy = (html) => {
+  const body = html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<(table|nav|footer|details)[\s\S]*?<\/\1>/gi, ' ')
+    // A dropdown's options are choices, not prose. Left in, the landing page's
+    // one sentence reads as a thirty-nine word run of every model name.
+    .replace(/<select[\s\S]*?<\/select>/gi, ' ');
+  return [...body.matchAll(/<(p|li)\b[^>]*>([\s\S]*?)<\/\1>/gi)]
+    .map(([, , inner]) =>
+      inner.replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim(),
+    )
+    .filter((text) => text.split(' ').length > 3);
+};
+
+for (const file of files) {
+  const name = relative(dist, file);
+  const sentences = bodyCopy(readFileSync(file, 'utf8'))
+    .flatMap((paragraph) => paragraph.split(/(?<=[.!?])\s+(?=[A-Z"'(])/))
+    .map((one) => one.trim())
+    .filter((one) => one.split(/\s+/).length > 2);
+
+  // A page with almost no prose on it says nothing about the average.
+  if (sentences.length < 8) continue;
+
+  const lengths = sentences.map((one) => one.split(/\s+/).length);
+  const mean = lengths.reduce((sum, n) => sum + n, 0) / lengths.length;
+  if (mean > MEAN_LIMIT) {
+    problems.push(`${name}: sentences average ${mean.toFixed(1)} words, over ${MEAN_LIMIT}.`);
+  }
+  for (const sentence of sentences) {
+    const words = sentence.split(/\s+/).length;
+    if (words > LONGEST_LIMIT) {
+      problems.push(`${name}: a ${words} word sentence. "${sentence.slice(0, 70)}..."`);
+    }
   }
 }
 

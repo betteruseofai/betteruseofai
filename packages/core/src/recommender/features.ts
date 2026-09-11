@@ -269,7 +269,7 @@ export const extractFeatures = (input: FeatureInput): Features => {
 
   const questionCount = (prompt.match(/\?/g) ?? []).length;
 
-  const nonLatin = (prompt.match(/[^ -ɏ\s]/g) ?? []).length;
+  const nonLatin = (prompt.match(/[^\u0000-ɏ\s]/g) ?? []).length;
   const nonLatinShare = prompt.length === 0 ? 0 : nonLatin / prompt.length;
 
   return {

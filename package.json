@@ -19,7 +19,8 @@
     "parity": "node fixtures/run-parity.mjs",
     "copy": "vale docs README.md CONTRIBUTING.md PLAN.md apps packages",
     "copy:selftest": "node scripts/vale-selftest.mjs",
-    "sync-dataset": "python apps/cli-py/scripts/sync-dataset.py"
+    "sync-dataset": "python apps/cli-py/scripts/sync-dataset.py",
+    "check-chars": "node scripts/check-control-chars.mjs"
   },
   "simple-git-hooks": {
     "commit-msg": "node scripts/check-commit-msg.mjs $1"

@@ -12,9 +12,9 @@ against the world average grid and the frontier model lands near 5 Wh, with a ra
 the spread inside each estimate is wider than the gap between them, which is worth saying plainly.
 
 The reason the smaller model is not the default is that nobody chooses per question. You pick a
-model once, at the top of the session or in a settings pane, and then you ask it everything:
-reformat this list, what is 18 per cent of 340, translate this line, write this function. Three of
-those four do not need a frontier model and one of them does not need a model at all.
+model once, at the top of the session or in a settings pane. Then you ask it everything: reformat
+this list, what is 18 per cent of 340, translate this line, write this function. Three of those
+four do not need a frontier model, and one does not need a model at all.
 
 ## What the recommender actually does
 

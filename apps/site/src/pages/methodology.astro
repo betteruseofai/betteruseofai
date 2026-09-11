@@ -256,10 +256,10 @@ const pending = dataset.regions.filter(
         </div>
         <div class="prose">
           <p>
-            Where a provider reports token counts we use theirs. Where one does not, we count with
-            the OpenAI tokenizer and then apply a measured correction for the provider, because
-            Anthropic and Google tokenize differently and the difference depends on whether the text
-            is prose, code, mathematics or a script outside the latin alphabet.
+            Where a provider reports token counts we use theirs. Where one does not, we count
+            with the OpenAI tokenizer and apply a measured correction. Anthropic and Google
+            tokenize differently, and how differently depends on what the text is: prose, code,
+            mathematics, or a script outside the latin alphabet.
           </p>
           <p>
             Those corrections are the weakest numbers in the whole dataset. They were derived from
@@ -268,9 +268,9 @@ const pending = dataset.regions.filter(
           </p>
           <p>
             A reasoning model that does not tell you how much it thought is the other gap. The low
-            bound of any such figure assumes it thought nothing, the central figure uses a measured
-            ratio for that class of model, and the figure is drawn with a "greater than or equal to"
-            mark so it can never be read as exact.
+            bound of any such figure assumes it thought nothing. The central figure uses a measured
+            ratio for that class of model. And the figure carries a "greater than or equal to" mark,
+            so it can never be read as exact.
           </p>
         </div>
       </section>
@@ -346,10 +346,10 @@ const pending = dataset.regions.filter(
           </p>
           <p>
             <a href="/methodology/data.json">Download the whole thing as JSON</a>. The hash above
-            is taken over the source files in the repository rather than over that download, because
-            two languages write the same small number differently and a hash over the serialised form
-            would disagree between them. So it tells you which version you are looking at. It will not
-            match a checksum you compute over the downloaded file.
+            is taken over the source files in the repository, not over that download. Two languages
+            write the same small number differently, so a hash over the serialised form would
+            disagree between them. It tells you which version you are looking at. It will not match
+            a checksum you compute over the file you downloaded.
           </p>
         </div>
       </section>
