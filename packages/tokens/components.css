@@ -94,6 +94,10 @@ samp {
  */
 .buoa-grid-paper {
   position: relative;
+  /* The rules have to reach the bottom of whatever they wrap, so this goes on
+     a container with content in it rather than on an empty element. */
+  background-repeat: repeat-y;
+  background-size: 100% 100%;
   background-image:
     repeating-linear-gradient(
       to right,
@@ -367,6 +371,21 @@ samp {
 
 .buoa-source {
   display: inline;
+}
+
+/*
+ * A closed details still generates a box for its content, and that box forces
+ * a line break in the middle of a sentence. Chrome and Safari expose it as
+ * ::details-content; Firefox does not need this because it does not create the
+ * box. Without it the chip drops its own paragraph, which is how this was
+ * found.
+ */
+.buoa-source::details-content {
+  display: none;
+}
+
+.buoa-source[open]::details-content {
+  display: block;
 }
 
 .buoa-source > summary {

@@ -1,0 +1,43 @@
+---
+import MetaStrip from './MetaStrip.astro';
+
+interface Props {
+  builtAt?: string;
+}
+const { builtAt } = Astro.props;
+---
+
+<footer class="buoa-footer">
+  <div class="shell">
+    <div class="cols">
+      <div>
+        <p class="note">The tools</p>
+        <ul class="stack">
+          <li><a href="/install">Browser extension</a></li>
+          <li><a href="/install#cli">Command line</a></li>
+          <li><a href="/install#plugin">Claude Code plugin</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="note">The working</p>
+        <ul class="stack">
+          <li><a href="/methodology">How we estimate</a></li>
+          <li><a href="/methodology/data.json">The dataset, as JSON</a></li>
+          <li><a href="/changelog">What changed</a></li>
+          <li><a href="/local-llms">Running a model yourself</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="note">The project</p>
+        <ul class="stack">
+          <li><a href="/about">Who made this</a></li>
+          <li><a href="/privacy">What we never collect</a></li>
+          <li><a href="/blog">Writing</a></li>
+          <li><a href="https://github.com/betteruseofai/betteruseofai">Source</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <MetaStrip builtAt={builtAt} />
+  </div>
+</footer>

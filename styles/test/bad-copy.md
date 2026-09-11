@@ -10,7 +10,7 @@ We harness the power of measurement. BUAI.Banned
 
 Every figure is analyzed against a normalized catalog of colors. BUAI.Spelling
 
-The estimate covers energy, water and carbon. BUAI.Triplets
+The method is honest, careful and clear. BUAI.Triplets
 
 It's not a measurement, it's an estimate. BUAI.NotButRather
 

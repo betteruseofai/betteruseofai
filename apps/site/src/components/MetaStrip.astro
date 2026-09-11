@@ -1,0 +1,23 @@
+---
+/**
+ * The strip along the bottom of every page: what built this, from what data,
+ * when, and what it sends. The telemetry line is the point of the whole strip.
+ */
+import dataset from '../lib/dataset';
+
+interface Props {
+  /** Frozen at build so two pages never disagree about the time. */
+  builtAt?: string;
+}
+
+const { builtAt = new Date().toISOString().replace('T', ' ').slice(0, 19) } = Astro.props;
+const sha = dataset.sha256.slice(0, 6);
+---
+
+<div class="buoa-metastrip">
+  <span class="buoa-metastrip__item">Dataset {dataset.version}</span>
+  <span class="buoa-metastrip__item">sha {sha}</span>
+  <span class="buoa-metastrip__item">{builtAt} UTC</span>
+  <span class="buoa-metastrip__item">Telemetry: none</span>
+  <span class="buoa-metastrip__item">MIT</span>
+</div>

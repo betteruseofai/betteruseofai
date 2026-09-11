@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Redacted from '../components/Redacted.astro';
+---
+
+<Base
+  title="Who made this"
+  description="Why the project exists, who is behind it, how to contribute, and what it is paid for with."
+  status="draft"
+  here="/about"
+>
+  <section class="band band--first">
+    <h1 class="statement">We built this because the meter was missing.</h1>
+    <p class="lede">
+      Every other utility in your life has a meter on it. Electricity, water, petrol, mobile data.
+      The one thing people now use dozens of times a day has no dial at all, and the published
+      figures for it disagree by more than an order of magnitude.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={4} />
+      <h2 class="band__title">Why</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        Two bad answers were already on offer. One says the cost is so small it rounds to nothing,
+        which is true for one prompt and stops being true somewhere between the tenth and the
+        thousandth. The other says a single question boils a kettle, which is wrong by a factor
+        nobody bothers to check. Both are a way of not looking.
+      </p>
+      <p>
+        The honest answer is that it depends, and that the range is wide, and that the range itself
+        is the interesting part. A frontier model asked to do arithmetic costs a few hundred times
+        what a small one costs to do the same arithmetic. That gap is worth seeing, and it is the
+        only part of this anyone can act on.
+      </p>
+      <p>
+        So the tool is built to be uncomfortable to misuse. It will not give you one number. It puts
+        a source one click from every figure, marks the ones that are scaled from somebody else's
+        measurement, and says "unknown" when it does not know, rather than zero.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={4} />
+      <h2 class="band__title">Who</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        Anirudh Sharma. Affiliation: <Redacted>still to be written</Redacted>. On GitHub as{' '}
+        <a href="https://github.com/gordianknot-legacy">gordianknot-legacy</a>.
+      </p>
+      <p>
+        Nobody pays for this. There is no company behind it, no funding, no sponsor, and nothing is
+        sold. If that changes it will be written here first.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={4} />
+      <h2 class="band__title">Helping</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        The most useful contribution by a distance is a benchmark row: a published measurement we
+        have missed, with its boundary and its method written down. The second most useful is
+        telling us a row is wrong, with a reason.
+      </p>
+      <p>
+        Code, adapters for surfaces we do not cover yet, and translations are all welcome.
+        <code>docs/dataset-contributing.md</code> in the repository sets out what a row needs before
+        it can go in.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={4} of={4} />
+      <h2 class="band__title">Licence and credit</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        MIT, for the code and for the dataset structure. The measurements themselves belong to the
+        people who made them and each row names its source.
+      </p>
+      <p>
+        Several projects got here first and shaped what this one does: AI Impact Tracker, EcoLogits,
+        AI Wattch, GreenChat, carbon-llm, GPTFootprint, claude-carbon and ccusage. Where one of them
+        is under the GPL we read it and credited it, and wrote our own. The README lists them all.
+      </p>
+      <p>
+        Grid intensities come from Ember and the EPA, which permit reuse with credit. Electricity
+        Maps data is not used anywhere, because its licence would spread to the rest of the dataset.
+      </p>
+    </div>
+  </section>
+</Base>

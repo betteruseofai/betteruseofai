@@ -1,0 +1,26 @@
+---
+/**
+ * An ink block that lifts on hover, focus or tap.
+ *
+ * It is a button rather than a span so a keyboard reaches it, and the text is
+ * in the DOM the whole time so a screen reader is never told less than a
+ * sighted reader gets.
+ *
+ * Hover and focus are handled in components.css, which already keys off
+ * aria-expanded. The only thing left for a script is tap, and without the
+ * script the block still reveals on focus.
+ */
+---
+
+<button class="buoa-redacted" type="button" aria-expanded="false" data-redacted>
+  <slot />
+</button>
+
+<script>
+  for (const block of document.querySelectorAll<HTMLButtonElement>('[data-redacted]')) {
+    block.addEventListener('click', () => {
+      const open = block.getAttribute('aria-expanded') === 'true';
+      block.setAttribute('aria-expanded', String(!open));
+    });
+  }
+</script>

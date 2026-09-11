@@ -1,0 +1,49 @@
+---
+import Base from './Base.astro';
+import Index from '../components/Index.astro';
+import type { Status } from '../lib/status';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  updated?: Date;
+  tags: string[];
+  authorNames: string[];
+  status: Status;
+}
+
+const { title, description, date, updated, tags, authorNames, status } = Astro.props;
+
+const stamp = (value: Date): string => value.toISOString().slice(0, 10);
+---
+
+<Base title={title} description={description} status={status} here="/blog">
+  <article class="band band--first">
+    <p class="note">
+      <a href="/blog">Writing</a> &middot; {stamp(date)}
+      {updated ? ` · updated ${stamp(updated)}` : ''} &middot; {authorNames.join(' and ')}
+    </p>
+
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 22ch; margin-top: var(--space-5)">
+      {title}
+    </h1>
+    <p class="lede">{description}</p>
+
+    <div class="prose" style="margin-top: var(--space-7)">
+      <slot />
+    </div>
+
+    {
+      tags.length > 0 ? (
+        <p class="note" style="margin-top: var(--space-7)">
+          {tags.map((tag) => (
+            <a href={`/blog/tags/${tag}`} style="margin-right: var(--space-3)">
+              {tag}
+            </a>
+          ))}
+        </p>
+      ) : null
+    }
+  </article>
+</Base>

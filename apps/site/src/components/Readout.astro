@@ -1,0 +1,51 @@
+---
+/**
+ * One figure, its unit, and the range it sits inside.
+ *
+ * The absence case is the reason this is a component rather than markup. A
+ * missing figure renders the word "unknown" and a line saying why. It never
+ * renders zero, and there is no code path here that can produce a zero from
+ * nothing.
+ */
+import type { Range } from '@betteruseofai/core';
+import { displayNumber } from '@betteruseofai/core';
+
+interface Props {
+  label: string;
+  range: Range | null | undefined;
+  unit?: string;
+  /** Set when hidden reasoning tokens mean the figure is a floor. */
+  atLeast?: boolean;
+  /** Shown instead of the bounds when there is no figure. */
+  absence?: string;
+  note?: string;
+}
+
+const { label, range, unit, atLeast = false, absence = 'we do not have a figure', note } =
+  Astro.props;
+
+const show = (value: number): string => displayNumber(value);
+---
+
+{
+  range ? (
+    <div class="buoa-readout">
+      <span class="buoa-readout__label">{label}</span>
+      <span class="buoa-readout__figure">
+        {atLeast ? <Fragment>&ge; </Fragment> : null}
+        {show(range.central)}
+        {unit ? <span class="buoa-readout__unit">{unit}</span> : null}
+      </span>
+      <span class="buoa-readout__bounds">
+        [ {show(range.low)} to {show(range.high)} ]
+        {note ? <Fragment> &middot; {note}</Fragment> : null}
+      </span>
+    </div>
+  ) : (
+    <div class="buoa-readout buoa-readout--unknown">
+      <span class="buoa-readout__label">{label}</span>
+      <span class="buoa-readout__figure">unknown</span>
+      <span class="buoa-readout__bounds">{absence}</span>
+    </div>
+  )
+}

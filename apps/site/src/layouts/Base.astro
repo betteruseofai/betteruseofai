@@ -1,0 +1,107 @@
+---
+/**
+ * The shell every page sits in.
+ *
+ * Two things happen in the head that are worth knowing about. The theme is
+ * applied before the body paints, from a script with no network access, so the
+ * page never flashes white on a dark screen. And the Cloudflare beacon is
+ * written as a manual snippet rather than injected by the platform, so its
+ * exact address can be printed on the privacy page and nothing else can creep
+ * in beside it.
+ */
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ReviewGate from '../components/ReviewGate.astro';
+import type { Status } from '../lib/status';
+import { robotsFor } from '../lib/status';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  status?: Status;
+  here?: string;
+  /** Landing, methodology and calculator carry the hairline grid. */
+  paper?: boolean;
+  wide?: boolean;
+}
+
+const {
+  title,
+  description,
+  status = 'draft',
+  here,
+  paper = false,
+  wide = false,
+} = Astro.props;
+
+const beacon = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
+const builtAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://betteruseofai.org');
+const full = `${title} · Better Use of AI`;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robotsFor(status)} />
+    <link rel="canonical" href={canonical.href} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical.href} />
+
+    <meta name="theme-color" content="#eeece9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121412" media="(prefers-color-scheme: dark)" />
+
+    <link rel="alternate" type="application/rss+xml" title="Better Use of AI" href="/rss.xml" />
+
+    <script is:inline>
+      // Runs before the first paint. Reads one key and sets one attribute.
+      try {
+        var saved = localStorage.getItem('buoa-theme');
+        if (saved === 'dark' || saved === 'light') {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch (error) {
+        // Site data switched off. The media query in tokens.css still applies.
+      }
+    </script>
+
+    {
+      beacon ? (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": "${beacon}"}`}
+        />
+      ) : null
+    }
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+
+    <div class="shell" style={wide ? '--shell: 1400px' : undefined}>
+      <Nav here={here} />
+      <ReviewGate status={status} />
+    </div>
+
+    <main
+      id="main"
+      class={paper ? 'shell buoa-grid-paper' : 'shell'}
+      style={wide ? '--shell: 1400px' : undefined}
+    >
+      <slot />
+    </main>
+
+    <Footer builtAt={builtAt} />
+  </body>
+</html>
+

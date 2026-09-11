@@ -1,0 +1,42 @@
+---
+/**
+ * Light and dark, remembered.
+ *
+ * The choice goes in localStorage, which the privacy page names. Nothing else
+ * is stored, and the default is whatever the operating system already says.
+ */
+---
+
+<button class="buoa-themetoggle" type="button" data-theme-toggle aria-live="polite">
+  Theme
+</button>
+
+<script>
+  const KEY = 'buoa-theme';
+  const root = document.documentElement;
+
+  const label = (): string => (root.dataset.theme === 'dark' ? 'Light' : 'Dark');
+
+  const paint = (): void => {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+      button.textContent = label();
+      button.setAttribute('aria-label', `Switch to the ${label().toLowerCase()} theme`);
+    }
+  };
+
+  paint();
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    button.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem(KEY, next);
+      } catch {
+        // A browser with site data switched off still gets the toggle, it
+        // just forgets between pages. Better than failing to switch.
+      }
+      paint();
+    });
+  }
+</script>

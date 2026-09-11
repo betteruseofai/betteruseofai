@@ -1,0 +1,47 @@
+---
+/**
+ * The spread, drawn.
+ *
+ * Scaled against a ceiling rather than against itself, so two bars on the same
+ * page can be compared. The high end carries a hatch as well as the hazard
+ * colour, because no band is ever encoded by colour alone.
+ */
+import type { Range } from '@betteruseofai/core';
+import { displayNumber } from '@betteruseofai/core';
+
+interface Props {
+  range: Range | null | undefined;
+  /** The value that reaches the right-hand edge. Defaults to the high bound. */
+  ceiling?: number;
+}
+
+const { range, ceiling } = Astro.props;
+
+const top = ceiling && ceiling > 0 ? ceiling : (range?.high ?? 0);
+const pc = (value: number): string =>
+  top > 0 ? `${Math.max(0, Math.min(100, (value / top) * 100)).toFixed(1)}%` : '0%';
+---
+
+{
+  range && top > 0 ? (
+    <Fragment>
+      <div
+        class="buoa-rangebar"
+        role="img"
+        aria-label={`From ${displayNumber(range.low)} to ${displayNumber(range.high)}, central ${displayNumber(range.central)}`}
+        style={`--buoa-low: ${pc(range.low)}; --buoa-central: ${pc(range.central)}; --buoa-high: ${pc(range.high)}`}
+      >
+        <div class="buoa-rangebar__band" />
+        <div class="buoa-rangebar__hazard" />
+        <div class="buoa-rangebar__tick" />
+      </div>
+      <div class="buoa-rangebar__scale">
+        <span>{displayNumber(range.low)}</span>
+        <span>{displayNumber(range.central)}</span>
+        <span>{displayNumber(range.high)}</span>
+      </div>
+    </Fragment>
+  ) : (
+    <div class="buoa-rangebar buoa-rangebar--absent" role="img" aria-label="No range to draw" />
+  )
+}

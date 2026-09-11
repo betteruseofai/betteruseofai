@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Hazard from '../components/Hazard.astro';
+---
+
+<Base
+  title="What we never collect"
+  description="One analytics script on the website, nothing at all in the tools, and a list of exactly what each one receives."
+  status="draft"
+  here="/privacy"
+>
+  <section class="band band--first">
+    <div class="band__head">
+      <Index n={1} of={5} />
+      <h2 class="band__title">The short version</h2>
+    </div>
+    <p class="lede">
+      The extension and both command line tools make no network requests. This website loads one
+      script, from Cloudflare, which counts page views. That is the whole list.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={5} />
+      <h2 class="band__title">The tools</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        Everything the extension reads stays in your browser's own storage. Everything the command
+        line tools read is already on your disk, in transcript files the tool you were using wrote
+        there. Neither sends anything anywhere, and neither needs an account.
+      </p>
+      <p>
+        That claim is checked rather than asserted. A test in the repository reads the built
+        extension files and fails if any way of reaching the network appears in them that is not on
+        a short list with a written reason beside it. Today that list has two entries: reading the
+        packaged tokenizer table out of the extension's own files, and the browser's own script
+        loader reading our interceptor out of the extension on Firefox. Both addresses belong to the
+        extension.
+      </p>
+      <p>
+        Prompt text is never stored. Where the extension needs to tell two exchanges apart it keeps
+        a hash, not the words.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={5} />
+      <h2 class="band__title">This website</h2>
+    </div>
+
+    <div class="prose">
+      <p>One script loads, and here it is in full:</p>
+      <pre><code>https://static.cloudflareinsights.com/beacon.min.js</code></pre>
+      <p>
+        It is Cloudflare Web Analytics, added by hand rather than injected by the hosting platform,
+        so that this paragraph can stay true. It posts to <code>/cdn-cgi/rum</code> on this domain.
+        Cloudflare receives the page address, the referrer, your browser's user agent string, the
+        country it infers from your address, and some page timings. It sets no cookie, and
+        Cloudflare state that they do not fingerprint visitors or build profiles across sites.
+      </p>
+      <p>
+        Block it and the site works exactly as it does now. Nothing on any page depends on it.
+      </p>
+      <p>
+        The fonts are served from this domain, not from a font service, so no third party learns
+        which pages you read. There are no forms, no comments, no embedded video and no cookies.
+      </p>
+      <p>
+        The calculator keeps its state in the part of the address after the <code>#</code>. Browsers
+        never send that part to a server, which is why it is there rather than in a query string.
+        Your figures stay on your screen even when you copy the link and paste it to somebody.
+      </p>
+      <p>
+        One key goes in local storage, <code>buoa-theme</code>, holding the word light or dark. It
+        never leaves the browser it was set in.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={4} of={5} />
+      <h2 class="band__title">Logs at the edge</h2>
+    </div>
+    <Hazard label="The one thing we cannot switch off">
+      <p style="margin-bottom: 0">
+        The site is served by Cloudflare, so Cloudflare sees the requests that fetch it, the way any
+        host sees the requests it serves. We do not run a server, we cannot read those logs, and we
+        have no way to connect them to anything. It is still worth saying out loud, because a
+        privacy page that claims nobody anywhere sees anything would be wrong.
+      </p>
+    </Hazard>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={5} of={5} />
+      <h2 class="band__title">If this changes</h2>
+    </div>
+    <div class="prose">
+      <p>
+        Any change to this page arrives as a commit in the public repository, and the{' '}
+        <a href="/changelog">changelog</a> records it. If a future release ever needed to send
+        something, it would ask first and the answer could be no.
+      </p>
+    </div>
+  </section>
+</Base>

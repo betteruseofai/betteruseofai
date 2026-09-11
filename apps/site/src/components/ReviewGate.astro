@@ -1,0 +1,22 @@
+---
+/**
+ * The draft banner. It stays until a person has read the page, which is the
+ * only thing that moves a status to published.
+ */
+import type { Status } from '../lib/status';
+
+interface Props {
+  status: Status;
+}
+const { status } = Astro.props;
+
+const wording: Record<string, string> = {
+  draft:
+    'Draft. Nobody has read this page yet. The numbers come from the dataset and are as good as the dataset is, but the words around them are unreviewed.',
+  review:
+    'In review. The words on this page are being read now, so some of them will change.',
+};
+const text = wording[status];
+---
+
+{text ? <p class="buoa-reviewgate">{text}</p> : null}

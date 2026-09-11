@@ -1,0 +1,19 @@
+---
+/**
+ * Questions worth asking.
+ *
+ * Native details, one per question, none open by default. The heading is a
+ * question mark, which is the one place STYLE.md allows one.
+ */
+interface Props {
+  title?: string;
+}
+const { title = 'Questions worth asking' } = Astro.props;
+---
+
+<div class="stack">
+  <h2 class="band__title">{title}</h2>
+  <div class="buoa-faq measure">
+    <slot />
+  </div>
+</div>

@@ -16,7 +16,11 @@
         "scripts/**",
         "*.css",
         "*.json",
-        "tsconfig.json"
+        "tsconfig.json",
+        "content/**",
+        "public/**",
+        "astro.config.mjs",
+        "pages/**"
       ],
       "outputs": [
         "dist/**",
@@ -44,6 +48,12 @@
       "outputs": []
     },
     "lint": {
+      "outputs": []
+    },
+    "copy": {
+      "dependsOn": [
+        "build"
+      ],
       "outputs": []
     }
   }

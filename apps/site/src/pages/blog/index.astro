@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { postIsVisible, type Status } from '../../lib/status';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => postIsVisible(post.data.status as Status))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Base
+  title="Writing"
+  description="Notes on how the numbers are worked out, where they come from, and what they still get wrong."
+  status="draft"
+  here="/blog"
+>
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 18ch">Working notes.</h1>
+    <p class="lede">
+      Mostly about method: how a figure was arrived at, which sources disagree, and what we changed
+      our minds about.
+    </p>
+  </section>
+
+  <section class="band">
+    {
+      posts.length === 0 ? (
+        <p class="note">Nothing published yet.</p>
+      ) : (
+        <ul class="postlist">
+          {posts.map((post) => (
+            <li>
+              <a href={`/blog/${post.id}`}>
+                <span class="postlist__date">{post.data.date.toISOString().slice(0, 10)}</span>
+                <span class="postlist__title">{post.data.title}</span>
+                <span class="postlist__desc">{post.data.description}</span>
+                {post.data.status !== 'published' ? (
+                  <span class="postlist__flag">{post.data.status}</span>
+                ) : null}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>

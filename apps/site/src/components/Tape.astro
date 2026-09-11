@@ -1,0 +1,11 @@
+---
+interface Props {
+  text?: string;
+  times?: number;
+}
+const { text = 'Estimate · not a measurement', times = 6 } = Astro.props;
+const run = Array.from({ length: times }, () => text).join(' · ');
+---
+
+<div class="buoa-tape" aria-hidden="true">{run}</div>
+<span class="buoa-visually-hidden">{text}</span>

@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import dataset from '../lib/dataset';
+import { releases } from '../loaders/github';
+
+const { items, snapshotFrom } = await releases();
+---
+
+<Base
+  title="What changed"
+  description="Releases of the tools, and the dataset version each one shipped with."
+  status="draft"
+  here="/changelog"
+>
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 18ch">What changed.</h1>
+    <p class="lede">
+      The tools and the dataset are versioned together. A figure that moves between two releases
+      moved because a row moved, and the release says which one.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={2} />
+      <h2 class="band__title">Releases</h2>
+    </div>
+
+    {
+      snapshotFrom ? (
+        <p class="note">
+          Read from a snapshot taken on {snapshotFrom}, because GitHub could not be reached when this
+          page was built.
+        </p>
+      ) : null
+    }
+
+    {
+      items.length === 0 ? (
+        <p class="measure">
+          Nothing released yet. The first release will carry the extension, both command line tools
+          and the Claude Code plugin together, so that every one of them prints the same dataset
+          hash.
+        </p>
+      ) : (
+        <ul class="postlist">
+          {items.map((release) => (
+            <li>
+              <a href={release.url}>
+                <span class="postlist__date">{release.date}</span>
+                <span class="postlist__title">{release.name}</span>
+                <span class="postlist__desc">{release.body.split('\n')[0]}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={2} />
+      <h2 class="band__title">The dataset in this build</h2>
+    </div>
+    <div class="prose">
+      <p>
+        Version {dataset.version}, hash <code>{dataset.sha256}</code>. If a tool on your machine
+        prints a different hash, it is working from different numbers, and the{' '}
+        <a href="/methodology">method page</a> describes the one shown here.
+      </p>
+    </div>
+  </section>
+</Base>

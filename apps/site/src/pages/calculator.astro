@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Tape from '../components/Tape.astro';
+import Calculator from '../islands/Calculator';
+---
+
+<Base
+  title="Work out your own"
+  description="Put in the work you actually do and see the energy, water and carbon behind it, with the whole range and every source."
+  status="draft"
+  here="/calculator"
+  paper
+  wide
+>
+
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 22ch">
+      Put your own numbers in.
+    </h1>
+    <p class="lede">
+      Nothing you type here is sent anywhere. The settings live in the part of the address after the
+      hash, which browsers keep to themselves, so you can paste the link to somebody and no server
+      along the way sees a thing.
+    </p>
+  </section>
+
+  <Tape />
+
+  <section class="band">
+    <Calculator client:load />
+  </section>
+</Base>

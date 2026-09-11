@@ -1,0 +1,35 @@
+---
+/**
+ * The top navigation. Four links and a theme toggle, on one rule.
+ *
+ * No dropdowns and no burger. At 390 px the links wrap onto a second row,
+ * which is fine, and is why the brand sits on its own line there.
+ */
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  here?: string;
+}
+
+const { here } = Astro.props;
+
+const links = [
+  { href: '/methodology', label: 'Method' },
+  { href: '/calculator', label: 'Calculator' },
+  { href: '/install', label: 'Install' },
+  { href: '/blog', label: 'Writing' },
+  { href: '/about', label: 'About' },
+];
+---
+
+<nav class="buoa-nav" aria-label="Main">
+  <a class="buoa-nav__brand" href="/">Better Use of AI</a>
+  {
+    links.map((link) => (
+      <a href={link.href} aria-current={here === link.href ? 'page' : undefined}>
+        {link.label}
+      </a>
+    ))
+  }
+  <ThemeToggle />
+</nav>

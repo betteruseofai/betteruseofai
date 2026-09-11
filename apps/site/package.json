@@ -1,0 +1,32 @@
+{
+  "name": "@betteruseofai/site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check --minimumSeverity error",
+    "shots": "node scripts/shoot.mjs",
+    "copy": "node scripts/copy-lint.mjs",
+    "test": "node scripts/copy-lint.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.0.1",
+    "@astrojs/preact": "^6.0.5",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@betteruseofai/core": "workspace:*",
+    "@betteruseofai/dataset": "workspace:*",
+    "@betteruseofai/tokens": "workspace:*",
+    "astro": "^7.3.2",
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.63.0",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,226 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Readout from '../components/Readout.astro';
+import RangeBar from '../components/RangeBar.astro';
+import Hazard from '../components/Hazard.astro';
+import Redacted from '../components/Redacted.astro';
+import Tape from '../components/Tape.astro';
+import Faq from '../components/Faq.astro';
+import SourceChip from '../components/SourceChip.astro';
+import StandBy from '../components/StandBy.astro';
+import MetaStrip from '../components/MetaStrip.astro';
+
+/**
+ * Every component in one place, from the same CSS the rest of the site uses.
+ *
+ * Kept out of the sitemap and marked noindex. It exists so a change to the
+ * system can be judged in one screenshot rather than by clicking through
+ * eleven pages.
+ */
+
+const tokens = [
+  ['--bg', 'ground'],
+  ['--bg-raised', 'cards'],
+  ['--bg-sunken', 'troughs'],
+  ['--ink', 'headlines'],
+  ['--ink-2', 'body'],
+  ['--muted', 'labels'],
+  ['--accent', 'links, central mark'],
+  ['--accent-strong', 'buttons, focus'],
+  ['--accent-tint', 'selected rows'],
+  ['--hazard', 'high band, caveats'],
+  ['--danger', 'errors'],
+  ['--hairline', 'grid rules'],
+  ['--border-ui', 'input borders'],
+];
+
+const energy = { low: 6.81, central: 13.6, high: 40.9 };
+const water = { low: 22.3, central: 44.7, high: 134 };
+---
+
+<Base
+  title="Design sheet"
+  description="Every component in the system, in one place, for review."
+  status="draft"
+  here="/design"
+>
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 20ch">The parts.</h1>
+    <p class="lede">
+      Not a page. Every component the site is built from, rendered from the shared stylesheet the
+      extension also uses, so the two cannot drift apart without this sheet showing it.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={7} />
+      <h2 class="band__title">Colour</h2>
+    </div>
+    <div class="cols">
+      {
+        tokens.map(([token, use]) => (
+          <div style="border: var(--rule) solid var(--hairline)">
+            <div style={`height: 68px; background: var(${token})`} />
+            <div
+              class="note"
+              style="display: flex; justify-content: space-between; gap: var(--space-2); padding: var(--space-2)"
+            >
+              <span>{token}</span>
+              <span>{use}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={7} />
+      <h2 class="band__title">Type</h2>
+    </div>
+    <p
+      style="font-family: var(--font-display); font-weight: 800; font-size: var(--step-4); text-transform: uppercase; line-height: 0.9; margin: 0"
+    >
+      Big Shoulders 800
+    </p>
+    <p style="font-size: var(--step-1); margin-top: var(--space-4)">
+      Schibsted Grotesk, the body face. Cold newspaper grotesk, and <em>an italic</em> that is drawn
+      rather than slanted.
+    </p>
+    <p class="buoa-mono" style="margin-top: var(--space-4)">
+      IBM Plex Mono 0123456789 &middot; tabular, slashed zero
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={7} />
+      <h2 class="band__title">Readouts</h2>
+    </div>
+    <div class="cols">
+      <div>
+        <Readout label="Energy" range={energy} unit="Wh" />
+        <RangeBar range={energy} />
+      </div>
+      <div>
+        <Readout
+          label="Water, on site and off site"
+          range={water}
+          unit="mL"
+          atLeast
+          note="hidden reasoning not disclosed"
+        />
+        <RangeBar range={water} />
+      </div>
+      <div>
+        <Readout label="Carbon" range={null} absence="we do not recognise this model" />
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={4} of={7} />
+      <h2 class="band__title">Tape and meta strip</h2>
+    </div>
+    <Tape />
+    <div style="margin-top: var(--space-5)">
+      <MetaStrip />
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={5} of={7} />
+      <h2 class="band__title">Tables, sources, redaction</h2>
+    </div>
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Row</th>
+            <th scope="col">Boundary</th>
+            <th scope="col">Quality</th>
+            <th scope="col">Wh</th>
+            <th scope="col">mL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Google fleet median<SourceChip
+                n="1"
+                title="Measuring the environmental impact of AI inference"
+                publisher="Google"
+                date="21 August 2025"
+                retrieved="10 September 2026"
+              />
+            </td>
+            <td>Data centre</td>
+            <td>4 of 5</td>
+            <td class="buoa-num">0.240</td>
+            <td class="buoa-num">0.260</td>
+          </tr>
+          <tr>
+            <td>Mistral Large 2, life cycle</td>
+            <td>Life cycle</td>
+            <td>5 of 5</td>
+            <td class="buoa-num">unknown</td>
+            <td class="buoa-num">45.0</td>
+          </tr>
+          <tr>
+            <th scope="row">What we send to a server</th>
+            <td colspan="4"><Redacted>nothing at all</Redacted></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={6} of={7} />
+      <h2 class="band__title">Hazard, buttons, standby</h2>
+    </div>
+    <Hazard>
+      <p style="margin-bottom: 0">
+        Running a model on your own laptop is not automatically lighter. A data centre batches
+        hundreds of requests onto one accelerator. Your machine runs one, and draws power the whole
+        time it thinks.
+      </p>
+    </Hazard>
+
+    <div class="row" style="margin-top: var(--space-6)">
+      <button class="buoa-button" type="button">Run the numbers</button>
+      <button class="buoa-button buoa-button--quiet" type="button">Read the method</button>
+    </div>
+
+    <div style="margin-top: var(--space-6)">
+      <StandBy code="404" heading="Nothing at this address">
+        <p class="measure">
+          The standby block, used for the not-found page and the no-script case.
+        </p>
+      </StandBy>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={7} of={7} />
+      <h2 class="band__title">Questions</h2>
+    </div>
+    <Faq>
+      <details>
+        <summary>Is this a measurement?</summary>
+        <p>No. It is arithmetic over other people's measurements, applied to your token counts.</p>
+      </details>
+      <details open>
+        <summary>An open one, so the open state is visible</summary>
+        <p>Native details, so it works with no script and needs no focus trap.</p>
+      </details>
+    </Faq>
+  </section>
+</Base>

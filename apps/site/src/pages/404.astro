@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import StandBy from '../components/StandBy.astro';
+---
+
+<Base
+  title="Nothing here"
+  description="That address does not exist on this site."
+  status="published"
+>
+  <section class="band band--first">
+    <StandBy code="404" heading="Nothing at this address">
+      <p class="measure">
+        The page you asked for is not here, and probably never was. The{' '}
+        <a href="/methodology">method</a>, the <a href="/calculator">calculator</a> and the{' '}
+        <a href="/install">install page</a> are all still where they were.
+      </p>
+    </StandBy>
+  </section>
+</Base>

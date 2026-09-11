@@ -1,0 +1,321 @@
+---
+import Base from '../layouts/Base.astro';
+import Readout from '../components/Readout.astro';
+import RangeBar from '../components/RangeBar.astro';
+import Index from '../components/Index.astro';
+import Hazard from '../components/Hazard.astro';
+import Redacted from '../components/Redacted.astro';
+import Tape from '../components/Tape.astro';
+import Faq from '../components/Faq.astro';
+import SourceChip from '../components/SourceChip.astro';
+import { CHOICES, PLACES, buildTable } from '../lib/landing';
+
+const table = buildTable();
+const start = { model: 'claude-opus-5', place: 'WORLD', prompts: 20 };
+const cell = table[`${start.model}|${start.place}`]!;
+
+const perDay = (value: { low: number; central: number; high: number } | null) =>
+  value
+    ? { low: value.low * start.prompts, central: value.central * start.prompts, high: value.high * start.prompts }
+    : null;
+---
+
+<Base
+  title="Your prompts have a water bill"
+  description="Work out the energy, water and carbon behind your own use of large language models, with the uncertainty left in, on your own machine."
+  status="draft"
+  here="/"
+  paper
+>
+
+  <section class="band band--first" data-landing>
+    <h1 class="statement">Your prompts have a water bill.</h1>
+
+    <p class="dialer">
+      We send about
+      <input
+        type="number"
+        min="1"
+        max="500"
+        value={start.prompts}
+        aria-label="Prompts a day"
+        data-dial="prompts"
+      />
+      prompts a day to
+      <select aria-label="Which model" data-dial="model">
+        {
+          CHOICES.map((choice) => (
+            <option value={choice.id} selected={choice.id === start.model}>
+              {choice.label}
+            </option>
+          ))
+        }
+      </select>
+      from
+      <select aria-label="Where the electricity comes from" data-dial="place">
+        {
+          PLACES.map((place) => (
+            <option value={place.code} selected={place.code === start.place}>
+              {place.label}
+            </option>
+          ))
+        }
+      </select>.
+    </p>
+
+    <div class="cols">
+      <div data-slot="energy">
+        <Readout label="Energy a day" range={perDay(cell.energyWh)} unit="Wh" atLeast={cell.atLeast} />
+        <RangeBar range={perDay(cell.energyWh)} />
+      </div>
+      <div data-slot="water">
+        <Readout label="Water a day" range={perDay(cell.waterMl)} unit="mL" atLeast={cell.atLeast} />
+        <RangeBar range={perDay(cell.waterMl)} />
+      </div>
+      <div data-slot="carbon">
+        <Readout label="Carbon a day" range={perDay(cell.carbonG)} unit="g" atLeast={cell.atLeast} />
+        <RangeBar range={perDay(cell.carbonG)} />
+      </div>
+    </div>
+
+    <p class="note" style="margin-top: var(--space-5)" data-caveat>
+      The spread is the disagreement between published measurements, not our own error bars.
+    </p>
+  </section>
+
+  <Tape />
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={6} />
+      <h2 class="band__title">What the range is doing there</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        Nobody outside the labs knows what a prompt costs. Google puts a median text prompt at
+        0.24 Wh and 0.26 mL of water on site<SourceChip
+          n="1"
+          title="Measuring the environmental impact of AI inference"
+          publisher="Google"
+          date="21 August 2025"
+          url="https://cloud.google.com/blog"
+        />. A life cycle study of Mistral Large 2 lands nearer 45 mL for one page of
+        text<SourceChip
+          n="2"
+          title="Our contribution to a global environmental standard for AI"
+          publisher="Mistral, Carbone 4 and ADEME"
+          date="22 July 2025"
+          url="https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai"
+        />. Both are honest. They are counting different things across different boundaries.
+      </p>
+      <p>
+        So we show the whole spread instead of picking a favourite, and every figure says which
+        measurement it leant on. A single number here would be easier to read and would be a lie
+        about how much is known.
+      </p>
+      <p>
+        Where a model thinks without telling us how much, the low bound assumes it did none, the
+        figure carries a "greater than or equal to" mark, and we say so on the page rather than
+        quietly picking a middle.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={6} />
+      <h2 class="band__title">Three ways in</h2>
+    </div>
+
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Where</th>
+            <th scope="col">What it watches</th>
+            <th scope="col">What it needs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="/install">Browser extension</a></td>
+            <td>claude.ai, chatgpt.com, gemini.google.com, a local web interface</td>
+            <td>Chrome or Firefox</td>
+          </tr>
+          <tr>
+            <td><a href="/install#cli">Command line</a></td>
+            <td>Claude Code and Codex CLI transcripts already on your disk</td>
+            <td>Node or Python</td>
+          </tr>
+          <tr>
+            <td><a href="/install#plugin">Claude Code plugin</a></td>
+            <td>The session you are in, on the status line</td>
+            <td>Claude Code</td>
+          </tr>
+          <tr>
+            <td><a href="/calculator">This site</a></td>
+            <td>Whatever you type into it</td>
+            <td>A browser</td>
+          </tr>
+          <tr>
+            <th scope="row">What any of them sends us</th>
+            <td colspan="2">
+              <Redacted>nothing at all</Redacted>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top: var(--space-4)">
+      No account, no server, no analytics inside the tools. The <a href="/privacy">privacy page</a>{' '}
+      names the one script this website loads and what it receives.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={6} />
+      <h2 class="band__title">Running it yourself</h2>
+    </div>
+
+    <Hazard>
+      <p style="margin-bottom: 0">
+        Running a model on your own laptop is not automatically lighter. A data centre batches
+        hundreds of requests onto one accelerator and runs it hard. Your machine runs one request
+        and draws power for as long as it thinks. For a short answer from a small model your laptop
+        usually wins. For a long answer from a large one it often does not, and the{' '}
+        <a href="/calculator">calculator</a> will say which way it falls for the work you actually do.
+      </p>
+    </Hazard>
+  </section>
+
+  <section class="band">
+    <Faq>
+      <details>
+        <summary>Is this a measurement?</summary>
+        <p>
+          No. Nothing here reads a power meter. It is arithmetic over published measurements of
+          other people's hardware, applied to your token counts. The tape at the top of the page
+          says so on every page for that reason.
+        </p>
+      </details>
+      <details>
+        <summary>Where do the numbers come from?</summary>
+        <p>
+          A dataset of published figures. Each one carries its source, the boundary it measured, a
+          quality score and the date we last checked it. It
+          ships with the tools and updates only when you update them. The{' '}
+          <a href="/methodology">method page</a> walks through every step, and the whole dataset is
+          downloadable as <a href="/methodology/data.json">one JSON file</a>.
+        </p>
+      </details>
+      <details>
+        <summary>Why does the water figure move so much?</summary>
+        <p>
+          Because "water" means three different things. Water evaporated in the cooling towers on
+          site, water used at the power station that supplied the electricity, and water across the
+          whole life of the hardware including the chips. We default to the first two and let you
+          switch.
+        </p>
+      </details>
+      <details>
+        <summary>Does any of this leave my machine?</summary>
+        <p>
+          The extension and both command line tools make no network requests at all, and there is a
+          test in the repository that reads the built files and fails if one appears. This website
+          loads one analytics script from Cloudflare, which the privacy page names in full.
+        </p>
+      </details>
+    </Faq>
+  </section>
+
+  <script id="landing-table" type="application/json" is:inline set:html={JSON.stringify(table)} />
+</Base>
+
+<script>
+  /**
+   * The sentence at the top, wired up.
+   *
+   * The table was computed at build time by the same engine that runs in the
+   * extension, so all this does is look up a cell and multiply by the number
+   * in the box. It exists to avoid shipping the dataset to a landing page.
+   */
+  type Bounds = { low: number; central: number; high: number } | null;
+  type Cell = { energyWh: Bounds; waterMl: Bounds; carbonG: Bounds; atLeast: boolean };
+
+  const root = document.querySelector('[data-landing]');
+  const payload = document.getElementById('landing-table');
+  if (root && payload) {
+    const table = JSON.parse(payload.textContent ?? '{}') as Record<string, Cell>;
+    const dials = {
+      prompts: root.querySelector<HTMLInputElement>('[data-dial="prompts"]'),
+      model: root.querySelector<HTMLSelectElement>('[data-dial="model"]'),
+      place: root.querySelector<HTMLSelectElement>('[data-dial="place"]'),
+    };
+
+    // Six significant digits, same rule as everywhere else. Kept here rather
+    // than imported so the landing page pulls in no package at all.
+    const show = (value: number): string => {
+      if (!Number.isFinite(value)) return 'unknown';
+      if (value === 0) return '0';
+      const magnitude = Math.abs(value);
+      if (magnitude >= 1e6 || magnitude < 1e-4) return value.toPrecision(3);
+      const digits = Math.max(0, 3 - Math.floor(Math.log10(magnitude)) - 1);
+      return value.toFixed(Math.min(digits, 4)).replace(/\.?0+$/, '');
+    };
+
+    const scaleUp = (bounds: Bounds, times: number): Bounds =>
+      bounds ? { low: bounds.low * times, central: bounds.central * times, high: bounds.high * times } : null;
+
+    const paintOne = (slot: string, bounds: Bounds, atLeast: boolean): void => {
+      const box = root.querySelector(`[data-slot="${slot}"]`);
+      if (!box) return;
+      const figure = box.querySelector('.buoa-readout__figure');
+      const unit = figure?.querySelector('.buoa-readout__unit')?.outerHTML ?? '';
+      const boundsText = box.querySelector('.buoa-readout__bounds');
+      const readout = box.querySelector('.buoa-readout');
+      const bar = box.querySelector<HTMLElement>('.buoa-rangebar');
+      const scale = box.querySelectorAll('.buoa-rangebar__scale span');
+
+      if (!bounds) {
+        readout?.classList.add('buoa-readout--unknown');
+        if (figure) figure.textContent = 'unknown';
+        if (boundsText) boundsText.textContent = 'we have no figure for this combination';
+        return;
+      }
+
+      readout?.classList.remove('buoa-readout--unknown');
+      if (figure) figure.innerHTML = `${atLeast ? '&ge; ' : ''}${show(bounds.central)}${unit}`;
+      if (boundsText) boundsText.textContent = `[ ${show(bounds.low)} to ${show(bounds.high)} ]`;
+
+      if (bar && bounds.high > 0) {
+        const pc = (value: number): string => `${Math.min(100, (value / bounds.high) * 100).toFixed(1)}%`;
+        bar.style.setProperty('--buoa-low', pc(bounds.low));
+        bar.style.setProperty('--buoa-central', pc(bounds.central));
+        bar.style.setProperty('--buoa-high', '100%');
+      }
+      const texts = [bounds.low, bounds.central, bounds.high].map(show);
+      scale.forEach((node, i) => {
+        node.textContent = texts[i] ?? '';
+      });
+    };
+
+    const paint = (): void => {
+      const model = dials.model?.value ?? 'claude-opus-5';
+      const place = dials.place?.value ?? 'WORLD';
+      const raw = Number(dials.prompts?.value ?? 20);
+      const times = Number.isFinite(raw) && raw > 0 ? Math.min(raw, 500) : 1;
+
+      const cell = table[`${model}|${place}`];
+      if (!cell) return;
+
+      paintOne('energy', scaleUp(cell.energyWh, times), cell.atLeast);
+      paintOne('water', scaleUp(cell.waterMl, times), cell.atLeast);
+      paintOne('carbon', scaleUp(cell.carbonG, times), cell.atLeast);
+    };
+
+    for (const dial of Object.values(dials)) dial?.addEventListener('input', paint);
+  }
+</script>

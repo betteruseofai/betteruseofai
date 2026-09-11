@@ -52,6 +52,7 @@ export interface Model {
   hosting?: 'cloud' | 'local' | 'both';
   released?: string;
   deprecated?: string;
+  provenance?: Provenance;
   notes?: string;
 }
 
@@ -74,6 +75,18 @@ export interface Source {
   retrieved: string;
   doi?: string;
   licence?: string;
+}
+
+/**
+ * How a value reached the repository, so the re-check debt is machine
+ * readable rather than a note somebody has to remember. Required by the
+ * dataset schema on every record that carries one.
+ */
+export interface Provenance {
+  method: 'source-appendix' | 'recalled-pending-refetch' | 'fetched';
+  /** ISO date. */
+  recorded: string;
+  note?: string;
 }
 
 export interface BenchmarkRow {
@@ -122,6 +135,7 @@ export interface BenchmarkRow {
   validFrom: string;
   validTo?: string;
   qualityScore: number;
+  provenance?: Provenance;
   notes?: string;
 }
 
@@ -135,6 +149,7 @@ export interface Region {
   year: number;
   source: Source;
   waterSource?: Source;
+  provenance?: Provenance;
   notes?: string;
 }
 
@@ -147,6 +162,7 @@ export interface Equivalent {
   plural: string;
   stale?: boolean;
   source: Source;
+  provenance?: Provenance;
   notes?: string;
 }
 

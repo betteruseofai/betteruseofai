@@ -1,0 +1,484 @@
+/*
+ * The site's own layout. Everything that describes a component lives in
+ * @betteruseofai/tokens, so the extension popup and this page render from the
+ * same rules. What is here is page furniture: the shell, the column grid, and
+ * the handful of spacing helpers that only a long page needs.
+ */
+
+@import '@betteruseofai/tokens/tokens.css';
+@import '@betteruseofai/tokens/fonts.css';
+@import '@betteruseofai/tokens/components.css';
+
+/* ---------------------------------------------------------------- shell -- */
+
+.shell {
+  max-width: var(--shell, 1180px);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 20;
+  background: var(--bg-raised);
+  border: var(--rule) solid var(--accent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.skip:focus {
+  left: var(--gutter);
+  top: var(--space-3);
+}
+
+/* Sections are separated by a rule, never by a shadow or a rounded card. */
+.band {
+  padding-block: var(--space-8);
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.band--first {
+  border-top: 0;
+  padding-top: var(--space-7);
+}
+
+.band__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.band__title {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+.cols {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.cols--two {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* ------------------------------------------------------------ statement -- */
+
+/*
+ * The landing headline. No hero image, no centred column, no three cards. The
+ * type is the picture.
+ */
+.statement {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-5);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-6);
+  max-width: 14ch;
+}
+
+/* The inline sentence with controls in it, on the landing page. */
+.dialer {
+  font-size: var(--step-2);
+  line-height: 1.45;
+  max-width: 30ch;
+  margin: 0 0 var(--space-7);
+}
+
+.dialer select,
+.dialer input {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  color: var(--accent-strong);
+  background: var(--bg-sunken);
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  border-radius: 0;
+  padding: 0 var(--space-1);
+  min-height: 1.5em;
+}
+
+.dialer input {
+  width: 3.5ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.dialer select:focus-visible,
+.dialer input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- prose --- */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-top: var(--space-4);
+}
+
+.prose h2 {
+  margin-top: var(--space-7);
+}
+
+.prose h3 {
+  margin-top: var(--space-6);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: var(--space-5);
+}
+
+.prose li + li {
+  margin-top: var(--space-2);
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-sunken);
+  padding: 0.1em 0.32em;
+}
+
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  background: var(--bg-sunken);
+  border: var(--rule) solid var(--hairline);
+  padding: var(--space-4);
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------- sidebar --- */
+
+/* Methodology: a sticky index beside the text, stacking on a narrow screen. */
+.withindex {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 60rem) {
+  .withindex {
+    grid-template-columns: 16rem minmax(0, 1fr);
+  }
+
+  .withindex__nav {
+    position: sticky;
+    top: var(--space-5);
+    align-self: start;
+  }
+}
+
+.withindex__nav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+
+.withindex__nav li {
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.withindex__nav a {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  text-decoration: none;
+  color: var(--ink-2);
+}
+
+.withindex__nav a:hover,
+.withindex__nav a:focus-visible {
+  color: var(--accent-strong);
+}
+
+.withindex__nav span {
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- misc --- */
+
+.stack > * + * {
+  margin-top: var(--space-4);
+}
+
+.stack--loose > * + * {
+  margin-top: var(--space-6);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.lede {
+  font-size: var(--step-1);
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+.note {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Present to a screen reader, absent to the eye. Used where a decorative run
+   of text would otherwise be read aloud several times over. */
+.buoa-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------- calculator --- */
+
+.calc {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 62rem) {
+  .calc {
+    grid-template-columns: 20rem minmax(0, 1fr);
+  }
+
+  .calc__dials {
+    position: sticky;
+    top: var(--space-5);
+    align-self: start;
+  }
+}
+
+.calc__dials fieldset {
+  border: var(--rule) solid var(--hairline);
+  border-radius: 0;
+  padding: var(--space-4);
+  margin: 0 0 var(--space-5);
+}
+
+.calc__dials legend {
+  padding-inline: var(--space-2);
+}
+
+.calc__dials label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  margin-bottom: var(--space-4);
+}
+
+.calc__dials label:last-child {
+  margin-bottom: 0;
+}
+
+.calc__dials select,
+.calc__dials input[type='number'] {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--step-0);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink);
+  background: var(--bg-raised);
+  border: var(--rule) solid var(--border-ui);
+  border-radius: 0;
+  padding: var(--space-2);
+  min-height: 2.5rem;
+}
+
+.calc__dials select:focus-visible,
+.calc__dials input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.calc__check {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.calc__check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.calc__out > * + * {
+  margin-top: var(--space-7);
+}
+
+.calc__like ul,
+.calc__why ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.calc__like li,
+.calc__why li {
+  border-top: var(--rule) solid var(--hairline);
+  padding: var(--space-2) 0;
+}
+
+.calc__local {
+  border-top: var(--rule) solid var(--hairline);
+  padding-top: var(--space-6);
+}
+
+/* ------------------------------------------------------------ postlist --- */
+
+.postlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.postlist li {
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.postlist li:last-child {
+  border-bottom: var(--rule) solid var(--hairline);
+}
+
+.postlist a {
+  display: grid;
+  gap: var(--space-1) var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  padding: var(--space-5) 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+@media (min-width: 48rem) {
+  .postlist a {
+    grid-template-columns: 8rem minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+}
+
+.postlist a:hover .postlist__title,
+.postlist a:focus-visible .postlist__title {
+  color: var(--accent-strong);
+}
+
+.postlist__date {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+.postlist__title {
+  font-size: var(--step-1);
+  font-weight: 700;
+}
+
+.postlist__desc {
+  grid-column: 1 / -1;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+@media (min-width: 48rem) {
+  .postlist__desc {
+    grid-column: 2 / 3;
+  }
+}
+
+.postlist__flag {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--hazard);
+  border: var(--rule) solid currentColor;
+  padding: 0 var(--space-2);
+  align-self: center;
+}
+
+/* The footer lists are navigation, so they read as rules rather than bullets.
+   Same reasoning as the rest of the system: no decoration that is not data. */
+.buoa-footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.buoa-footer li {
+  border-top: var(--rule) solid var(--hairline);
+  padding: var(--space-2) 0;
+}
+
+.buoa-footer li a {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+
+/* The label rule above sets display:block and has the same weight as a single
+   class, so the checkbox row needs both to win. */
+.calc__dials label.calc__check {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.calc__dials label.calc__check input {
+  flex: 0 0 auto;
+  margin-top: 0.15em;
+}
+
+.calc__like-head {
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-1);
+  color: var(--ink-2);
+}

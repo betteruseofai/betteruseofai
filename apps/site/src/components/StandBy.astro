@@ -1,0 +1,13 @@
+---
+interface Props {
+  code: string;
+  heading: string;
+}
+const { code, heading } = Astro.props;
+---
+
+<div class="buoa-standby">
+  <span class="buoa-standby__code">{code}</span>
+  <h1>{heading}</h1>
+  <slot />
+</div>

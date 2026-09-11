@@ -1,0 +1,358 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Hazard from '../components/Hazard.astro';
+import SourceChip from '../components/SourceChip.astro';
+import Tape from '../components/Tape.astro';
+import dataset from '../lib/dataset';
+import { displayNumber } from '@betteruseofai/core';
+
+/**
+ * The working, shown.
+ *
+ * Every table on this page is generated from the dataset rather than typed
+ * out, so the page cannot drift from the numbers the tools actually use. If a
+ * row changes, this changes with it.
+ */
+
+const sections = [
+  { id: 'scope', title: 'What is being counted' },
+  { id: 'energy', title: 'Energy per token' },
+  { id: 'water', title: 'Water, and its three meanings' },
+  { id: 'carbon', title: 'Carbon and the grid' },
+  { id: 'tokens', title: 'Counting tokens we cannot see' },
+  { id: 'local', title: 'Running a model yourself' },
+  { id: 'limits', title: 'What this gets wrong' },
+  { id: 'data', title: 'The dataset itself' },
+];
+
+const rows = [...dataset.benchmarks].sort((a, b) => b.qualityScore - a.qualityScore);
+
+const boundaryWords: Record<string, string> = {
+  accelerator: 'Accelerator only',
+  server: 'Whole server',
+  datacenter: 'Data centre',
+  lifecycle: 'Life cycle',
+};
+
+const methodWords: Record<string, string> = {
+  'provider-measured': 'Measured by the provider',
+  'third-party-measured': 'Measured by somebody else',
+  'lca': 'Life cycle assessment',
+  'parametric': 'From a formula',
+  'proxy': 'Scaled from another model',
+  'statement': 'A statement, no working shown',
+};
+
+const num = (value: { central: number } | null | undefined): string =>
+  value ? displayNumber(value.central) : 'unknown';
+
+const regions = [...dataset.regions].sort((a, b) =>
+  a.gridGco2PerKwh.central - b.gridGco2PerKwh.central,
+);
+
+const pending = dataset.regions.filter(
+  (region) => region.provenance?.method === 'recalled-pending-refetch',
+).length;
+---
+
+<Base
+  title="How we estimate"
+  description="Every step from a token count to a figure in millilitres, with the source of each number and the places the method is weakest."
+  status="draft"
+  here="/methodology"
+  paper
+  wide
+>
+
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 24ch">
+      Here is the whole arithmetic.
+    </h1>
+    <p class="lede">
+      Nothing on this page is secret and nothing is smoothed. Where the method is weak, the section
+      about it says so in its first sentence rather than its last.
+    </p>
+  </section>
+
+  <Tape text="Estimate · not a measurement" />
+
+  <div class="withindex" style="margin-top: var(--space-7)">
+    <nav class="withindex__nav" aria-label="Sections">
+      <ol>
+        {
+          sections.map((section, i) => (
+            <li>
+              <a href={`#${section.id}`}>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {section.title}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div>
+      <section class="band band--first" id="scope">
+        <div class="band__head">
+          <Index n={1} of={8} />
+          <h2 class="band__title">What is being counted</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Only the energy drawn while a model answers you, plus whatever the building around it
+            draws to keep it running. Training is not in here at all. Neither is the cost of
+            building the data centre or making the chips, unless you switch the boundary to life
+            cycle, and then the page says so.
+          </p>
+          <p>
+            The unit of work is one exchange: your tokens in, the model's tokens out, plus whatever
+            it thought to itself on the way. Cached reads are charged less than fresh input, because
+            they are. Cache writes are charged more.
+          </p>
+        </div>
+      </section>
+
+      <section class="band" id="energy">
+        <div class="band__head">
+          <Index n={2} of={8} />
+          <h2 class="band__title">Energy per token</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Published measurements come in four shapes: a figure per token, a figure per prompt, a
+            set of measured queries we fit a line through, and a formula. All four are converted to
+            one shape, energy per input token and energy per output token, and an output token is
+            taken to cost about eight times an input token. That weight is itself a range, from four
+            to fifteen, and it widens the answer accordingly.
+          </p>
+          <p>Every row we hold, worst to best evidence reading upward:</p>
+        </div>
+
+        <div class="buoa-scroll-x" style="margin-top: var(--space-5)">
+          <table class="buoa-table">
+            <thead>
+              <tr>
+                <th scope="col">Row</th>
+                <th scope="col">Method</th>
+                <th scope="col">Boundary</th>
+                <th scope="col">Quality</th>
+                <th scope="col">PUE</th>
+                <th scope="col">Water L/kWh</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rows.map((row, i) => (
+                  <tr>
+                    <th scope="row">
+                      {row.id}
+                      <SourceChip
+                        n={i + 1}
+                        title={row.source.title}
+                        publisher={row.source.publisher}
+                        date={row.source.date}
+                        retrieved={row.source.retrieved}
+                        url={row.source.url}
+                      />
+                    </th>
+                    <td>{methodWords[row.methodology] ?? row.methodology}</td>
+                    <td>{boundaryWords[row.boundary] ?? row.boundary}</td>
+                    <td class="buoa-num">{row.qualityScore} of 5</td>
+                    <td class="buoa-num">{num(row.pue)}</td>
+                    <td class="buoa-num">{num(row.waterOnsiteLPerKwh)}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="band" id="water">
+        <div class="band__head">
+          <Index n={3} of={8} />
+          <h2 class="band__title">Water, and its three meanings</h2>
+        </div>
+        <div class="prose">
+          <p>
+            The word covers three different quantities, which is why published water figures look
+            like they disagree by a hundred times when mostly they do not.
+          </p>
+          <p>
+            <strong>On site</strong> is water evaporated in the cooling towers of the building the
+            model ran in. <strong>Off site</strong> is water used at the power stations that made
+            the electricity, which is usually the larger of the two and depends entirely on where
+            you are. <strong>Life cycle</strong> adds the water used to make the hardware, which is
+            large, poorly measured, and spread over years of use.
+          </p>
+          <p>
+            We default to on site plus off site. The calculator lets you change it and the figure
+            relabels itself when you do.
+          </p>
+        </div>
+      </section>
+
+      <section class="band" id="carbon">
+        <div class="band__head">
+          <Index n={4} of={8} />
+          <h2 class="band__title">Carbon and the grid</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Carbon is energy multiplied by the intensity of the grid that supplied it. We default to
+            the location-based figure, which is what was actually burnt, rather than the
+            market-based one, which is what was bought. The two can differ by three or four times
+            for the same electricity.
+          </p>
+          <p>
+            Where a provider publishes their own market-based figure we keep it, and use it only if
+            you ask for it by name.
+          </p>
+        </div>
+
+        <div class="buoa-scroll-x" style="margin-top: var(--space-5)">
+          <table class="buoa-table">
+            <thead>
+              <tr>
+                <th scope="col">Region</th>
+                <th scope="col">gCO2e per kWh</th>
+                <th scope="col">Off-site water, L/kWh</th>
+                <th scope="col">Year</th>
+                <th scope="col">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                regions.map((region, i) => (
+                  <tr>
+                    <th scope="row">{region.name}</th>
+                    <td class="buoa-num">{num(region.gridGco2PerKwh)}</td>
+                    <td class="buoa-num">{num(region.waterOffsiteLPerKwh)}</td>
+                    <td class="buoa-num">{region.year}</td>
+                    <td>
+                      <SourceChip
+                        n={`r${i + 1}`}
+                        title={region.source.title}
+                        publisher={region.source.publisher}
+                        date={region.source.date}
+                        retrieved={region.source.retrieved}
+                        url={region.source.url}
+                      />
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="band" id="tokens">
+        <div class="band__head">
+          <Index n={5} of={8} />
+          <h2 class="band__title">Counting tokens we cannot see</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Where a provider reports token counts we use theirs. Where one does not, we count with
+            the OpenAI tokenizer and then apply a measured correction for the provider, because
+            Anthropic and Google tokenize differently and the difference depends on whether the text
+            is prose, code, mathematics or a script outside the latin alphabet.
+          </p>
+          <p>
+            Those corrections are the weakest numbers in the whole dataset. They were derived from
+            sample text rather than checked against the providers' own counting endpoints, and they
+            are written as ranges wide enough to admit that.
+          </p>
+          <p>
+            A reasoning model that does not tell you how much it thought is the other gap. The low
+            bound of any such figure assumes it thought nothing, the central figure uses a measured
+            ratio for that class of model, and the figure is drawn with a "greater than or equal to"
+            mark so it can never be read as exact.
+          </p>
+        </div>
+      </section>
+
+      <section class="band" id="local">
+        <div class="band__head">
+          <Index n={6} of={8} />
+          <h2 class="band__title">Running a model yourself</h2>
+        </div>
+        <div class="prose">
+          <p>
+            A local figure comes from a formula rather than a measurement: active parameters, the
+            energy a given class of accelerator spends per operation, and how long your machine
+            takes. Power usage effectiveness is set to one, since your room is the data centre.
+          </p>
+        </div>
+        <Hazard label="Where this is likely to be wrong">
+          <p style="margin-bottom: 0">
+            The formula assumes your accelerator is busy. If you run a large model slowly on a
+            machine that is mostly waiting on memory, real consumption is higher than this says,
+            possibly by a lot. We checked one case against measured joules per token on a desktop
+            graphics card and the formula came out about a third low. Treat a local figure as the
+            bottom of a range.
+          </p>
+        </Hazard>
+      </section>
+
+      <section class="band" id="limits">
+        <div class="band__head">
+          <Index n={7} of={8} />
+          <h2 class="band__title">What this gets wrong</h2>
+        </div>
+        <div class="prose">
+          <p>
+            No provider publishes per-model energy figures for their current frontier models. Rows
+            for those models are scaled from a measured model of a different size and are marked as
+            scaled wherever they appear. That scaling is a guess with a documented rule behind it,
+            and it is the single largest source of error here.
+          </p>
+          <p>
+            Serving efficiency improves quickly, and a figure measured eighteen months ago is
+            probably pessimistic now. We do not adjust for that, because adjusting would mean
+            inventing a rate of improvement.
+          </p>
+          <p>
+            Grid intensity is a yearly average. Real intensity moves hour by hour, sometimes by a
+            factor of three within a day.
+          </p>
+          {
+            pending > 0 && (
+              <p>
+                {pending} of the {dataset.regions.length} region rows are still marked as pending a
+                refetch from the source data. They are close, they are not yet checked, and the
+                dataset says so in the row itself.
+              </p>
+            )
+          }
+        </div>
+      </section>
+
+      <section class="band" id="data">
+        <div class="band__head">
+          <Index n={8} of={8} />
+          <h2 class="band__title">The dataset itself</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Version {dataset.version}, {dataset.benchmarks.length} benchmark rows,
+            {' '}{dataset.models.length} models, {dataset.regions.length} regions and
+            {' '}{dataset.equivalents.length} equivalence factors. Its SHA-256 is
+            {' '}<code>{dataset.sha256}</code>, and every tool prints the same hash, which is how you
+            can tell two answers came from the same data.
+          </p>
+          <p>
+            <a href="/methodology/data.json">Download the whole thing as JSON</a>. The hash above
+            is taken over the source files in the repository rather than over that download, because
+            two languages write the same small number differently and a hash over the serialised form
+            would disagree between them. So it tells you which version you are looking at. It will not
+            match a checksum you compute over the downloaded file.
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

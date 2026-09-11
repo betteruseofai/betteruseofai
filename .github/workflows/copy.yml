@@ -34,5 +34,22 @@ jobs:
       - name: check the rules still catch things
         run: node scripts/vale-selftest.mjs
 
-      - name: check the copy
+      - name: check the copy in the markdown
         run: vale docs README.md CONTRIBUTING.md PLAN.md apps packages
+
+      # The site's pages are .astro, which Vale cannot parse, so they are
+      # checked as rendered text instead. REQUIRE_VALE turns a missing binary
+      # into a failure here, because this is the one job that gates the rules.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm turbo run build --filter=@betteruseofai/site...
+
+      - name: check the copy on the built pages
+        working-directory: apps/site
+        env:
+          REQUIRE_VALE: '1'
+        run: node scripts/copy-lint.mjs

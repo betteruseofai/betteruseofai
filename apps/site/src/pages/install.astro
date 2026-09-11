@@ -1,0 +1,185 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Faq from '../components/Faq.astro';
+import Redacted from '../components/Redacted.astro';
+
+/**
+ * Five routes in. The store links are placeholders until the developer
+ * accounts exist, and they say so rather than pointing at a page that is not
+ * there yet.
+ */
+const routes = [
+  {
+    id: 'chrome',
+    name: 'Chrome, Edge, Brave',
+    how: 'Chrome Web Store',
+    command: null,
+    state: 'Waiting on the store review. Until then, load the unpacked build from a release.',
+  },
+  {
+    id: 'firefox',
+    name: 'Firefox',
+    how: 'Add-ons for Firefox',
+    command: null,
+    state: 'Waiting on review. Firefox 128 or newer, because of how the page script is injected.',
+  },
+  { id: 'cli', name: 'Command line, Node', how: 'npm', command: 'npx betteruseofai summary', state: 'Node 22 or newer.' },
+  { id: 'cli-py', name: 'Command line, Python', how: 'PyPI', command: 'uvx betteruseofai summary', state: 'Python 3.10 or newer.' },
+  {
+    id: 'plugin',
+    name: 'Claude Code plugin',
+    how: 'Plugin marketplace',
+    command: '/plugin marketplace add betteruseofai/betteruseofai',
+    state: 'Then /plugin install betteruseofai, then /betteruseofai:setup for the status line.',
+  },
+];
+---
+
+<Base
+  title="Install it"
+  description="Five routes in: two browsers, two command lines and a Claude Code plugin, with what each one is allowed to do."
+  status="draft"
+  here="/install"
+>
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 20ch">Pick a way in.</h1>
+    <p class="lede">
+      All five run the same engine over the same dataset, so they agree to the last digit. The
+      command line tools are checked against each other on every commit, case by case, byte for
+      byte.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={4} />
+      <h2 class="band__title">The routes</h2>
+    </div>
+
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Where</th>
+            <th scope="col">From</th>
+            <th scope="col">Command</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            routes.map((route) => (
+              <tr id={route.id}>
+                <th scope="row">{route.name}</th>
+                <td>{route.how}</td>
+                <td>{route.command ? <code>{route.command}</code> : <span class="note">not yet</span>}</td>
+                <td>{route.state}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={4} />
+      <h2 class="band__title">What the extension is allowed to do</h2>
+    </div>
+
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Permission</th>
+            <th scope="col">What it is for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><code>storage</code>, <code>unlimitedStorage</code></th>
+            <td>Keeping your own counts in your own browser, and your settings.</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>alarms</code></th>
+            <td>Deleting events once they pass the retention you set.</td>
+          </tr>
+          <tr>
+            <th scope="row">Four site addresses</th>
+            <td>claude.ai, chatgpt.com, chat.openai.com and gemini.google.com. Nothing else.</td>
+          </tr>
+          <tr>
+            <th scope="row">localhost, optional</th>
+            <td>Asked for only if you switch on watching a model running on your own machine.</td>
+          </tr>
+          <tr>
+            <th scope="row">What it uploads</th>
+            <td><Redacted>nothing at all</Redacted></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top: var(--space-4)">
+      No tabs permission, no webRequest, no cookies, no history, and no permission covering all
+      addresses. The built files are tested for this on every commit.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={4} />
+      <h2 class="band__title">Checking what you downloaded</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        Every release lists a SHA-256 for each file. On a Mac or a Linux machine:
+      </p>
+      <pre><code>shasum -a 256 betteruseofai-chrome.zip</code></pre>
+      <p>On Windows, in PowerShell:</p>
+      <pre><code>Get-FileHash betteruseofai-chrome.zip -Algorithm SHA256</code></pre>
+      <p>
+        Compare it with the line in the release notes. If they differ, do not install it, and please
+        open an issue.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <Faq>
+      <details>
+        <summary>Will it slow my browser down?</summary>
+        <p>
+          It reads responses as they stream past and counts tokens. The background worker is under
+          170 kB and the tokenizer table loads only when something needs counting.
+        </p>
+      </details>
+      <details>
+        <summary>Does the command line tool upload my transcripts?</summary>
+        <p>
+          No. It reads files already on your disk and prints to your terminal. Both the Node and the
+          Python build contain no network code at all.
+        </p>
+      </details>
+      <details>
+        <summary>What does the Claude Code plugin put on my status line?</summary>
+        <p>
+          One line with the running total for the session. It reads a small cached text file rather
+          than parsing the transcript again, so it costs about 48 milliseconds. The line stays empty
+          until your first turn finishes, which is expected.
+        </p>
+      </details>
+      <details>
+        <summary>How do I get rid of it?</summary>
+        <p>
+          Remove the extension the way you remove any extension, which deletes its storage with it.
+          The command line tools keep a small cache directory that <code>betteruseofai doctor</code>{' '}
+          will name and remove.
+        </p>
+      </details>
+    </Faq>
+  </section>
+</Base>

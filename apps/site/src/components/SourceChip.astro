@@ -1,0 +1,29 @@
+---
+/**
+ * A numbered chip that opens the source it came from.
+ *
+ * Native details and summary, so it works with JavaScript switched off and
+ * needs no focus trap. Every number in published copy has one of these within
+ * reach; scripts/copy-lint.mjs checks that.
+ */
+interface Props {
+  n: number | string;
+  title: string;
+  publisher?: string;
+  date?: string;
+  retrieved?: string;
+  url?: string;
+}
+
+const { n, title, publisher, date, retrieved, url } = Astro.props;
+
+const meta = [publisher, date, retrieved ? `read ${retrieved}` : null].filter(Boolean).join(' · ');
+---
+
+<details class="buoa-source">
+  <summary>[{n}]</summary>
+  <span class="buoa-source__body">
+    {url ? <a href={url}>{title}</a> : title}
+    {meta ? <span class="buoa-source__meta">{meta}</span> : null}
+  </span>
+</details>

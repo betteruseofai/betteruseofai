@@ -1,0 +1,198 @@
+---
+import Base from '../layouts/Base.astro';
+import Index from '../components/Index.astro';
+import Hazard from '../components/Hazard.astro';
+import Faq from '../components/Faq.astro';
+
+const tiers = [
+  {
+    machine: 'A laptop with 8 GB of shared memory',
+    size: 'Up to about 4 billion parameters',
+    picks: 'Phi-3 Mini, Llama 3.2 3B',
+    good: 'Summaries, tidying text, simple questions',
+  },
+  {
+    machine: 'A laptop with 16 GB, or an M-series Mac',
+    size: 'Up to about 9 billion',
+    picks: 'Llama 3.1 8B, Qwen 2.5 7B, Mistral 7B, Gemma 2 9B',
+    good: 'Most everyday writing and light code',
+  },
+  {
+    machine: 'A desktop card with 24 GB',
+    size: 'Up to about 32 billion, quantised',
+    picks: 'Qwen 2.5 32B, a distilled reasoning model',
+    good: 'Real code, longer documents',
+  },
+  {
+    machine: 'Two cards, or 64 GB of unified memory',
+    size: '70 billion, quantised',
+    picks: 'Llama 3.3 70B',
+    good: 'Close to a mid-sized hosted model, much slower',
+  },
+];
+
+const tools = [
+  { name: 'Ollama', what: 'Command line, one binary, pulls models by name', where: 'Mac, Windows, Linux' },
+  { name: 'LM Studio', what: 'A window with a model picker and a chat', where: 'Mac, Windows, Linux' },
+  { name: 'llama.cpp', what: 'The engine most of the others are built on', where: 'Anywhere that compiles' },
+  { name: 'Jan', what: 'An open-source desktop app with a local server', where: 'Mac, Windows, Linux' },
+];
+---
+
+<Base
+  title="Running a model yourself"
+  description="What a local model costs, when it is lighter than a hosted one and when it is not, and what your machine can actually hold."
+  status="draft"
+  here="/local-llms"
+>
+  <section class="band band--first">
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 20ch">
+      Your laptop is a data centre with a bad cooling budget.
+    </h1>
+    <p class="lede">
+      Running a model yourself keeps your text on your own disk, which is a good reason on its own.
+      Whether it uses less energy is a separate question, and the answer is often no.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={1} of={4} />
+      <h2 class="band__title">Why it can be lighter</h2>
+    </div>
+    <div class="prose">
+      <p>
+        A small model does less arithmetic per token than a large one, by roughly the ratio of their
+        active parameters. An 8 billion parameter model asked a simple question is doing a fraction
+        of the work a frontier model does answering the same question, and most questions people ask
+        do not need the frontier model.
+      </p>
+      <p>
+        There is also no building around it. No power usage effectiveness multiplier of 1.1 or 1.2,
+        no cooling towers evaporating water, no network. The only water is at the power station that
+        charged your battery.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={4} />
+      <h2 class="band__title">Why it often is not</h2>
+    </div>
+
+    <Hazard label="The part people skip">
+      <p>
+        A data centre batches many requests onto one accelerator and keeps it saturated. Your
+        machine runs one request at a time, and draws power for the whole time it is thinking,
+        including the long stretches where it is waiting on memory rather than computing.
+      </p>
+      <p style="margin-bottom: 0">
+        So a model that runs at four tokens a second on your laptop can cost more per token than the
+        same class of model in a rack, even though the rack has a cooling bill. The{' '}
+        <a href="/calculator">calculator</a> has a switch for this, and it will tell you when your
+        own machine comes out worse.
+      </p>
+    </Hazard>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={4} />
+      <h2 class="band__title">What your machine can hold</h2>
+    </div>
+
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Machine</th>
+            <th scope="col">Model size</th>
+            <th scope="col">Worth trying</th>
+            <th scope="col">Good at</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            tiers.map((tier) => (
+              <tr>
+                <th scope="row">{tier.machine}</th>
+                <td>{tier.size}</td>
+                <td>{tier.picks}</td>
+                <td>{tier.good}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top: var(--space-4)">
+      Sizes assume four-bit quantisation, which is what nearly everyone runs locally and costs a
+      little quality for a lot of memory.
+    </p>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={4} of={4} />
+      <h2 class="band__title">What to run it with</h2>
+    </div>
+
+    <div class="buoa-scroll-x">
+      <table class="buoa-table">
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col">What it is</th>
+            <th scope="col">Runs on</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            tools.map((tool) => (
+              <tr>
+                <th scope="row">{tool.name}</th>
+                <td>{tool.what}</td>
+                <td>{tool.where}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top: var(--space-4)">
+      Any of them that serves a web interface on localhost can be watched by the extension, once you
+      grant it that address. It asks rather than assuming.
+    </p>
+  </section>
+
+  <section class="band">
+    <Faq>
+      <details>
+        <summary>How accurate is the local figure?</summary>
+        <p>
+          Less accurate than the hosted ones, and they are not very accurate either. It comes from a
+          formula using active parameters and the efficiency of your accelerator class, not from a
+          measurement of your machine. One case we checked against measured joules per token on a
+          desktop card came out about a third low.
+        </p>
+      </details>
+      <details>
+        <summary>Does the tool measure my actual power draw?</summary>
+        <p>
+          No. Reading a real power meter needs privileges a browser extension does not have and
+          should not ask for. If you have a wall meter, use it, and please tell us what it says.
+        </p>
+      </details>
+      <details>
+        <summary>Is a small hosted model better than a small local one?</summary>
+        <p>
+          For energy, usually yes, because of batching. For privacy, no. They are different
+          questions and this project only answers the first one.
+        </p>
+      </details>
+    </Faq>
+  </section>
+</Base>
