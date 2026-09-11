@@ -20,6 +20,14 @@ export default defineConfig({
   srcDir: 'src',
   outDir: '.output',
 
+  /*
+   * Manifest v3 on Firefox too, not the v2 the build tool defaults to.
+   * Mozilla is retiring v2, and the page-world script this extension depends
+   * on needs Firefox 128 or newer, which is what the minimum version below
+   * pins. Shipping v2 would mean a second code path to keep honest.
+   */
+  manifestVersion: 3,
+
   manifest: ({ browser }) => ({
     name: 'Better Use of AI',
     description:
@@ -63,11 +71,15 @@ export default defineConfig({
               id: 'betteruseofai@betteruseofai.org',
               // Page-world scripts need this, and AMO rejects the zip without it.
               strict_min_version: '128.0',
+              /*
+               * Firefox asks every add-on to declare what it collects, and the
+               * answer here is nothing. It belongs inside gecko rather than at
+               * the top level: web-ext lint said so, and a declaration in the
+               * wrong place is the same as no declaration.
+               */
+              data_collection_permissions: { required: ['none'] },
             },
           },
-          // Firefox asks every add-on to declare what it collects. The answer
-          // is nothing, and this is where that is said in machine readable form.
-          data_collection_permissions: { required: ['none'] },
         }
       : {}),
   }),
@@ -80,6 +92,13 @@ export default defineConfig({
         '@betteruseofai/tokenizers': resolve(__dirname, '../../packages/tokenizers/src/index.ts'),
         '@betteruseofai/ui-hint': resolve(__dirname, '../../packages/ui-hint/src/index.ts'),
         '@betteruseofai/tokens': resolve(__dirname, '../../packages/tokens'),
+        /*
+         * The rank table is two and a half megabytes and a service worker is
+         * built as one file, so leaving this reachable put the whole table in
+         * the worker. It ships as a packaged file instead, and the background
+         * points the tokenizer at it.
+         */
+        'js-tiktoken/ranks/o200k_base': resolve(__dirname, 'src/lib/ranks-not-bundled.ts'),
       },
     },
     build: {

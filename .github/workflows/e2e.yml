@@ -1,0 +1,85 @@
+name: extension
+
+# The end to end run launches a browser, so it gets a job to itself rather
+# than sharing a machine with the unit tests. It failed about one time in four
+# when it did share, and a flaky test teaches people to ignore failures.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: extension-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: the extension in a browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: build everything the extension depends on
+        run: pnpm turbo run build --filter=@betteruseofai/extension...
+
+      - name: install a browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: load the extension and drive it
+        working-directory: apps/extension
+        run: pnpm test:e2e
+
+  firefox:
+    name: firefox build and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm turbo run build --filter=@betteruseofai/extension...
+
+      - name: build for firefox and lint the result
+        working-directory: apps/extension
+        # One warning is expected and documented in the readme: Preact's
+        # support for dangerouslySetInnerHTML, which this extension never uses.
+        # Errors and notices must both be zero.
+        run: |
+          node scripts/copy-ranks.mjs
+          pnpm exec wxt build -b firefox
+          pnpm dlx web-ext@8 lint --source-dir .output/firefox-mv3 --no-config-discovery --warnings-as-errors=false
+
+      - name: keep the zips, so a release can be checked by hand
+        if: success()
+        run: |
+          node scripts/copy-ranks.mjs
+          pnpm exec wxt zip -b firefox
+          pnpm exec wxt zip
+        working-directory: apps/extension
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension-zips
+          path: apps/extension/.output/*.zip
+          retention-days: 14

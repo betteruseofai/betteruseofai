@@ -6,12 +6,15 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "wxt build",
+    "build": "node scripts/copy-ranks.mjs && wxt build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build:firefox": "wxt build -b firefox",
-    "zip": "wxt zip",
-    "dev": "wxt"
+    "build:firefox": "node scripts/copy-ranks.mjs && wxt build -b firefox",
+    "zip": "node scripts/copy-ranks.mjs && wxt zip",
+    "dev": "wxt",
+    "shoot": "node scripts/shoot-popup.mjs",
+    "lint:firefox": "node scripts/copy-ranks.mjs && wxt build -b firefox && web-ext lint --source-dir .output/firefox-mv3 --no-config-discovery",
+    "test:e2e": "node scripts/copy-ranks.mjs && wxt build && vitest run --config vitest.e2e.config.ts"
   },
   "dependencies": {
     "@betteruseofai/core": "workspace:*",

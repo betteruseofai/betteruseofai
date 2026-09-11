@@ -4,6 +4,8 @@ import type { Dataset } from '@betteruseofai/core';
 
 import { adapterById } from '../adapters/index.js';
 import type { ExtensionMessage } from '../adapters/types.js';
+import { setRanksLoader } from '@betteruseofai/tokenizers';
+
 import { priceTurn, reprice } from '../lib/pipeline.js';
 import {
   countEvents,
@@ -25,13 +27,32 @@ import { browser } from 'wxt/browser';
  * script, so the two megabytes of benchmark rows are loaded once per browser
  * rather than once per tab.
  *
- * It never opens a connection. If you are reviewing this extension, that claim
- * is checkable: there is no fetch, no XMLHttpRequest and no WebSocket in this
- * file or anything it imports, and the manifest declares no remote host beyond
- * the three sites the content scripts read.
+ * It opens no network connection. There is exactly one fetch in this file and
+ * its address is chrome-extension://<this extension>/o200k_base.json, which is
+ * a file packaged inside the extension. No remote host appears anywhere here,
+ * and the manifest declares none beyond the sites the content scripts read.
+ *
+ * If you are reviewing this extension, that is the claim to check, and it is
+ * checkable: search this file and everything it imports for fetch,
+ * XMLHttpRequest, WebSocket and EventSource. The one hit is the line below.
  */
 
 const dataset = datasetBundle as unknown as Dataset;
+
+/*
+ * Read the rank table out of a file packaged with the extension rather than
+ * letting it be inlined into this worker. A service worker is built as one
+ * file, so the dynamic import the tokenizer would otherwise use gets flattened
+ * and the worker grows to two and a half megabytes that it reloads on every
+ * wake.
+ *
+ * The address is the extension's own. This is a local file read, and it is the
+ * only fetch anywhere in the extension.
+ */
+setRanksLoader(async () => {
+  const response = await fetch(browser.runtime.getURL('/o200k_base.json'));
+  return response.json();
+});
 
 const settings = settingsStore({
   get: (keys) => browser.storage.local.get(keys) as Promise<Record<string, unknown>>,

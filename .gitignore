@@ -43,3 +43,5 @@ fixtures/cli/output/
 apps/claude-code-plugin/dist/
 apps/extension/.output/
 apps/extension/.wxt/
+apps/extension/public/o200k_base.json
+.wxt/

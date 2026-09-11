@@ -35,21 +35,43 @@ export interface TokenEstimate {
 
 let encoderPromise: Promise<{ encode(text: string): number[] }> | null = null;
 
+/** The shape js-tiktoken wants: the rank table for an encoding. */
+export type Ranks = Parameters<
+  typeof import('js-tiktoken/lite').Tiktoken extends new (ranks: infer R) => unknown
+    ? (ranks: R) => void
+    : never
+>[0];
+
+type RanksLoader = () => Promise<unknown>;
+
 /**
- * Loads the o200k encoder once.
+ * Where the rank table comes from. Two megabytes of it, so it matters.
  *
- * Kept behind a function rather than a top level import so a bundler splits it
- * into its own chunk, and so a caller that only ever needs the synchronous
- * estimate never pays for it.
+ * The default is a dynamic import, which a bundler splits into its own chunk
+ * and a caller who only needs the quick estimate never pays for.
+ *
+ * A browser extension needs a different answer. An extension service worker is
+ * built as one file, so the dynamic import gets inlined and the worker grows to
+ * two and a half megabytes that it reloads every time it wakes. Such a caller
+ * passes a loader that reads the table out of a file packaged with the
+ * extension. That is a local file read, not a network request: the address is
+ * the extension's own, and nothing leaves the machine.
  */
+let loadRanks: RanksLoader = async () => (await import('js-tiktoken/ranks/o200k_base')).default;
+
+export const setRanksLoader = (loader: RanksLoader): void => {
+  loadRanks = loader;
+  // A loader set after the encoder is built would be ignored, which would be
+  // a confusing way to fail. Drop the cached one so the new source is used.
+  encoderPromise = null;
+};
+
+/** Loads the o200k encoder once, and keeps it. */
 export const loadEncoder = async (): Promise<{ encode(text: string): number[] }> => {
   if (encoderPromise === null) {
     encoderPromise = (async () => {
-      const [{ Tiktoken }, ranks] = await Promise.all([
-        import('js-tiktoken/lite'),
-        import('js-tiktoken/ranks/o200k_base'),
-      ]);
-      return new Tiktoken(ranks.default);
+      const [{ Tiktoken }, ranks] = await Promise.all([import('js-tiktoken/lite'), loadRanks()]);
+      return new Tiktoken(ranks as never);
     })();
   }
   return encoderPromise;
