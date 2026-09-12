@@ -486,13 +486,18 @@
 /* -------------------------------------------------------------- dither --- */
 
 /*
- * The backdrop behind the landing headline.
+ * The stage the sequence plays on.
  *
- * Full bleed, so it escapes the shell's gutter by spanning the viewport from
- * the middle of its own column. Sits behind everything in the band and takes
- * no pointer events, because there is nothing on it to click.
+ * Full bleed, behind everything in the band, and inert to the pointer. It
+ * swells with scroll: --swell is written by the script from scroll position
+ * alone, and drives how far down the field reaches and how much ground sits
+ * in front of it. Nothing here moves the page.
  */
 .dither {
+  --swell: 0;
+  /* How far down the band the field reaches. The compositions are drawn to
+     fill this window, so it must not start so small that they fall outside. */
+  --reach: calc(58% + var(--swell) * 40%);
   position: absolute;
   inset-block: 0;
   left: 50%;
@@ -507,31 +512,50 @@
   display: block;
   width: 100%;
   height: 100%;
-  /* One canvas pixel is one cell. Scaling it up with nearest-neighbour is what
-     gives the hard square edges a 1-bit image needs; smoothing would turn the
-     whole thing into grey mush. */
+  /* One canvas pixel is one cell. Nearest-neighbour scaling is what gives a
+     1-bit image its hard square edges; smoothing turns it into grey mush. */
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  /* Fades out before the bottom edge, so the field ends rather than stopping. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 42%, transparent 96%);
-  mask-image: linear-gradient(to bottom, #000 42%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--reach) - 16%), transparent var(--reach));
+  mask-image: linear-gradient(to bottom, #000 calc(var(--reach) - 16%), transparent var(--reach));
 }
 
 /*
- * A gradient is banned everywhere else in this system, and this is the single
- * exception the rule already allows for: it exists to keep the headline
- * readable over the field rather than to decorate anything. It fades the
- * ground back in behind the text column only.
+ * A gradient is banned everywhere else in this system, and this is the one
+ * exception the rule already carves out: it exists to keep the headline
+ * readable over the field rather than to decorate anything. It thins as the
+ * field swells, so the sequence is at its clearest in the middle of the pass.
  */
 .dither__scrim {
   position: absolute;
   inset: 0;
+  opacity: calc(1 - var(--swell) * 0.45);
   background: linear-gradient(
     to right,
     var(--bg) 0%,
-    color-mix(in srgb, var(--bg) 82%, transparent) 38%,
-    transparent 68%
+    color-mix(in srgb, var(--bg) 78%, transparent) 32%,
+    transparent 58%
   );
+}
+
+/*
+ * Names the pair currently on screen. Without it, soil strata and wafer layers
+ * are both just stripes, and the claim the sequence is making does not land.
+ */
+.dither__caption {
+  position: absolute;
+  left: max(var(--gutter), calc(50vw - 590px + var(--gutter)));
+  /* Sits on the line where the field fades out, so it reads as a label for
+     what is above it rather than as a stray line of page furniture. */
+  top: calc(var(--reach) - 2.2rem);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  opacity: calc(0.25 + var(--swell) * 0.6);
+  transition: opacity var(--tempo-slow) var(--ease);
 }
 
 @media (max-width: 60rem) {
@@ -541,29 +565,41 @@
        74 per cent it washed out to nothing on a phone. */
     background: color-mix(in srgb, var(--bg) 52%, transparent);
   }
+
+  .dither__caption {
+    display: none;
+  }
 }
 
 /*
- * The field covers the headline and the sentence under it, and stops there.
- *
- * It used to span the whole band, which put a noise texture behind the three
- * readouts. Those are the reason anyone opens this page, and a backdrop that
- * competes with them is a backdrop that has failed.
+ * The field covers the headline and the sentence under it, and swells from
+ * there. It used to span the whole band at full strength, which put a noise
+ * texture behind the three readouts. Those are the reason anyone opens this
+ * page, and a backdrop that competes with them is a backdrop that has failed.
  */
-.hero {
+.band--dither {
   position: relative;
-  padding-block-end: var(--space-6);
 }
 
-.hero > *:not(.dither) {
+/* Everything in the band sits above the field. The field is the only child
+   that does not, and it is the one that needs to be behind. */
+.band--dither > *:not(.dither) {
   position: relative;
   z-index: 1;
 }
 
+.hero {
+  padding-block-end: var(--space-6);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  /* The script already holds a single frame. This makes sure nothing else
-     about the band animates either. */
-  .dither__canvas {
+  /* The script holds one frame and never starts its clock. This keeps the
+     stage from swelling too, so nothing moves as the page is scrolled. */
+  .dither {
+    --swell: 0;
+  }
+
+  .dither__caption {
     transition: none;
   }
 }

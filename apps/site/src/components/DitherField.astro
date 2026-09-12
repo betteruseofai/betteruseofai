@@ -1,29 +1,33 @@
 ---
 /**
- * The dither backdrop, behind the landing headline.
+ * The backdrop behind the landing headline.
  *
- * Decoration, so it is hidden from assistive technology and carries no text.
- * The canvas is sized by CSS and reserves its own space, so nothing on the
- * page moves when it paints: layout shift on this page has to stay at zero.
+ * Decoration, so it is hidden from assistive technology. The caption is the
+ * one part that carries meaning, and it is hidden too: it names what the field
+ * is showing for someone who can see it, and a screen reader being told
+ * "III, soil becomes wafer" every few seconds would be an interruption, not
+ * information. The same argument is made in words further down the page.
  *
  * With no JavaScript it renders nothing and the page reads exactly as it did
- * before, which is the correct behaviour for a backdrop.
+ * before, which is correct for a backdrop.
  */
 ---
 
 <div class="dither" data-dither aria-hidden="true">
   <canvas class="dither__canvas" data-dither-canvas></canvas>
   <div class="dither__scrim"></div>
+  <p class="dither__caption" data-dither-caption></p>
 </div>
 
 <script>
   import { mountDither } from '../islands/dither';
 
-  const field = document.querySelector<HTMLElement>('[data-dither]');
+  const stage = document.querySelector<HTMLElement>('[data-dither]');
   const canvas = document.querySelector<HTMLCanvasElement>('[data-dither-canvas]');
-  const track = field?.closest<HTMLElement>('[data-dither-track]') ?? field;
+  const caption = document.querySelector<HTMLElement>('[data-dither-caption]');
+  const track = stage?.closest<HTMLElement>('[data-dither-track]') ?? stage;
 
-  if (canvas && track) {
-    mountDither({ canvas, track });
+  if (stage && canvas && track) {
+    mountDither({ canvas, stage, track, caption });
   }
 </script>
