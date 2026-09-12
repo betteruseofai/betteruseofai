@@ -8,7 +8,6 @@ import { chromium } from '@playwright/test';
 import type { Browser, Page } from '@playwright/test';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-// @ts-expect-error plain JavaScript, shared with the screenshot script
 import { serve } from '../scripts/serve.mjs';
 
 /**
@@ -223,7 +222,9 @@ describe('the content security policy', () => {
       const html = readFileSync(join(dist, file), 'utf8');
       const policy = html.match(/http-equiv="content-security-policy" content="([^"]*)"/i)?.[1] ?? '';
 
-      for (const [, attrs, body] of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
+      for (const match of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
+        const attrs = match[1] ?? '';
+        const body = match[2] ?? '';
         if (/\ssrc=/.test(attrs)) continue;
         // A JSON payload is data. The browser never executes it.
         if (/type="application\/(ld\+)?json"/.test(attrs)) continue;

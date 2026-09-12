@@ -1,0 +1,29 @@
+---
+/**
+ * The dither backdrop, behind the landing headline.
+ *
+ * Decoration, so it is hidden from assistive technology and carries no text.
+ * The canvas is sized by CSS and reserves its own space, so nothing on the
+ * page moves when it paints: layout shift on this page has to stay at zero.
+ *
+ * With no JavaScript it renders nothing and the page reads exactly as it did
+ * before, which is the correct behaviour for a backdrop.
+ */
+---
+
+<div class="dither" data-dither aria-hidden="true">
+  <canvas class="dither__canvas" data-dither-canvas></canvas>
+  <div class="dither__scrim"></div>
+</div>
+
+<script>
+  import { mountDither } from '../islands/dither';
+
+  const field = document.querySelector<HTMLElement>('[data-dither]');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-dither-canvas]');
+  const track = field?.closest<HTMLElement>('[data-dither-track]') ?? field;
+
+  if (canvas && track) {
+    mountDither({ canvas, track });
+  }
+</script>

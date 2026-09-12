@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import DitherField from '../components/DitherField.astro';
 import Readout from '../components/Readout.astro';
 import RangeBar from '../components/RangeBar.astro';
 import Index from '../components/Index.astro';
@@ -28,10 +29,13 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
   paper
 >
 
-  <section class="band band--first" data-landing>
-    <h1 class="statement">Your prompts have a water bill.</h1>
+  <section class="band band--first band--dither" data-landing data-dither-track>
+    <div class="hero">
+      <DitherField />
 
-    <p class="dialer">
+      <h1 class="statement">Your prompts have a water bill.</h1>
+
+      <p class="dialer">
       We send about
       <input
         type="number"
@@ -61,7 +65,8 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
           ))
         }
       </select>.
-    </p>
+      </p>
+    </div>
 
     <div class="cols">
       <div data-slot="energy">

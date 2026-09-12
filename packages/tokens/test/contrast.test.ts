@@ -91,6 +91,36 @@ describe('contrast against the ground', () => {
     }
   });
 
+  /*
+   * The landing page draws a dither field in the hairline colour behind its
+   * headline, so text sits on top of those cells rather than on the ground.
+   * The worst case is a letter falling entirely on a filled cell.
+   */
+  it('keeps headline text readable over the dither field', () => {
+    for (const token of ['ink', 'ink-2']) {
+      expect(
+        contrast(light[token] as string, light['hairline'] as string),
+        `light ${token} over a filled cell`,
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(dark[token] as string, dark['hairline'] as string),
+        `dark ${token} over a filled cell`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  /*
+   * And the ones that would fail. Muted comes out at 3.70 over a filled cell
+   * in the light theme and accent at 4.08, so neither may be placed over the
+   * field. This test exists to say that out loud: if a future change makes
+   * them pass, the restriction can be lifted deliberately rather than by
+   * somebody assuming it was always fine.
+   */
+  it('records which colours may not sit over the dither field', () => {
+    expect(contrast(light['muted'] as string, light['hairline'] as string)).toBeLessThan(4.5);
+    expect(contrast(light['accent'] as string, light['hairline'] as string)).toBeLessThan(4.5);
+  });
+
   it('every interface border clears the three to one rule for non-text', () => {
     for (const token of ['border-ui']) {
       expect(contrast(light[token] as string, light['bg'] as string)).toBeGreaterThanOrEqual(3);

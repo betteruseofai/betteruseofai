@@ -482,3 +482,88 @@
   margin-bottom: var(--space-1);
   color: var(--ink-2);
 }
+
+/* -------------------------------------------------------------- dither --- */
+
+/*
+ * The backdrop behind the landing headline.
+ *
+ * Full bleed, so it escapes the shell's gutter by spanning the viewport from
+ * the middle of its own column. Sits behind everything in the band and takes
+ * no pointer events, because there is nothing on it to click.
+ */
+.dither {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dither__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* One canvas pixel is one cell. Scaling it up with nearest-neighbour is what
+     gives the hard square edges a 1-bit image needs; smoothing would turn the
+     whole thing into grey mush. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* Fades out before the bottom edge, so the field ends rather than stopping. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 42%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 42%, transparent 96%);
+}
+
+/*
+ * A gradient is banned everywhere else in this system, and this is the single
+ * exception the rule already allows for: it exists to keep the headline
+ * readable over the field rather than to decorate anything. It fades the
+ * ground back in behind the text column only.
+ */
+.dither__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 82%, transparent) 38%,
+    transparent 68%
+  );
+}
+
+@media (max-width: 60rem) {
+  .dither__scrim {
+    /* Narrow screens have no free column beside the text, so the field sits
+       behind it rather than beside it. Light enough to still be visible: at
+       74 per cent it washed out to nothing on a phone. */
+    background: color-mix(in srgb, var(--bg) 52%, transparent);
+  }
+}
+
+/*
+ * The field covers the headline and the sentence under it, and stops there.
+ *
+ * It used to span the whole band, which put a noise texture behind the three
+ * readouts. Those are the reason anyone opens this page, and a backdrop that
+ * competes with them is a backdrop that has failed.
+ */
+.hero {
+  position: relative;
+  padding-block-end: var(--space-6);
+}
+
+.hero > *:not(.dither) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The script already holds a single frame. This makes sure nothing else
+     about the band animates either. */
+  .dither__canvas {
+    transition: none;
+  }
+}
