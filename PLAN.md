@@ -1,5 +1,9 @@
 # Better Use of AI — Implementation Plan
 
+> This is the plan as approved on 2026-09-10, kept as the record. Where the built work has
+> departed from it, `docs/DECISIONS.md` says so and why; the design audit of 2026-09-12 is in
+> `CONFLICTS.md`. Read those before quoting a figure or a component name from here.
+
 ## 1. Context
 
 A new open-source project at `betteruseofai.org`. It shows people how much water, energy and carbon their LLM usage consumes, with honest uncertainty ranges, and nudges them towards a smaller model, no model, or a local model when the frontier model is overkill. It exists because nobody using ChatGPT, Claude, Gemini or a coding agent today can see the resource cost of a conversation, and because the default model is almost always the most expensive one.

@@ -12,7 +12,7 @@ Pinned versions, so CI and this machine agree.
 | Vale | 3.21.0 | Pinned release binary from errata-ai/vale, in `~/.local/bin` |
 | Python | 3.12 and 3.14 | Already present, used from step 5 onwards |
 
-CI installs the same Vale version. If you bump it here, bump it in `.github/workflows/site.yml` too.
+CI installs the same Vale version. If you bump it here, bump it in `.github/workflows/copy.yml` too.
 
 ## Parity between the two command line tools
 

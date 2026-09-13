@@ -10,6 +10,8 @@ Take a typical exchange, four hundred tokens in and three hundred out. Run it th
 against the world average grid and the frontier model lands near 5 Wh, with a range from about
 0.6 to 60. The small model in the same family lands near 0.6 Wh. That is roughly eight times, and
 the spread inside each estimate is wider than the gap between them, which is worth saying plainly.
+[The calculator shows the two side by side](/calculator#model=claude-opus-5&region=WORLD&prompts=1&in=400&out=300&period=day&scope=on-site+%2B+off-site&compare=1&local=llama-3.1-8b),
+with the rows each figure rests on.
 
 The reason the smaller model is not the default is that nobody chooses per question. You pick a
 model once, at the top of the session or in a settings pane. Then you ask it everything: reformat

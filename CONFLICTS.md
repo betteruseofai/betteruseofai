@@ -4,6 +4,13 @@
 > `docs/design/BRIEF.md`. Nothing below has been acted on. The audit stops here, by design, until
 > each conflict has a decision against it.
 
+## What happened next
+
+Decisions were taken on every item on 2026-09-13 and the work is recorded in `docs/DECISIONS.md`,
+entries 26 to 38. Two things stayed open: the mark, which is at the three-directions gate, and the
+code of conduct. The rest of this document is the audit as it was written, and the line numbers in
+it refer to commit `965a69f`.
+
 ## How to read this
 
 Part 1 is the Constraint Inventory: every rule the repo states or implies, with where it is

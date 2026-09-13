@@ -35,8 +35,8 @@ list with a reason beside it. Today that list is two entries:
 - `background.js` fetches `o200k_base.json`, a file packaged inside the extension. The rank table
   is two and a half megabytes and a service worker is built as one file, so inlining it meant a
   worker that reloaded the whole table on every wake. It is 169 kB now.
-- `content-scripts/sites.js` fetches our own interceptor, which is the build tool's way of
-  injecting it on Manifest V2.
+- `content-scripts/sites.js` fetches our own interceptor out of the extension, which is how the
+  build tool's `injectScript` reads a page-world script before handing it to the page.
 
 An end-to-end test loads the built extension into Chromium, opens every page, and asserts that not
 one request leaves for a host.

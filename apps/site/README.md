@@ -36,7 +36,8 @@ than that, so `src/lib/landing.ts` runs the engine at build time over the handfu
 the sentence offers and ships a small table. The arithmetic left for the browser is one
 multiplication. Same engine, same flags, nothing rounded on the way out.
 
-That keeps the landing page at about 2.4 kB of script.
+That keeps the landing page at about 8 kB of script, most of it the backdrop. The footer of every
+page prints what that page weighs over the wire; `scripts/weigh.mjs` fills it in after the build.
 
 ## The copy rules
 

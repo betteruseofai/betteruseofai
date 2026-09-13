@@ -47,7 +47,9 @@ Absence never renders as zero. Unknown model reads "unknown".
 
 Vale, pinned to v3.21.0, with the rule set in `styles/BUAI/`. Rules: Banned, Dashes, Exclaim,
 NotButRather, Rhetorical, Triplets (warning only), Emoji, GenericCTA, plus en_GB spelling with a
-project vocabulary. Alongside it, `scripts/copy-lint.ts` checks that every number is near a source,
-that no published page contains a TODO, and that every entry has a `status` field.
+project vocabulary. Alongside it, `apps/site/scripts/copy-lint.mjs` runs Vale over the text of the
+built pages, checks that a page with figures on it has sources on it, that no published page
+contains a TODO, that every page has a status, that sentences average under twenty words, and that
+a multiplier written in prose ("eight times", "a factor of thirty") sits on a page with a source.
 
-The Vale rule set lands with the website. Until then, copy is checked against this page by eye.
+Vale runs over the markdown in CI, and `copy-lint` runs over the built site.

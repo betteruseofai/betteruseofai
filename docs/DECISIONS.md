@@ -1,0 +1,107 @@
+# Decisions, and where the plan was superseded
+
+> The public record of where the built work departs from `PLAN.md`, and why. The plan stays as it
+> was written on 2026-09-10; this file is the change log against it. Newest at the bottom.
+
+## Deviations from the plan, all deliberate
+
+1. **pnpm** was installed with `npm i -g pnpm@10`, not corepack, which needs administrator rights on
+   the machine the plan was written on.
+2. A **`per-prompt` benchmark row may carry `directWaterMl` and `directCarbonG`.** Without that the
+   Mistral life-cycle row cannot be represented, because Mistral published carbon and water per
+   reply but no energy.
+3. **`proxy` is a fifth benchmark shape** rather than a duplicated payload, and rows carry an
+   explicit `hosting` field rather than the engine inferring it from PUE.
+4. **Six font faces, not nine.** All nine came to 155 kB against the 130 kB budget. Big Shoulders
+   700 and Schibsted Grotesk 500 were dropped; real italic was kept.
+5. **The design sheet** lives at `packages/tokens/design/index.html` as standalone HTML and becomes
+   the site's `/design` route from the same CSS.
+6. **Arguments are parsed by hand**, not with Commander, so the help text follows the copy rules and
+   the Python tool can mirror it exactly.
+7. **The dataset hash covers raw file bytes** rather than a re-serialisation, because JavaScript
+   writes `1.17e-6` where Python writes `1.17e-06`. `apps/cli-py/scripts/sync-dataset.py` recomputes
+   it and refuses to build on a mismatch.
+8. **The `watch` command is not built.** It lands with the extension.
+9. **Both tools carry a `recommend` command**, which the plan did not list, so the recommender sits
+   inside the parity harness.
+10. **The extension reads the o200k rank table from a packaged file** rather than bundling it. A
+    service worker is one file; the lazy import was flattened and the worker hit 2.49 MB. It is
+    under 200 kB now, and `apps/extension/test/no-network.test.ts` holds the allow list for that
+    fetch.
+11. **Firefox is built as Manifest v3**, not the v2 the build tool defaults to.
+12. **The extension's end to end run is a separate task** from the unit tests, because sharing a
+    machine made it flake about one time in four.
+13. **The recommender runs with a higher bar inside a coding session**, and three rules are muted
+    there: `no-llm.arithmetic`, `no-llm.unit-conversion` and `downgrade.short-simple`.
+14. **Astro 7, not Astro 5.** The plan was written on 2026-09-10 and Astro was two majors past it by
+    the time the site was built.
+15. **Vale does not lint `.astro`.** `apps/site/scripts/copy-lint.mjs` runs Vale over text extracted
+    from the built pages instead, which checks the words a reader sees.
+16. **`Provenance` is a type in core.** The dataset schema had required it from the start; the
+    TypeScript interfaces never carried it.
+17. **The landing page does not import the dataset.** The engine runs at build time over the
+    combinations its sentence offers and the page ships a small table.
+18. **The landing headline has an animated backdrop**, which the plan did not call for: a generated
+    tree dissolves through ordered dither into a circuit. Agreed on 2026-09-12. The landing script
+    budget was lifted to 150 kB that day and the lift was never needed; the enforced budget stays at
+    the plan's 25 kB and the page ships about 8 kB.
+19. **The backdrop is a hand-written WebGL2 fragment shader with a canvas 2D fallback**, not a
+    library. Three.js would have been 600 kB of scene graph for one full-screen quad.
+20. **Four paired dissolves rather than one:** canopy to rack, river to coolant, soil to wafer,
+    roots to fibre, sharing a composition so each has something to land on.
+21. **Progress follows native scroll in a passive listener**, not a CSS scroll timeline, which
+    cannot drive a canvas and leaves Firefox on a static frame.
+22. **No uPlot, no chart library in the extension** (`PLAN.md:75`). The dashboard's bars are divs.
+23. **Big Shoulders is loaded in the extension** (`PLAN.md:146` said not, for weight). Inside a
+    packaged extension the weight argument is moot, and the brand line needs the face.
+24. **`Hairline`, `Ticker`, `PostCard` and `AuthorCard`** (`PLAN.md:200`) were never built as
+    components. The hairline is a class, the ticker became the page-weight item in the metastrip,
+    and the blog list and About page carry their content inline.
+25. **The workflows are `ci.yml`, `copy.yml`, `dataset-links.yml`, `e2e.yml` and `parity.yml`**
+    (`PLAN.md:82` named `site.yml`, `release.yml` and `snapshots.yml`). Release and snapshot
+    automation is still to come.
+
+## The design audit of 2026-09-12
+
+`CONFLICTS.md` at the repository root is the audit; `docs/design/BRIEF.md` is the brief it ran
+against. The decisions taken on it, on 2026-09-13:
+
+26. **The abbreviation in code is `buai`**, matching the Vale style, everywhere: class names,
+    environment variables, the custom element and the events between page and extension. The
+    repository slug is `betteruseofai/betteruseofai` in every file and goes live when the
+    organisation does.
+27. **`tokens.json` is the single source.** `tokens.css` and the composer hint's palette are
+    generated from it, both command line tools read its terminal block, and the test regenerates
+    the CSS and fails on drift. `--muted` moved from `#5b665f` to `#5a655e` to clear 4.5 to one on
+    the accent tint.
+28. **One hue.** The brief's palette words map onto the existing tokens (`docs/design/BRAND.md`).
+    Deep water is not added and iridescence is dither, not gradient.
+29. **The gradient rule says what is true**: no colour gradients; the hatching, the paper grid and
+    the landing scrim are named in `tokens.json` by file and count and the test counts them.
+30. **The backdrop plays once** and ends on a ninth scene, the composer, then holds. That frame is
+    also the reduced-motion, Still-toggle and no-WebGL2 frame. A Still toggle sits beside the theme
+    toggle and is remembered. The rules are in `docs/design/MOTION.md`.
+31. **The brief's cost and recovery moments are stills**, and recovery lives where a real saving
+    exists: the extension dashboard, as rings, against the largest model in each family.
+32. **The fonts ship with their OFL licence text** beside them, and `FONTS.md` carries the notice.
+33. **`NO_COLOR` is honoured** in both tools, and `session --brief` prints six lines with a block
+    meter; the full report is unchanged. The brief form is the first text case in the parity
+    harness.
+34. **The CLI's everyday comparisons name their quantity**, and stale-figure ages are computed from
+    the source date everywhere they appear.
+35. **The popup leads with energy** and the first run asks one question, where you are, once.
+36. **The composer hint uses an adopted stylesheet.** Probed in the end to end run: an inline style
+    element under a strict host `style-src` is blocked in Chromium.
+37. **Every page prints its own weight** over the wire, computed after the build by the same
+    arithmetic as the budget test.
+38. **The mark is being redrawn.** The three cell-grid routes of 2026-09-12 were judged not to
+    help the brand; three new directions are at the gate.
+
+## Still open
+
+- Which of the three new mark directions, and after that the icon exports at 16, 32, 48 and 128,
+  the site favicon, the Firefox `theme_icons`, the lockups and the usage document.
+- A code of conduct. The Contributor Covenant is CC BY 4.0 and compatible; its register is warmer
+  than `docs/STYLE.md`, which is acceptable for a conduct document. Owner's call.
+- Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
+  as owed.

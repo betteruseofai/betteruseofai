@@ -14,6 +14,7 @@
  *   - a word never runs into an inline tag, which Astro does silently when the
  *     tag sits at a line boundary
  *   - a page with figures on it has sources on it
+ *   - a multiplier written in prose sits on a page with sources on it
  *   - sentences average under twenty words, and none runs past thirty-six
  */
 
@@ -112,6 +113,17 @@ for (const file of files) {
   const showsSources = /buai-source|calc__why/.test(body);
   if (statesFigures && !showsSources) {
     problems.push(`${name}: prints figures with no source anywhere on the page.`);
+  }
+
+  // A comparison written in words is a number too. "A few hundred times" on a
+  // page with no chip was the one unsourced claim the audit found, and the
+  // check above could not see it because it was not in a readout.
+  const multiplier = /(?:[a-z]+|\d+) times|factor of (?:about )?(?:[a-z]+|\d+)/i;
+  // The calculator shows its sources for whatever it is asked, so a link into
+  // it with the comparison preset counts as a source for the comparison.
+  const pointsAtCalculator = /href="\/calculator#/.test(body);
+  if (multiplier.test(textOf(body)) && !showsSources && !pointsAtCalculator) {
+    problems.push(`${name}: says something is so many times something else, with no source on the page.`);
   }
 }
 
