@@ -1,5 +1,22 @@
 # @betteruseofai/dataset
 
+## 0.3.0
+
+Data only, so a minor bump.
+
+- **Regions.** The two eGRID subregions are read from the EPA's eGRID2023 Summary Tables, revision 2:
+  California (CAMX) 195.0 gCO2e/kWh, recalled as 210, and Virginia and the Carolinas (SRVC) 270.5,
+  recalled as 290. The national row was verified against the same sheet, 770.884 lb/MWh to 349.7
+  g/kWh as the appendix had it, and its provenance is now `fetched` too. No region row is recalled
+  from memory any more.
+
+Known gaps, in the order they should be closed:
+
+1. Off-site water needs the per-region factors from the World Resources Institute appendix; every
+   region still carries the same range built around the United States figure.
+2. Tokenizer ratios for Anthropic and Google need measuring against the providers' counting endpoints.
+3. Every proxy row should be replaced by a measurement the moment one is published.
+
 ## 0.2.0
 
 Data only, so a minor bump.

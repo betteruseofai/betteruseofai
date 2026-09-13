@@ -129,9 +129,12 @@ against. The decisions taken on it, on 2026-09-13:
     by a factor of about twenty, not thirty, and the popup and options copy now say so. Two eGRID
     subregions stay pending; the owner declined the EPA download in this session.
 
+43. **The two eGRID subregions are read from the EPA spreadsheet.** Dataset 0.3.0. California
+    195.0 and Virginia and the Carolinas 270.5 gCO2e/kWh, both lower than recalled; the national
+    row verified against the same sheet. No region row is recalled from memory any more.
+
 ## Still open
 
-- The two eGRID subregion rows, the WRI off-site water factors and the tokenizer ratios, in
-  `packages/dataset/CHANGELOG.md`.
+- The WRI off-site water factors and the tokenizer ratios, in `packages/dataset/CHANGELOG.md`.
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.

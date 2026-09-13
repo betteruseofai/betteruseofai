@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "0.2.0",
-  "datasetSha256": "4742d664fff7a777a090e004b96487ff94674cb7119ba942974e270a2d357d89",
+  "datasetVersion": "0.3.0",
+  "datasetSha256": "87667f2c9a7d32376f35193dea834e5b2eb4c3af5d3fa588a1742920c72cb940",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -84,7 +84,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://www.epa.gov/egrid"
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
     },
@@ -214,7 +214,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://www.epa.gov/egrid"
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
     },
@@ -372,7 +372,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://www.epa.gov/egrid"
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
     },
@@ -408,7 +408,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://www.epa.gov/egrid"
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
     },

@@ -131,6 +131,9 @@ describe('the built extension', () => {
       'https://arxiv.org',
       'https://epoch.ai',
       'https://ember-energy.org',
+      // Ember's yearly CSV, which the region rows cite, is served from a
+      // Google Cloud bucket. A source address, printed and never requested.
+      'https://storage.googleapis.com',
       'https://huggingface.co',
       'https://joss.theoj.org',
       'https://mistral.ai',

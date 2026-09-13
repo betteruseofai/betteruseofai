@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "defaultRegion": "WORLD",
   "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
   "regions": [
@@ -47,9 +47,9 @@
       "kind": "country",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 330,
+        "low": 330.0,
         "central": 349.7,
-        "high": 375
+        "high": 375.0
       },
       "waterOffsiteLPerKwh": {
         "low": 1.0,
@@ -58,11 +58,11 @@
       },
       "year": 2023,
       "source": {
-        "title": "eGRID2023 summary tables",
-        "url": "https://www.epa.gov/egrid",
+        "title": "eGRID2023 Summary Tables, revision 2, Table 1: subregion output emission rates",
+        "url": "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx",
         "publisher": "United States Environmental Protection Agency",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2025-06",
+        "retrieved": "2026-09-13",
         "licence": "public domain"
       },
       "waterSource": {
@@ -74,10 +74,10 @@
         "doi": "10.48550/arXiv.2304.03271"
       },
       "provenance": {
-        "method": "source-appendix",
-        "recorded": "2026-09-10",
-        "note": "770.884 lb CO2e per MWh, converted to 349.7 g per kWh."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "CO2e output emission rate from the U.S. total line of Table 1, 770.884 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13."
     },
     {
       "code": "IN",
@@ -572,9 +572,9 @@
       "kind": "subregion",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 190,
-        "central": 210,
-        "high": 235
+        "low": 184.0,
+        "central": 195.0,
+        "high": 209.1
       },
       "waterOffsiteLPerKwh": {
         "low": 1.0,
@@ -583,18 +583,18 @@
       },
       "year": 2023,
       "source": {
-        "title": "eGRID2023 subregion tables",
-        "url": "https://www.epa.gov/egrid",
+        "title": "eGRID2023 Summary Tables, revision 2, Table 1: subregion output emission rates",
+        "url": "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx",
         "publisher": "United States Environmental Protection Agency",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2025-06",
+        "retrieved": "2026-09-13",
         "licence": "public domain"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Subregion value not yet read out of the eGRID spreadsheet."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "CO2e output emission rate from the CAMX line of Table 1, 429.983 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13."
     },
     {
       "code": "US-SRVC",
@@ -602,9 +602,9 @@
       "kind": "subregion",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 260,
-        "central": 290,
-        "high": 325
+        "low": 255.3,
+        "central": 270.5,
+        "high": 290.1
       },
       "waterOffsiteLPerKwh": {
         "low": 1.0,
@@ -613,18 +613,18 @@
       },
       "year": 2023,
       "source": {
-        "title": "eGRID2023 subregion tables",
-        "url": "https://www.epa.gov/egrid",
+        "title": "eGRID2023 Summary Tables, revision 2, Table 1: subregion output emission rates",
+        "url": "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx",
         "publisher": "United States Environmental Protection Agency",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2025-06",
+        "retrieved": "2026-09-13",
         "licence": "public domain"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Northern Virginia carries more data centre load than anywhere else on earth, which is why this subregion is here. Value not yet read out of the spreadsheet."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "CO2e output emission rate from the SRVC line of Table 1, 596.326 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Northern Virginia carries more data centre load than anywhere else on earth, which is why this subregion is here."
     },
     {
       "code": "GOOGLE-FLEET",
