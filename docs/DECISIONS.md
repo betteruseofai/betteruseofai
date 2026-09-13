@@ -58,8 +58,8 @@
     components. The hairline is a class, the ticker became the page-weight item in the metastrip,
     and the blog list and About page carry their content inline.
 25. **The workflows are `ci.yml`, `copy.yml`, `dataset-links.yml`, `e2e.yml` and `parity.yml`**
-    (`PLAN.md:82` named `site.yml`, `release.yml` and `snapshots.yml`). Release and snapshot
-    automation is still to come.
+    (`PLAN.md:82` named `site.yml`, `release.yml` and `snapshots.yml`). Superseded by entry 41:
+    `release.yml` and `snapshots.yml` now exist.
 
 ## The design audit of 2026-09-12
 
@@ -113,6 +113,14 @@ against. The decisions taken on it, on 2026-09-13:
     the method page, and a hand-kept list in `src/data/reading.json` for writing found elsewhere.
     The site's RSS feed and the `@astrojs/rss` dependency went with the posts; `/feed` now lands on
     the hub. Asked for on 2026-09-13.
+
+41. **Release and snapshot automation.** `release.yml` runs on a `v*` tag: build, tests, parity,
+    both extension zips with `SHA256SUMS` attached to a GitHub release, then npm and PyPI behind a
+    `release` environment a person approves. `snapshots.yml` refreshes the three committed
+    fallbacks weekly and opens a pull request. The plugin bundle is tracked in git, because a
+    marketplace install cannot build, and CI fails when the committed bundle is not the one the
+    commit builds. `docs/DEPLOY.md` is the launch checklist. Entry 25 is superseded on the two
+    missing workflows.
 
 ## Still open
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists

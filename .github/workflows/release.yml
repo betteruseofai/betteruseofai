@@ -1,0 +1,176 @@
+name: release
+
+# A tag of the form v1.2.3 builds everything, attaches the extension zips and
+# their checksums to a GitHub release, and then waits. Publishing to npm and
+# PyPI sits behind the "release" environment, which needs a person to approve
+# it in the repository settings, so a tag pushed by mistake ships nothing to
+# a package registry.
+#
+# Nothing here contacts a live provider site. The parity harness and every
+# test run against fixtures, as they do on every push.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  BUAI_OFFLINE: '1'
+
+jobs:
+  build:
+    name: build, test and attach
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: astral-sh/setup-uv@v5
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: the tag is the version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          for file in apps/cli-ts/package.json apps/extension/package.json apps/claude-code-plugin/.claude-plugin/plugin.json packages/core/package.json packages/dataset/package.json packages/tokenizers/package.json packages/readers/package.json; do
+            node -e "const fs=require('fs');const p='$file';const j=JSON.parse(fs.readFileSync(p,'utf8'));if(j.version!=='$version'){console.error(p+' says '+j.version+', the tag says $version. Run pnpm version-packages first.');process.exit(1)}"
+          done
+
+      - run: pnpm turbo run build typecheck test
+
+      - name: parity between the two command line tools
+        run: |
+          python apps/cli-py/scripts/sync-dataset.py
+          node fixtures/run-parity.mjs
+
+      - name: the committed plugin bundle is the one this commit builds
+        run: git diff --exit-code apps/claude-code-plugin/dist
+
+      - name: extension zips, both browsers, and the sources zip Firefox asks for
+        working-directory: apps/extension
+        run: |
+          node scripts/copy-ranks.mjs
+          pnpm exec wxt zip
+          pnpm exec wxt zip -b firefox
+          ls -la .output/*.zip
+
+      - name: checksums
+        working-directory: apps/extension/.output
+        run: |
+          sha256sum *.zip > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: the release, with the zips and the checksums attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="Dataset $(node -e "console.log(require('./packages/dataset/dist/dataset.json').version)"), sha $(node -e "console.log(require('./packages/dataset/dist/dataset.json').sha256.slice(0,12))").
+
+          Every tool in this release prints the same dataset hash. Check a download against SHA256SUMS before installing it; the install page says how."
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "$notes" \
+            apps/extension/.output/*.zip apps/extension/.output/SHA256SUMS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.version.outputs.version }}
+          path: |
+            apps/extension/.output/*.zip
+            apps/extension/.output/SHA256SUMS
+          retention-days: 30
+
+  npm:
+    name: publish to npm
+    needs: build
+    runs-on: ubuntu-latest
+    # A person approves this in the repository's environment settings.
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=betteruseofai...
+
+      # Provenance ties the package to this workflow run. It needs the
+      # NPM_TOKEN secret, or npm trusted publishing set up for the package,
+      # both of which are steps in docs/DEPLOY.md.
+      - name: publish the five packages in the fixed group
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for pkg in packages/dataset packages/core packages/tokenizers packages/readers apps/cli-ts; do
+            (cd "$pkg" && pnpm publish --access public --provenance --no-git-checks)
+          done
+
+  pypi:
+    name: publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: astral-sh/setup-uv@v5
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@betteruseofai/dataset
+      - run: python apps/cli-py/scripts/sync-dataset.py
+
+      - name: build the wheel and the source distribution
+        working-directory: apps/cli-py
+        run: uv build
+
+      # Trusted publishing: PyPI is told which repository and workflow may
+      # publish this project, and no token is stored anywhere. docs/DEPLOY.md
+      # has the one-time setup.
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: apps/cli-py/dist

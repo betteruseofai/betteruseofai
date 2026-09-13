@@ -42,6 +42,14 @@ jobs:
 
       - run: pnpm turbo run build
 
+      # The plugin bundle is tracked, because a marketplace install cannot
+      # build. If this commit builds a different one, the commit is missing
+      # a rebuild. Checked on one runner: esbuild output is deterministic for
+      # a given input, and one check is enough to say so.
+      - name: the committed plugin bundle is the one this commit builds
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        run: git diff --exit-code apps/claude-code-plugin/dist
+
       - run: pnpm turbo run typecheck
 
       - run: pnpm turbo run test

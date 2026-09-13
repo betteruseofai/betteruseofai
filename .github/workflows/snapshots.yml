@@ -1,0 +1,56 @@
+name: snapshots
+
+# The site reads three things from the network at build time and falls back
+# to a committed snapshot when it cannot: the contributors list and the
+# releases from GitHub, and the contributors' Substack feeds. A snapshot that
+# is never refreshed is a page that quietly goes stale on the day a build has
+# no network. This refreshes all three weekly and opens a pull request when
+# anything moved, and a person merges it. It never pushes to main.
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: refresh the three snapshots
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm exec tsx apps/site/scripts/snapshot.ts
+
+      - name: open a pull request if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet apps/site/public/fallback; then
+            echo "nothing moved"
+            exit 0
+          fi
+          branch="snapshots/$(date -u +%Y-%m-%d)"
+          git config user.name "snapshots"
+          git config user.email "snapshots@betteruseofai.org"
+          git checkout -b "$branch"
+          git add apps/site/public/fallback
+          git commit -m "chore(site): refresh the fallback snapshots, $(date -u +%Y-%m-%d)"
+          git push origin "$branch"
+          gh pr create --title "Refresh the fallback snapshots" --body "The weekly refresh of the committed snapshots the site falls back to when a build has no network: GitHub contributors, GitHub releases, and the contributors' Substack feeds. Opened by the snapshots workflow; a person merges it." --base main --head "$branch"

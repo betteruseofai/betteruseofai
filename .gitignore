@@ -4,6 +4,9 @@ node_modules/
 
 # build output
 dist/
+# ...except the plugin bundle, which is tracked because a marketplace install
+# cannot build. CI fails if the committed bundle is not the one the commit builds.
+!apps/claude-code-plugin/dist/
 .turbo/
 .output/
 *.tsbuildinfo
