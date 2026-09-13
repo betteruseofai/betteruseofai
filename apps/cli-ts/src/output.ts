@@ -1,6 +1,8 @@
 import { canonicalNumber, displayNumber, formatRange, scaleUnit } from '@betteruseofai/core';
 import type { Aggregate, EstimateFlag, Range } from '@betteruseofai/core';
 
+import tokens from '@betteruseofai/tokens/tokens.json' with { type: 'json' };
+
 import { canonicalJson, SCHEMA_VERSION } from './canonical.js';
 import type { Context } from './context.js';
 
@@ -12,16 +14,54 @@ import type { Context } from './context.js';
  * canonical writer and nothing else.
  */
 
-const ANSI = {
-  dim: '[2m',
-  bold: '[1m',
-  green: '[32m',
-  yellow: '[33m',
-  reset: '[0m',
+/*
+ * The escape codes come from the shared tokens, so the terminal reads from the
+ * same file as the site and the extension. tokens.json says why the two
+ * colours are green and yellow and never red: a caveat and a figure have to
+ * stay apart for somebody who cannot tell red from green.
+ */
+const CODES = tokens.terminal.codes;
+const ANSI = Object.fromEntries(
+  Object.entries(CODES).map(([name, code]) => [name, `\x1b[${code}m`]),
+) as Record<keyof typeof CODES, string>;
+
+export const paint = (context: Context, colour: keyof typeof CODES, text: string): string =>
+  context.colour ? `${ANSI[colour]}${text}${ANSI.reset}` : text;
+
+/**
+ * A ten-cell block meter for a share. The one place the terminal draws a bar,
+ * because a share of a whole is the one quantity a bar cannot misrepresent:
+ * there is no hidden floor and no range to flatten.
+ */
+export const meter = (share: number, ascii: boolean): string => {
+  const cells = Math.max(0, Math.min(10, Math.floor(share * 10 + 0.5)));
+  const glyphs = tokens.terminal.meter;
+  const on = ascii ? glyphs.asciiFilled : glyphs.filled;
+  const off = ascii ? glyphs.asciiEmpty : glyphs.empty;
+  return on.repeat(cells) + off.repeat(10 - cells);
 };
 
-export const paint = (context: Context, colour: keyof typeof ANSI, text: string): string =>
-  context.colour ? `${ANSI[colour]}${text}${ANSI.reset}` : text;
+/** Small numbers as words in prose, the way the style guide asks. */
+export const words = (value: number): string => {
+  const table = [
+    'nought', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen',
+    'nineteen', 'twenty',
+  ];
+  return table[value] ?? String(value);
+};
+
+/**
+ * The note that follows a stale comparison, with its age worked out from the
+ * source date rather than typed in. "Seventeen years old" was a string once,
+ * and it would have been wrong from the first of January.
+ */
+export const staleNote = (source: { date?: string } | undefined, now: Date): string => {
+  const year = Number.parseInt((source?.date ?? '').slice(0, 4), 10);
+  if (!Number.isFinite(year)) return ', from a figure marked stale';
+  const age = now.getUTCFullYear() - year;
+  return `, from a figure now ${words(age)} years old`;
+};
 
 /** A range as a plain object of canonical strings, for the JSON payload. */
 export const rangeOut = (range: Range | null): Record<string, string> | null =>

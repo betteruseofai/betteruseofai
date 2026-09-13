@@ -5,7 +5,7 @@ import { flagString } from '../args.js';
 import type { ParsedArgs } from '../args.js';
 import type { Context } from '../context.js';
 import { loadEvents } from '../context.js';
-import { caveats, emitJson, paint, rangeOut, readout, short, table } from '../output.js';
+import { caveats, emitJson, paint, rangeOut, readout, short, staleNote, table } from '../output.js';
 
 const BUCKETS: AggregateBucket[] = ['day', 'week', 'model', 'surface', 'session', 'hosting', 'all'];
 
@@ -68,6 +68,12 @@ export const summary = async (context: Context, args: ParsedArgs): Promise<strin
   lines.push('');
   lines.push(...readout(context, totals));
 
+  /*
+   * Each comparison names its quantity. Without that, "2.4 smartphone charges"
+   * for energy and "1.6 smartphones charged" for carbon sat in one list and
+   * read as the tool contradicting itself. The calculator groups them under
+   * headings for the same reason.
+   */
   for (const [quantity, value] of [
     ['energy', totals.energyWh?.central],
     ['water', totals.waterMl?.central],
@@ -79,7 +85,7 @@ export const summary = async (context: Context, args: ParsedArgs): Promise<strin
         paint(
           context,
           'dim',
-          `          about ${found.count.toFixed(1)} ${found.label}${found.stale ? ', from a figure now seventeen years old' : ''}`,
+          `          ${quantity}: about ${found.count.toFixed(1)} ${found.label}${found.stale ? staleNote(found.source, context.now) : ''}`,
         ),
       );
     }

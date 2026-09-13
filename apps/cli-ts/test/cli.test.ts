@@ -383,3 +383,49 @@ describe('the fixtures stay in step', () => {
     expect(readme).toContain('rollout-two.jsonl');
   });
 });
+
+describe('the brief report', () => {
+  it('is six lines or fewer, and counts the caveats rather than cutting them', async () => {
+    const result = await cli(['session', 'session-alpha', '--brief']);
+    const lines = result.stdout.split('\n');
+    expect(lines.length).toBeLessThanOrEqual(6);
+    expect(result.stdout).toContain('caveats. Run "betteruseofai session session-alpha"');
+    // The meter draws a share, and only a share: the readouts keep their ranges.
+    expect(result.stdout).toMatch(/[▓░#.]{10}\s+\d+% of the energy/);
+    expect(result.stdout).toContain('[ ');
+  });
+
+  it('falls back to ascii glyphs when asked', async () => {
+    const result = await cli(['session', 'session-alpha', '--brief', '--ascii']);
+    expect(result.stdout).toMatch(/[#.]{10}/);
+    expect(result.stdout).not.toMatch(/[▓░≥]/);
+  });
+});
+
+describe('colour', () => {
+  it('is switched off by NO_COLOR, whatever the value', async () => {
+    const { buildContext } = await import('../src/context.js');
+    const { parseArgs: parse } = await import('../src/args.js');
+    const wasTTY = process.stdout.isTTY;
+    const had = process.env['NO_COLOR'];
+    try {
+      Object.defineProperty(process.stdout, 'isTTY', { value: true, configurable: true });
+      delete process.env['NO_COLOR'];
+      expect(buildContext(parse(['summary'])).context.colour).toBe(true);
+      process.env['NO_COLOR'] = '1';
+      expect(buildContext(parse(['summary'])).context.colour).toBe(false);
+      process.env['NO_COLOR'] = 'yes please';
+      expect(buildContext(parse(['summary'])).context.colour).toBe(false);
+    } finally {
+      Object.defineProperty(process.stdout, 'isTTY', { value: wasTTY, configurable: true });
+      if (had === undefined) delete process.env['NO_COLOR'];
+      else process.env['NO_COLOR'] = had;
+    }
+  });
+
+  it('labels every equivalent with its quantity, so two phone comparisons cannot contradict', async () => {
+    const result = await cli(['summary']);
+    expect(result.stdout).toMatch(/energy: about [\d.]+ /);
+    expect(result.stdout).toMatch(/carbon: about [\d.]+ /);
+  });
+});

@@ -42,6 +42,7 @@ export const SWITCH_FLAGS = new Set([
   'all',
   'verbose',
   'local',
+  'brief',
 ]);
 
 export const parseArgs = (argv: string[]): ParsedArgs => {

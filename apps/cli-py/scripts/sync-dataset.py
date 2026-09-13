@@ -27,6 +27,8 @@ repo = here.parent.parent.parent
 dataset_dir = repo / "packages" / "dataset"
 source = dataset_dir / "dist" / "dataset.json"
 target = here.parent / "src" / "betteruseofai" / "data" / "dataset.json"
+tokens_source = repo / "packages" / "tokens" / "tokens.json"
+tokens_target = here.parent / "src" / "betteruseofai" / "data" / "tokens.json"
 
 if not source.exists():
     sys.exit(f"No built dataset at {source}. Run: pnpm --filter @betteruseofai/dataset build")
@@ -51,3 +53,8 @@ if recomputed != bundle["sha256"]:
 target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copyfile(source, target)
 print(f"dataset {bundle['version']} ({bundle['sha256'][:12]}) copied into the python package")
+
+# The design tokens travel the same way, for the terminal block: the escape
+# codes and meter glyphs both tools print come from one file.
+shutil.copyfile(tokens_source, tokens_target)
+print("tokens.json copied into the python package")

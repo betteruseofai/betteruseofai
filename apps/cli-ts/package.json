@@ -4,9 +4,20 @@
   "description": "See the energy, water and carbon behind your own agent sessions. Everything is computed on your machine.",
   "license": "MIT",
   "type": "module",
-  "bin": { "betteruseofai": "./dist/cli.js" },
-  "files": ["dist"],
-  "keywords": ["llm", "energy", "water", "carbon", "claude-code", "codex"],
+  "bin": {
+    "betteruseofai": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "llm",
+    "energy",
+    "water",
+    "carbon",
+    "claude-code",
+    "codex"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
@@ -16,6 +27,7 @@
   "dependencies": {
     "@betteruseofai/core": "workspace:*",
     "@betteruseofai/dataset": "workspace:*",
-    "@betteruseofai/readers": "workspace:*"
+    "@betteruseofai/readers": "workspace:*",
+    "@betteruseofai/tokens": "workspace:*"
   }
 }

@@ -54,6 +54,9 @@ importers:
       '@betteruseofai/readers':
         specifier: workspace:*
         version: link:../../packages/readers
+      '@betteruseofai/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
 
   apps/extension:
     dependencies:

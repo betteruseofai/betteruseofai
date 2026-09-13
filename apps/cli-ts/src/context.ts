@@ -80,7 +80,12 @@ export const buildContext = (args: ParsedArgs): { context: Context; errors: stri
       since: resolveSince(flagString(args.flags, 'since'), now),
       until: flagString(args.flags, 'until'),
       json: flagBool(args.flags, 'json') || flagString(args.flags, 'format') === 'json',
-      colour: !flagBool(args.flags, 'no-color') && process.stdout.isTTY === true,
+      // NO_COLOR is the convention (no-color.org): any value at all switches
+      // colour off, and so does a pipe, and so does the flag.
+      colour:
+        !flagBool(args.flags, 'no-color') &&
+        !(process.env['NO_COLOR'] ?? '') &&
+        process.stdout.isTTY === true,
       ascii: flagBool(args.flags, 'ascii'),
       sources,
     },

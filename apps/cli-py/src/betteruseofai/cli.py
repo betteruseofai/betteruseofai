@@ -9,6 +9,7 @@ words.
 from __future__ import annotations
 
 import math
+import os
 import re
 import sys
 from datetime import datetime, timedelta, timezone
@@ -17,7 +18,14 @@ from typing import Any
 
 from .aggregate import Aggregate, aggregate, equivalents
 from .canonical import SCHEMA_VERSION, canonical_json, canonical_number
-from .engine import Range, downgrade_target, get_model, load_dataset, select_benchmark
+from .engine import (
+    Range,
+    downgrade_target,
+    get_model,
+    load_dataset,
+    load_tokens,
+    select_benchmark,
+)
 from .estimate import Estimate, UsageEvent, estimate
 from .readers import default_claude_dir, default_codex_dir, read_claude_code, read_codex
 from .recommender import create_recommender
@@ -29,7 +37,7 @@ VALUE_FLAGS = {
     "water-scope", "carbon-basis", "limit", "interval", "model", "depth",
 }  # fmt: skip
 SWITCH_FLAGS = {
-    "json", "no-color", "help", "version", "ascii", "cheap", "all", "verbose", "local",
+    "json", "no-color", "help", "version", "ascii", "cheap", "all", "verbose", "local", "brief",
 }  # fmt: skip
 
 WATER_SCOPES = ("on-site", "on-site + off-site", "lifecycle")
@@ -66,6 +74,7 @@ OPTIONS
   --now <iso>             Pretend it is this moment, so a fixture run is repeatable
   --ascii                 Avoid characters a plain terminal cannot draw
   --no-color              No escape codes
+  --brief                 On the session report, six lines and no tables
   --all                   Show the regions as well, on the models command
   --model <id>            The model a recommendation is measured against
   --depth <n>             How many turns into the conversation a prompt sits
@@ -203,7 +212,11 @@ class Context:
         self.since = resolve_since(flags.get("since"), self.now)
         self.until = flags.get("until")
         self.json = bool(flags.get("json")) or flags.get("format") == "json"
-        self.colour = not flags.get("no-color") and sys.stdout.isatty()
+        # NO_COLOR is the convention (no-color.org): any value at all switches
+        # colour off, and so does a pipe, and so does the flag.
+        self.colour = (
+            not flags.get("no-color") and not os.environ.get("NO_COLOR") and sys.stdout.isatty()
+        )
         self.ascii = bool(flags.get("ascii"))
         self.dir = flags.get("dir")
 
@@ -273,11 +286,46 @@ def emit_json(context: Context, body: dict[str, Any]) -> str:
     return canonical_json(payload(context, body)).rstrip("\n")
 
 
-_ANSI = {"dim": "\x1b[2m", "bold": "\x1b[1m", "green": "\x1b[32m", "yellow": "\x1b[33m"}
+# The escape codes come from the shared tokens, so the terminal reads from the
+# same file as the site and the extension. tokens.json says why the two colours
+# are green and yellow and never red.
+_TOKENS = load_tokens()
+_CODES: dict[str, int] = _TOKENS["terminal"]["codes"]
+_ANSI = {name: f"\x1b[{code}m" for name, code in _CODES.items()}
 
 
 def paint(context: Context, colour: str, text: str) -> str:
-    return f"{_ANSI[colour]}{text}\x1b[0m" if context.colour else text
+    return f"{_ANSI[colour]}{text}{_ANSI['reset']}" if context.colour else text
+
+
+def meter(share: float, ascii_only: bool) -> str:
+    """A ten-cell block meter for a share, the one bar the terminal draws."""
+    cells = max(0, min(10, int(share * 10 + 0.5)))
+    glyphs = _TOKENS["terminal"]["meter"]
+    on = glyphs["asciiFilled"] if ascii_only else glyphs["filled"]
+    off = glyphs["asciiEmpty"] if ascii_only else glyphs["empty"]
+    return on * cells + off * (10 - cells)
+
+
+_WORDS = [
+    "nought", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+    "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+    "nineteen", "twenty",
+]  # fmt: skip
+
+
+def words(value: int) -> str:
+    """Small numbers as words in prose, the way the style guide asks."""
+    return _WORDS[value] if 0 <= value < len(_WORDS) else str(value)
+
+
+def stale_note(source: dict[str, Any] | None, now: datetime) -> str:
+    """The note after a stale comparison, with its age worked out from the source date."""
+    try:
+        year = int(str((source or {}).get("date", ""))[:4])
+    except ValueError:
+        return ", from a figure marked stale"
+    return f", from a figure now {words(now.year - year)} years old"
 
 
 def display_number(value: float) -> str:
@@ -531,9 +579,15 @@ def cmd_summary(context: Context, args: dict[str, Any]) -> str:
         found = equivalents(value, quantity, context.dataset, 1)
         if found:
             one = found[0]
-            note = ", from a figure now seventeen years old" if one["stale"] else ""
+            # Each comparison names its quantity, so an energy comparison and a
+            # carbon comparison in one list stop reading as a contradiction.
+            note = stale_note(one.get("source"), context.now) if one["stale"] else ""
             lines.append(
-                paint(context, "dim", f"          about {one['count']:.1f} {one['label']}{note}")
+                paint(
+                    context,
+                    "dim",
+                    f"          {quantity}: about {one['count']:.1f} {one['label']}{note}",
+                )
             )
 
     lines.append("")
@@ -696,8 +750,45 @@ def cmd_session(context: Context, args: dict[str, Any]) -> str:
             },
         )
 
+    session_id = mine[0][0].session_id or wanted
+    notes = caveats(context, totals)
+
+    # Six lines or fewer. The three figures, the model that did most of the
+    # work as a share, and a count of the caveats the full report carries.
+    if args["flags"].get("brief"):
+        brief = [
+            paint(
+                context,
+                "bold",
+                f"Session {session_id} · {totals.count} turns · "
+                f"{totals.from_[:16].replace('T', ' ')} to {totals.to[11:16]} UTC",
+            ),
+            *readout(context, totals),
+        ]
+        priced = sorted(
+            [one for one in by_model if one.energy_wh is not None],
+            key=lambda one: -one.energy_wh.central,
+        )
+        if priced and totals.energy_wh and totals.energy_wh.central > 0:
+            top = priced[0]
+            share = top.energy_wh.central / totals.energy_wh.central
+            name = (get_model(top.key, context.dataset) or {}).get("displayName", top.key)
+            brief.append(
+                f"  {name}  {meter(share, context.ascii)}  {int(share * 100 + 0.5)}% of the energy"
+            )
+        if not notes:
+            tail = f'  No caveats. Run "betteruseofai session {session_id}" for the whole report.'
+        else:
+            noun = "caveat" if len(notes) == 1 else "caveats"
+            tail = (
+                f'  {len(notes)} {noun}. Run "betteruseofai session {session_id}" '
+                "for the whole report."
+            )
+        brief.append(paint(context, "dim", tail))
+        return "\n".join(brief)
+
     lines = [
-        paint(context, "bold", f"Session {mine[0][0].session_id or wanted}"),
+        paint(context, "bold", f"Session {session_id}"),
         paint(
             context,
             "dim",
@@ -761,7 +852,6 @@ def cmd_session(context: Context, args: dict[str, Any]) -> str:
             )
         )
 
-    notes = caveats(context, totals)
     if notes:
         lines.append("")
         lines.extend(notes)

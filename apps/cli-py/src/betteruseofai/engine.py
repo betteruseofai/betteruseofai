@@ -84,6 +84,18 @@ def load_dataset(path: str | Path | None = None) -> dict[str, Any]:
         return json.load(handle)
 
 
+def load_tokens() -> dict[str, Any]:
+    """Read the design tokens vendored beside the dataset.
+
+    Only the terminal block is used here: the escape codes and the meter
+    glyphs, so the two tools and the website read their colours from one file.
+    """
+    with resources.files("betteruseofai.data").joinpath("tokens.json").open(
+        "r", encoding="utf-8"
+    ) as handle:
+        return json.load(handle)
+
+
 _SYNTHETIC = {"<synthetic>", "synthetic"}
 
 

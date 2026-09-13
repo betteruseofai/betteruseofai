@@ -368,6 +368,23 @@
         "12",
         "Rewrite that last paragraph more plainly."
       ]
+    },
+    {
+      "name": "session-alpha-brief",
+      "why": "The six line report, compared as text: the meter, the rounding of the share and every readout line have to match byte for byte.",
+      "argv": [
+        "session",
+        "session-alpha",
+        "--brief",
+        "--no-color",
+        "--ascii",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
     }
   ]
 }

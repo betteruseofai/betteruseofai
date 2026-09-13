@@ -43,6 +43,7 @@ OPTIONS
   --depth <n>             How many turns into the conversation a prompt sits
   --local                 Say that you run models locally, so that can be suggested
   --cheap                 On the status line, read the cached total and parse nothing
+  --brief                 On the session report, six lines and no tables
   -h, --help              This text
   -v, --version           The version and the dataset it ships with
 
@@ -67,9 +68,12 @@ export const COMMAND_HELP: Record<string, string> = {
 
   The report for one session: what it cost, which model did most of it, its
   heaviest turns, and why the figures are uncertain. A partial id is enough.
+  With --brief it is six lines: the three figures, the model that did most of
+  the work, and how many caveats the full report carries.
 
   betteruseofai sessions
   betteruseofai session ba71e9d8
+  betteruseofai session ba71e9d8 --brief
 `,
   export: `betteruseofai export
 

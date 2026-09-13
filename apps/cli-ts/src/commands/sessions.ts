@@ -1,9 +1,10 @@
 import { aggregate, equivalents, explainFlags, formatRange, getModel } from '@betteruseofai/core';
 
+import { flagBool } from '../args.js';
 import type { ParsedArgs } from '../args.js';
 import type { Context } from '../context.js';
 import { loadEvents } from '../context.js';
-import { caveats, emitJson, paint, rangeOut, readout, short, table } from '../output.js';
+import { caveats, emitJson, meter, paint, rangeOut, readout, short, table } from '../output.js';
 
 /** Every session, newest last, with what each one cost. */
 export const sessions = async (context: Context, args: ParsedArgs): Promise<string> => {
@@ -105,8 +106,48 @@ export const session = async (context: Context, args: ParsedArgs): Promise<strin
     });
   }
 
+  const id = mine[0]?.event.sessionId ?? wanted;
+  const notes = caveats(context, totals);
+
+  /*
+   * Six lines or fewer. The three figures, the model that did most of the
+   * work as a share, and a count of the caveats the full report carries. The
+   * caveats are counted rather than cut, because a short report that hides
+   * them is the one thing this tool must not print.
+   */
+  if (flagBool(args.flags, 'brief')) {
+    const brief: string[] = [
+      paint(
+        context,
+        'bold',
+        `Session ${id} · ${totals.count} turns · ${totals.from.slice(0, 16).replace('T', ' ')} to ${totals.to.slice(11, 16)} UTC`,
+      ),
+      ...readout(context, totals),
+    ];
+    const top = [...byModel]
+      .filter((one) => one.energyWh !== null)
+      .sort((a, b) => (b.energyWh?.central ?? 0) - (a.energyWh?.central ?? 0))[0];
+    if (top && totals.energyWh && totals.energyWh.central > 0) {
+      const share = (top.energyWh?.central ?? 0) / totals.energyWh.central;
+      const name = getModel(top.key, context.dataset)?.displayName ?? top.key;
+      brief.push(
+        `  ${name}  ${meter(share, context.ascii)}  ${Math.floor(share * 100 + 0.5)}% of the energy`,
+      );
+    }
+    brief.push(
+      paint(
+        context,
+        'dim',
+        notes.length === 0
+          ? `  No caveats. Run "betteruseofai session ${id}" for the whole report.`
+          : `  ${notes.length} ${notes.length === 1 ? 'caveat' : 'caveats'}. Run "betteruseofai session ${id}" for the whole report.`,
+      ),
+    );
+    return brief.join('\n');
+  }
+
   const lines: string[] = [];
-  lines.push(paint(context, 'bold', `Session ${mine[0]?.event.sessionId ?? wanted}`));
+  lines.push(paint(context, 'bold', `Session ${id}`));
   lines.push(
     paint(
       context,
@@ -178,7 +219,6 @@ export const session = async (context: Context, args: ParsedArgs): Promise<strin
     );
   }
 
-  const notes = caveats(context, totals);
   if (notes.length > 0) {
     lines.push('');
     lines.push(...notes);
