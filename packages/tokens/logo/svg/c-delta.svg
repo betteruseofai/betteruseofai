@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Better Use of AI, C. The delta">
+  <path d="M8 14.5 V9.5" />
+  <path d="M8 9.5 L4.5 6 V3.5 M8 9.5 V3.5 M8 9.5 L11.5 6 V3.5" />
+  <circle cx="4.5" cy="2.5" r="1" fill="currentColor" stroke="none" />
+  <circle cx="8" cy="2.5" r="1" fill="currentColor" stroke="none" />
+  <circle cx="11.5" cy="2.5" r="1" fill="currentColor" stroke="none" />
+</svg>

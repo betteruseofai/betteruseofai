@@ -1,180 +1,184 @@
 #!/usr/bin/env node
 /**
- * Three routes for the mark, drawn as cell grids.
+ * Three directions for the mark, drawn by hand as monoline SVG.
  *
- * The hardest size decides the design: a 16 px favicon is about eight cells
- * across, and eight is exactly the width of the Bayer tile the dithering
- * already uses. So the mark is one tile. Every cell is a whole square, every
- * square lands on a whole pixel at 16, 48 and 128, and nothing needs a hint or
- * a special small version.
+ * The three cell-grid routes of 2026-09-12 (now under superseded/) put the
+ * project's dither mechanism at eight cells and read as texture rather than as
+ * a mark. These are drawn as shapes instead, each one form that reads two ways,
+ * which is the whole brand: nature and silicon on one geometry.
  *
- * Each route is generated from a rule rather than drawn by hand, so the
- * reasoning is in the file rather than in a pixel nobody can explain later.
+ * Sixteen pixels first. Every direction is designed on a 16 unit box with a
+ * 1.5 unit stroke, so the toolbar icon is the drawing and every larger size is
+ * the same drawing scaled. Strokes sit on half units where a horizontal or
+ * vertical run needs to land on whole pixels at 16.
+ *
+ * The SVG uses currentColor, so one file is the mark in ink on paper, in paper
+ * on ink, in the toolbar mid-tone, and in the accent on a button. The sheet
+ * renders each direction at six sizes in both themes, on both Chrome toolbar
+ * tones in the mid-tone colour, and inside a circular crop with the two-cell
+ * margin the avatar export uses.
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const N = 8;
+const tokens = JSON.parse(readFileSync(join(here, '..', 'tokens.json'), 'utf8'));
 
-/** The same ordered dither the backdrop and the extension use. */
-const BAYER = [
-  0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28,
-  52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7,
-  39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
+const STROKE = 1.5;
+
+/** Wraps a body in the 16 unit frame the three share. */
+const frame = (body, { pad = 0, title }) => {
+  const size = 16 + pad * 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${size} ${size}" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Better Use of AI, ${title}">
+${body}
+</svg>
+`;
+};
+
+/*
+ * A. The wafer.
+ *
+ * Two rings and a centre around one point, with a flat cut across the bottom
+ * of the outer ring. A ripple where a drop landed, a tree's rings, and a
+ * silicon wafer, which has that flat edge so a machine can tell which way it
+ * is facing. The flat is the whole tell: without it this is any set of rings;
+ * with it, it is a wafer to anyone who has seen one and a still pond to anyone
+ * who has not.
+ */
+const wafer = `  <path d="M3.9 12.5 A6.25 6.25 0 1 1 12.1 12.5 Z" />
+  <circle cx="8" cy="8" r="3.1" />
+  <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />`;
+
+/*
+ * B. The die.
+ *
+ * A square with one corner drawn to a point, and inside it a midrib running to
+ * that point with veins leaving it at right angles. The outline is a die, and
+ * the point is where a leaf ends; the veins are the venation of the leaf and
+ * the routing of the chip, and they are the same lines. Read the square first
+ * and it is a floorplan. Read the point first and it is a leaf.
+ */
+const die = `  <path d="M2.5 5.5 V13.5 H10.5 L13.5 10.5 V2.5 H5.5 Z" />
+  <path d="M3.5 12.5 L12.6 3.4" />
+  <path d="M6 10 L6 7.5 M8 8 L8 5 M10 6 L10 4.5" />
+  <path d="M6 10 L8.5 10 M8 8 L11 8 M10 6 L11.5 6" />`;
+
+/*
+ * C. The delta.
+ *
+ * One stem that divides into three channels at forty-five degrees, each
+ * ending in a pad. A river reaching the sea, and the fan-out from a single pin
+ * on a board, drawn with the same turns. It is the most literal statement of
+ * one thing feeding many, which is what a prompt does on the way to a data
+ * centre.
+ */
+const delta = `  <path d="M8 14.5 V9.5" />
+  <path d="M8 9.5 L4.5 6 V3.5 M8 9.5 V3.5 M8 9.5 L11.5 6 V3.5" />
+  <circle cx="4.5" cy="2.5" r="1" fill="currentColor" stroke="none" />
+  <circle cx="8" cy="2.5" r="1" fill="currentColor" stroke="none" />
+  <circle cx="11.5" cy="2.5" r="1" fill="currentColor" stroke="none" />`;
+
+export const DIRECTIONS = [
+  {
+    id: 'a-wafer',
+    name: 'A. The wafer',
+    body: wafer,
+    glyph: '◎',
+    ascii: '(o)',
+    line: 'Rings around one point with a wafer flat across the bottom: a ripple, tree rings and a silicon wafer at once, and round enough to survive any crop.',
+  },
+  {
+    id: 'b-die',
+    name: 'B. The die',
+    body: die,
+    glyph: '◩',
+    ascii: '[/]',
+    line: 'A die with one corner drawn to a leaf tip, and a midrib whose veins leave at right angles: venation that is also routing.',
+  },
+  {
+    id: 'c-delta',
+    name: 'C. The delta',
+    body: delta,
+    glyph: 'ʸ',
+    ascii: '\\|/',
+    line: 'One stem dividing into three channels at forty-five degrees, each ending in a pad: a river delta and fan-out from a single pin.',
+  },
 ];
-
-const threshold = (x, y) => (BAYER[(y % N) * N + (x % N)] + 0.5) / 64;
-
-/**
- * A. The diagonal.
- *
- * Density runs from full in the top left to empty in the bottom right, passed
- * through the dither. One grid, solid at one corner and open at the other,
- * with the ordered grain visible in between. This is the project's whole
- * mechanism at eight cells.
- */
-const diagonal = (x, y) => {
-  // A steeper ramp than a plain average, so one corner is unambiguously solid
-  // and the other unambiguously empty. The first version spread the gradient
-  // so evenly that the mark read as noise at every size.
-  const t = (x + y) / (2 * (N - 1));
-  const density = Math.min(1, Math.max(0, 1.35 - t * 1.7));
-  return density > threshold(x, y);
-};
-
-/**
- * B. The seam.
- *
- * Left is organic: a mass that thins upward, irregular. Right is ordered: a
- * lattice of pads on a fixed pitch. They meet in a dithered seam down the
- * middle. The most literal reading of nature becoming infrastructure.
- */
-const seam = (x, y) => {
-  // Left: a solid mass, tapering. Right: a lattice on a fixed pitch. The
-  // point is that the left is unbroken and the right is regular, so the
-  // crossfade between them is the only place the dither shows.
-  const organic = x < 3 ? 1 : Math.max(0, 1 - (x - 2) / 3);
-  const ordered = x % 2 === 1 && y % 2 === 0 ? 1 : 0;
-  const across = Math.min(1, Math.max(0, (x - 2) / 3.5));
-  const density = organic * (1 - across) + ordered * across;
-  return density > threshold(x, y);
-};
-
-/**
- * C. The strata.
- *
- * Irregular grain at the top settling into ruled layers at the bottom: soil
- * becoming wafer, read downward. The only route with a clear up and down,
- * which is either an advantage or a liability depending on where it sits.
- */
-const strata = (x, y) => {
-  // Below the line: ruled layers with vias tying them together, the way a die
-  // reads in cross section. Solid slabs were too blunt and swallowed the grain
-  // above them.
-  if (y === 5) return true;
-  if (y === 6) return x % 3 === 1;
-  if (y === 7) return true;
-  // Above it: grain, thinning upward.
-  const density = 0.82 - y * 0.14;
-  return density > threshold(x, y * 3 + 1);
-};
-
-const ROUTES = [
-  { id: 'a-diagonal', name: 'A. The diagonal', cells: diagonal, glyph: '▓░' },
-  { id: 'b-seam', name: 'B. The seam', cells: seam, glyph: '█▒' },
-  { id: 'c-strata', name: 'C. The strata', cells: strata, glyph: '▒≡' },
-];
-
-const grid = (route) => {
-  const rows = [];
-  for (let y = 0; y < N; y += 1) {
-    const row = [];
-    for (let x = 0; x < N; x += 1) row.push(route.cells(x, y) ? 1 : 0);
-    rows.push(row);
-  }
-  return rows;
-};
-
-/**
- * One rect per filled cell, merged along each row into runs.
- *
- * Fewer paths, and it keeps every edge on a whole coordinate, which is what
- * stops a 16 px render going soft.
- */
-const toSvg = (rows, { colour = 'currentColor', pad = 0 } = {}) => {
-  const size = N + pad * 2;
-  const parts = [];
-  rows.forEach((row, y) => {
-    let run = 0;
-    for (let x = 0; x <= N; x += 1) {
-      if (row[x] === 1) {
-        run += 1;
-        continue;
-      }
-      if (run > 0) {
-        parts.push(`M${x - run + pad} ${y + pad}h${run}v1h-${run}z`);
-        run = 0;
-      }
-    }
-  });
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" shape-rendering="crispEdges" role="img" aria-label="Better Use of AI"><path fill="${colour}" d="${parts.join('')}"/></svg>\n`;
-};
 
 mkdirSync(join(here, 'svg'), { recursive: true });
 
-const sheets = ROUTES.map((route) => {
-  const rows = grid(route);
-  const svg = toSvg(rows, { pad: 1 });
-  writeFileSync(join(here, 'svg', `${route.id}.svg`), svg, 'utf8');
-  const filled = rows.flat().filter(Boolean).length;
-  return { route, rows, svg, filled };
-});
+for (const direction of DIRECTIONS) {
+  writeFileSync(join(here, 'svg', `${direction.id}.svg`), frame(direction.body, { title: direction.name }), 'utf8');
+  // The avatar export: a two unit margin so the circle a service crops to
+  // clears every stroke.
+  writeFileSync(join(here, 'svg', `${direction.id}-avatar.svg`), frame(direction.body, { pad: 2, title: direction.name }), 'utf8');
+}
 
-// A comparison sheet, so the three can be judged at the sizes that matter
-// rather than at the size they were drawn.
-const swatch = (sheet, px) =>
-  `<span class="shot" style="--px:${px}px">${sheet.svg.replace('<svg', '<svg class="mark"')}</span>`;
+// --------------------------------------------------------------- the sheet
 
-const block = (sheet) => `
+const light = tokens.colour.light;
+const dark = tokens.colour.dark;
+const inline = (direction, pad = 0) => frame(direction.body, { pad, title: direction.name }).replace('<svg', '<svg class="mark"');
+
+const sizes = [16, 24, 32, 48, 64, 128];
+
+const block = (direction) => `
   <section class="route">
-    <h2>${sheet.route.name}</h2>
-    <p class="meta">${sheet.filled} of 64 cells filled &middot; terminal: <b>${sheet.route.glyph}</b></p>
-    <div class="sizes">
-      ${[16, 24, 32, 48, 64, 128].map((px) => `<div><span class="label">${px}</span>${swatch(sheet, px)}</div>`).join('')}
+    <h2>${direction.name}</h2>
+    <p class="line">${direction.line}</p>
+    <div class="row">
+      ${sizes.map((px) => `<div class="cell"><span class="label">${px}</span><span class="shot" style="--px:${px}px">${inline(direction)}</span></div>`).join('')}
+      <div class="cell"><span class="label">terminal</span><span class="glyph">${direction.glyph}</span><span class="glyph ascii">${direction.ascii}</span></div>
     </div>
-    <pre class="ascii">${sheet.rows.map((row) => row.map((on) => (on ? '██' : '··')).join('')).join('\n')}</pre>
+    <div class="row contexts">
+      <div class="cell"><span class="label">chrome light toolbar</span><span class="toolbar toolbar--light"><span class="shot" style="--px:16px">${inline(direction)}</span><span class="shot" style="--px:16px">${inline(direction)}</span></span></div>
+      <div class="cell"><span class="label">chrome dark toolbar</span><span class="toolbar toolbar--dark"><span class="shot" style="--px:16px">${inline(direction)}</span><span class="shot" style="--px:16px">${inline(direction)}</span></span></div>
+      <div class="cell"><span class="label">avatar crop, 2 unit margin</span><span class="avatar"><span class="shot" style="--px:64px">${inline(direction, 2)}</span></span></div>
+      <div class="cell"><span class="label">on the accent</span><span class="onaccent"><span class="shot" style="--px:32px">${inline(direction)}</span></span></div>
+      <div class="cell"><span class="label">readme header</span><span class="header"><span class="shot" style="--px:28px">${inline(direction)}</span><span class="wordmark">Better Use of AI</span></span></div>
+    </div>
   </section>`;
 
-/*
- * One page, screenshotted twice with data-theme set on the root element.
- *
- * The first version put data-theme on a div, and tokens.css defines the dark
- * palette on :root, so the dark half was rendering the light palette against a
- * dark rectangle. It looked like the marks disappeared in dark; they had never
- * been drawn in dark at all.
- */
 const page = `<!doctype html>
-<html lang="en-GB"><head><meta charset="utf-8"><title>Marks</title>
+<html lang="en-GB"><head><meta charset="utf-8"><title>Three directions for the mark</title>
 <link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../fonts.css">
 <style>
   body { margin:0; font-family:var(--font-body); background:var(--bg); color:var(--ink); }
-  .sheet { max-width:1100px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+  .sheet { max-width:1180px; margin:0 auto; padding:2rem 1.5rem 3rem; }
   h1 { font-family:var(--font-display); text-transform:uppercase; font-size:2.4rem; margin:0 0 .4rem; }
+  .intro { max-width:62ch; color:var(--ink-2); margin:0 0 1.5rem; }
   h2 { font-family:var(--font-mono); font-size:.85rem; letter-spacing:.16em; text-transform:uppercase; margin:0 0 .3rem; }
-  .meta { font-family:var(--font-mono); font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin:0 0 1rem; }
+  .line { max-width:62ch; margin:0 0 1rem; color:var(--ink-2); font-size:.95rem; }
   .route { border-top:1px solid var(--hairline); padding:1.4rem 0; }
-  .sizes { display:flex; gap:1.6rem; align-items:flex-end; flex-wrap:wrap; }
-  .label { display:block; font-family:var(--font-mono); font-size:.65rem; color:var(--muted); margin-bottom:.4rem; }
-  .mark { width:var(--px); height:var(--px); color:var(--ink); display:block; }
-  .onaccent { background:var(--accent); padding:.5rem; display:inline-block; }
+  .row { display:flex; gap:1.6rem; align-items:flex-end; flex-wrap:wrap; margin-bottom:1rem; }
+  .cell { display:grid; gap:.4rem; justify-items:start; }
+  .label { font-family:var(--font-mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+  .shot { display:inline-block; width:var(--px); height:var(--px); }
+  .mark { width:100%; height:100%; display:block; color:var(--ink); }
+  .glyph { font-family:var(--font-mono); font-size:1.6rem; line-height:1; color:var(--ink); }
+  .ascii { font-size:1rem; color:var(--muted); }
+  /* Chrome's toolbar tones, and the mid-tone the icon ships in. */
+  .toolbar { display:inline-flex; gap:12px; padding:8px 12px; align-items:center; }
+  .toolbar--light { background:#f1f3f4; }
+  .toolbar--dark { background:#202124; }
+  .toolbar .shot:first-child .mark { color:${light.muted}; }
+  .toolbar .shot:last-child .mark { color:${light.accent}; }
+  .toolbar--dark .shot:first-child .mark { color:${dark.muted}; }
+  .toolbar--dark .shot:last-child .mark { color:${dark.accent}; }
+  .avatar { display:inline-block; width:64px; height:64px; border-radius:50%; overflow:hidden; background:var(--bg-sunken); }
+  .avatar .shot { display:block; }
+  .onaccent { display:inline-block; background:var(--accent); padding:8px; }
   .onaccent .mark { color:var(--bg); }
-  .ascii { font-family:var(--font-mono); font-size:.6rem; line-height:1; color:var(--hairline); margin:1rem 0 0; }
+  .header { display:inline-flex; align-items:center; gap:.6rem; }
+  .wordmark { font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:1.5rem; letter-spacing:.02em; }
 </style></head>
-<body><div class="sheet"><h1>Three marks</h1>${sheets.map(block).join('')}</div></body></html>`;
+<body><div class="sheet">
+  <h1>Three directions</h1>
+  <p class="intro">Each is one form that reads two ways. Drawn at sixteen pixels with a 1.5 unit stroke, and shown at the sizes that matter: the toolbar in both Chrome tones, a circular crop, the accent, and a README header. Nothing here is chosen yet.</p>
+  ${DIRECTIONS.map(block).join('')}
+</div></body></html>`;
 
 writeFileSync(join(here, 'sheet.html'), page, 'utf8');
-console.log(`${sheets.length} marks in packages/tokens/logo/svg, sheet at logo/sheet.html`);
-for (const sheet of sheets) console.log(`  ${sheet.route.id.padEnd(12)} ${sheet.filled}/64 cells`);
+console.log(`${DIRECTIONS.length} directions in packages/tokens/logo/svg, sheet at logo/sheet.html`);
