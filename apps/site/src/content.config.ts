@@ -1,35 +1,9 @@
-import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
-
 /**
- * Every entry carries a status, and the default is draft.
+ * No content collections at present.
  *
- * Nothing reaches a reader as finished work until somebody has read it, which
- * is a person's decision and not a build flag. src/lib/status.ts holds what
- * each status does.
+ * The site's own posts used to live here as a blog collection. They are now
+ * published on the contributors' Substacks and gathered onto the Writing page
+ * at build time by src/loaders/substack.ts, beside a reading list kept in
+ * src/data/reading.json. The pages themselves carry their own status.
  */
-const status = z.enum(['draft', 'review', 'published']).default('draft');
-
-const blog = defineCollection({
-  loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    date: z.coerce.date(),
-    updated: z.coerce.date().optional(),
-    authors: z.array(z.string()).default(['anirudh']),
-    tags: z.array(z.string()).default([]),
-    status,
-  }),
-});
-
-const authors = defineCollection({
-  loader: glob({ base: './src/content/authors', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    name: z.string(),
-    bio: z.string(),
-    links: z.record(z.string(), z.string()).default({}),
-  }),
-});
-
-export const collections = { blog, authors };
+export const collections = {};

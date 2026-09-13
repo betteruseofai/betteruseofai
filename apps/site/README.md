@@ -17,11 +17,21 @@ Every page and every post carries a `status` of `draft`, `review` or `published`
 has read it.
 
 A draft page still renders, with a banner across the top and `noindex` in the head, because a site
-missing its methodology page is worse than one with a banner on it. A draft post is different: it is
-simply absent from the listing on the production branch, and never enters the feed on any branch,
-because a reader's feed client keeps what it fetched.
+missing its methodology page is worse than one with a banner on it.
 
 `src/lib/status.ts` holds all of that. `REQUIRE_PUBLISHED=1` flips on at launch.
+
+## The Writing page
+
+There is no blog here. The people who make this publish on Substack, and `/blog` gathers those posts
+when the site is built: `src/loaders/substack.ts` reads each feed listed in `src/data/substacks.json`,
+parses it by hand, and falls back to `public/fallback/substack.json` when a feed cannot be reached or
+`BUAI_OFFLINE=1` is set, saying so on the page. A reader's browser never contacts Substack.
+
+Beneath the posts, `src/lib/reading.ts` lists the papers the dataset rests on, built from the
+benchmark rows' own citations, and whatever `src/data/reading.json` adds by hand. Titles quoted from
+elsewhere carry `buai-verbatim`, which the copy lint skips: another person's title is theirs to
+punctuate.
 
 ## Where the numbers come from
 

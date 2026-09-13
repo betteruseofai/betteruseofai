@@ -37,7 +37,6 @@ const PAGES = [
   ['privacy', '/privacy'],
   ['changelog', '/changelog'],
   ['blog', '/blog'],
-  ['post', '/blog/estimating-water-per-prompt'],
   ['design', '/design'],
   ['404', '/404'],
 ];

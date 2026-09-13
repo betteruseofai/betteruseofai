@@ -1,47 +1,171 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { postIsVisible, type Status } from '../../lib/status';
+import Index from '../../components/Index.astro';
+import { substackPosts } from '../../loaders/substack';
+import { readingList } from '../../lib/reading';
 
-const posts = (await getCollection('blog'))
-  .filter((post) => postIsVisible(post.data.status as Status))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+/**
+ * The Writing page is a hub, not a blog. Our own posts are published on
+ * Substack and gathered here when the site is built, beside the papers the
+ * dataset rests on and the writing elsewhere worth the time. A reader's
+ * browser fetches none of it from anyone but this site.
+ */
+const { posts, contributors, snapshotFrom } = await substackPosts();
+const reading = readingList();
+const papers = reading.filter((one) => one.kind === 'paper');
+const elsewhere = reading.filter((one) => one.kind !== 'paper');
+
+const byContributor = contributors.map((contributor) => ({
+  contributor,
+  posts: posts.filter((post) => post.contributor === contributor.name),
+}));
+
+const month = (iso: string): string => {
+  const [year, m] = iso.split('-');
+  const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const index = Number.parseInt(m ?? '', 10) - 1;
+  return names[index] ? `${names[index]} ${year}` : (year ?? iso);
+};
+
+const sections = 3;
 ---
 
 <Base
   title="Writing"
-  description="Notes on how the numbers are worked out, where they come from, and what they still get wrong."
+  description="Posts from the people who make this, published on Substack and gathered here; the papers the numbers rest on; and writing elsewhere worth the time."
   status="draft"
   here="/blog"
 >
   <section class="band band--first">
-    <h1 class="statement" style="font-size: var(--step-4); max-width: 18ch">Working notes.</h1>
+    <h1 class="statement" style="font-size: var(--step-4); max-width: 18ch">Writing, ours and others'.</h1>
     <p class="lede">
-      Mostly about method: how a figure was arrived at, which sources disagree, and what we changed
-      our minds about.
+      The people who make this publish on Substack, and this page gathers those posts when the site
+      is built. Beneath them, the papers every figure here rests on, and the writing elsewhere that
+      shaped the method. Nothing on this page is fetched by your browser from anyone but us.
     </p>
   </section>
 
   <section class="band">
+    <div class="band__head">
+      <Index n={1} of={sections} />
+      <h2 class="band__title">From the contributors</h2>
+    </div>
+
     {
-      posts.length === 0 ? (
-        <p class="note">Nothing published yet.</p>
+      contributors.length === 0 ? (
+        <p class="measure">
+          No contributor feeds are listed yet. When one is, its posts appear here, read from the
+          Substack feed when this site is built and never from your browser. The list lives in the
+          repository at <code>apps/site/src/data/substacks.json</code>.
+        </p>
       ) : (
-        <ul class="postlist">
-          {posts.map((post) => (
-            <li>
-              <a href={`/blog/${post.id}`}>
-                <span class="postlist__date">{post.data.date.toISOString().slice(0, 10)}</span>
-                <span class="postlist__title">{post.data.title}</span>
-                <span class="postlist__desc">{post.data.description}</span>
-                {post.data.status !== 'published' ? (
-                  <span class="postlist__flag">{post.data.status}</span>
-                ) : null}
-              </a>
-            </li>
-          ))}
-        </ul>
+        byContributor.map(({ contributor, posts: theirs }) => (
+          <div class="hub__contributor">
+            <p class="note">
+              <a href={contributor.url} rel="external">{contributor.name}</a>
+            </p>
+            {theirs.length === 0 ? (
+              <p class="measure">Nothing published yet.</p>
+            ) : (
+              <ul class="postlist">
+                {theirs.map((post) => (
+                  <li>
+                    <a href={post.url} rel="external">
+                      <span class="postlist__date">{post.date}</span>
+                      <span class="postlist__title buai-verbatim">{post.title}</span>
+                      <span class="postlist__desc buai-verbatim">{post.summary}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))
       )
     }
+
+    {
+      snapshotFrom ? (
+        <p class="note" style="margin-top: var(--space-4)">
+          Read from a snapshot taken on {snapshotFrom}, because a feed could not be reached when this
+          page was built.
+        </p>
+      ) : null
+    }
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={2} of={sections} />
+      <h2 class="band__title">The papers the numbers rest on</h2>
+    </div>
+
+    <p class="measure">
+      Every benchmark row in the dataset cites its source, and this list is built from those
+      citations, so it cannot say something the <a href="/methodology">method page</a> does not.
+      Where a paper is listed but no row rests on it yet, it says so.
+    </p>
+
+    <ul class="postlist hub__list">
+      {
+        papers.map((one) => (
+          <li>
+            <a href={one.url} rel="external">
+              <span class="postlist__date">{month(one.date)}</span>
+              <span class="postlist__title buai-verbatim">{one.title}</span>
+              <span class="postlist__desc">
+                <span class="buai-verbatim">{one.authors ? `${one.authors}. ` : ''}{one.publisher}.</span>
+                {one.about ? <span class="hub__about"> {one.about}</span> : null}
+              </span>
+              <span class="postlist__flag hub__rows">
+                {one.rows.length === 0
+                  ? 'no row yet'
+                  : `${one.rows.length} ${one.rows.length === 1 ? 'row' : 'rows'}`}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={sections} />
+      <h2 class="band__title">Writing elsewhere</h2>
+    </div>
+
+    <p class="measure">
+      Posts, statements and reports from providers and researchers that the dataset draws on or
+      that shaped how this project thinks. A provider's own statement is listed as what it is, and
+      the method page scores it accordingly.
+    </p>
+
+    <ul class="postlist hub__list">
+      {
+        elsewhere.map((one) => (
+          <li>
+            <a href={one.url} rel="external">
+              <span class="postlist__date">{month(one.date)}</span>
+              <span class="postlist__title buai-verbatim">{one.title}</span>
+              <span class="postlist__desc">
+                <span class="buai-verbatim">{one.publisher}.</span>
+                {one.about ? <span class="hub__about"> {one.about}</span> : null}
+              </span>
+              <span class="postlist__flag hub__rows">
+                {one.rows.length === 0
+                  ? one.kind
+                  : `${one.rows.length} ${one.rows.length === 1 ? 'row' : 'rows'}`}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="note" style="margin-top: var(--space-4)">
+      To add something here, edit <code>apps/site/src/data/reading.json</code> in the repository. A
+      public address, a publisher, a date and one sentence on what it is.
+    </p>
   </section>
 </Base>

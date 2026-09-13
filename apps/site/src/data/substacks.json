@@ -1,0 +1,4 @@
+{
+  "$comment": "The contributors whose Substack posts appear on the Writing page. Each needs a name and the Substack address; the build reads <url>/feed. Nothing here is fetched by a reader's browser. The list is empty until the first address is added.",
+  "contributors": []
+}

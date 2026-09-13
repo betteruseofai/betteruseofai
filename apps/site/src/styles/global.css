@@ -560,6 +560,29 @@
   align-self: center;
 }
 
+/* ----------------------------------------------------------------- hub --- */
+
+/* The Writing page. Titles quoted from elsewhere carry .buai-verbatim so the
+   copy lint leaves other people's punctuation alone. */
+.hub__contributor + .hub__contributor {
+  margin-top: var(--space-6);
+}
+
+.hub__about {
+  color: var(--ink-2);
+}
+
+.hub__rows {
+  color: var(--muted);
+}
+
+.postlist a[rel='external'] .postlist__title::after {
+  content: ' \2197';
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
 /* The footer lists are navigation, so they read as rules rather than bullets.
    Same reasoning as the rest of the system: no decoration that is not data. */
 .buai-footer ul {

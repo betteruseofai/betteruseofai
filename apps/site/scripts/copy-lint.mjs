@@ -45,6 +45,9 @@ const textOf = (html) =>
     // guide. "Assessing Energy, Water, and Carbon Footprint of LLM Inference"
     // is a paper, not a list of three that we chose to write.
     .replace(/<span class="buai-source__body">[\s\S]*?<\/span><\/details>/gi, ' ')
+    // Titles and bylines quoted from elsewhere, on the Writing page. Another
+    // person's title is theirs to punctuate, and a feed's summary is not ours.
+    .replace(/<span class="[^"]*buai-verbatim[^"]*">[\s\S]*?<\/span>/gi, ' ')
     // A summary is a heading by role. Emitting it as one keeps the FAQ out of
     // the rules aimed at body copy, where a question mark is the whole point.
     .replace(/<summary[^>]*>([\s\S]*?)<\/summary>/gi, '\n\n## $1\n\n')
@@ -145,6 +148,7 @@ const bodyCopy = (html) => {
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<(table|nav|footer|details)[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<span class="[^"]*buai-verbatim[^"]*">[\s\S]*?<\/span>/gi, ' ')
     // A dropdown's options are choices, not prose. Left in, the landing page's
     // one sentence reads as a thirty-nine word run of every model name.
     .replace(/<select[\s\S]*?<\/select>/gi, ' ');

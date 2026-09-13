@@ -1,0 +1,35 @@
+{
+  "$comment": "Writing and research found elsewhere that the Writing page lists beside the dataset's own sources. Every entry needs a public URL, a publisher, a date and one sentence saying what it is. kind is paper, post or report. These first three come from the research appendix in PLAN.md and are not yet rows in the dataset.",
+  "entries": [
+    {
+      "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
+      "authors": "Pengfei Li, Jianyi Yang, Mohammad A. Islam and Shaolei Ren",
+      "publisher": "arXiv, and Communications of the ACM",
+      "date": "2023-04",
+      "url": "https://arxiv.org/abs/2304.03271",
+      "kind": "paper",
+      "about": "The framework this project uses for water: on-site cooling, off-site generation, and the difference between consumption and withdrawal.",
+      "provenance": "source-appendix"
+    },
+    {
+      "title": "Power Hungry Processing: Watts Driving the Cost of AI Deployment?",
+      "authors": "Sasha Luccioni, Yacine Jernite and Emma Strubell",
+      "publisher": "arXiv, FAccT 2024",
+      "date": "2023-11",
+      "url": "https://arxiv.org/abs/2311.16863",
+      "kind": "paper",
+      "about": "Measured energy per thousand inferences across tasks, and the finding that image generation costs orders of magnitude more than text.",
+      "provenance": "source-appendix"
+    },
+    {
+      "title": "GPTFootprint",
+      "authors": "Various",
+      "publisher": "arXiv, CHI EA 2025",
+      "date": "2025-05",
+      "url": "https://arxiv.org/abs/2505.24107",
+      "kind": "paper",
+      "about": "A browser extension that shows the footprint of ChatGPT use, and a study of whether seeing it changes behaviour. Prior art this project credits.",
+      "provenance": "source-appendix"
+    }
+  ]
+}

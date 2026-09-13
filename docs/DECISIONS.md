@@ -105,6 +105,15 @@ against. The decisions taken on it, on 2026-09-13:
     rewritten in the project's voice, with the Covenant credited under CC BY 4.0. Asked for by
     the owner on 2026-09-13.
 
+40. **The Writing page is a hub, not a blog.** The site's own two seed posts were removed; the
+    people who make this publish on Substack, and the build reads each contributor's feed
+    (`apps/site/src/loaders/substack.ts`, list in `src/data/substacks.json`, committed snapshot
+    as the fallback, offline in CI) and ships the posts as plain text. Beneath them, the papers the
+    dataset rests on, built from the benchmark rows' own citations so the list cannot drift from
+    the method page, and a hand-kept list in `src/data/reading.json` for writing found elsewhere.
+    The site's RSS feed and the `@astrojs/rss` dependency went with the posts; `/feed` now lands on
+    the hub. Asked for on 2026-09-13.
+
 ## Still open
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.

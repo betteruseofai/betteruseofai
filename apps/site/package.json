@@ -11,14 +11,13 @@
     "typecheck": "astro check --minimumSeverity error",
     "shots": "node scripts/shoot.mjs",
     "copy": "node scripts/copy-lint.mjs",
-    "test": "node scripts/copy-lint.mjs",
+    "test": "vitest run --config vitest.unit.config.ts && node scripts/copy-lint.mjs",
     "test:browser": "vitest run",
     "shots:dither": "node scripts/shoot-dither.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
     "@astrojs/preact": "^6.0.5",
-    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "@betteruseofai/core": "workspace:*",
     "@betteruseofai/dataset": "workspace:*",
