@@ -6,13 +6,14 @@
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/headers.mjs",
+    "build": "astro build && node scripts/weigh.mjs && node scripts/headers.mjs",
     "preview": "astro preview",
     "typecheck": "astro check --minimumSeverity error",
     "shots": "node scripts/shoot.mjs",
     "copy": "node scripts/copy-lint.mjs",
     "test": "node scripts/copy-lint.mjs",
-    "test:browser": "vitest run"
+    "test:browser": "vitest run",
+    "shots:dither": "node scripts/shoot-dither.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",

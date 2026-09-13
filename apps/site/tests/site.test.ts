@@ -350,3 +350,93 @@ describe('the budgets', () => {
     expect(total).toBeLessThan(250 * 1024);
   });
 });
+
+describe('the backdrop', () => {
+  it('prints its own weight in the footer', async () => {
+    if (skip()) return;
+    const { page } = await open('/');
+    // The footer says what the page weighs, filled in after the build.
+    const strip = (await page.textContent('.buai-metastrip')) ?? '';
+    expect(strip).toMatch(/\d+ kB over the wire/);
+    await page.close();
+  }, 60000);
+
+  it('holds still when asked, and remembers', async () => {
+    if (skip()) return;
+    const { page } = await open('/');
+    await page.click('[data-still-toggle]');
+    expect(await page.getAttribute('html', 'data-still')).toBe('1');
+    expect(await page.getAttribute('[data-dither]', 'data-ended')).toBe('1');
+    expect((await page.textContent('[data-still-toggle]'))?.trim()).toBe('Motion');
+    await page.reload({ waitUntil: 'networkidle' });
+    expect(await page.getAttribute('html', 'data-still')).toBe('1');
+    // With the toggle on, the caret stands and the stage does not swell.
+    const swell = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('[data-dither]') as Element).getPropertyValue('--swell').trim(),
+    );
+    expect(Number.parseFloat(swell)).toBe(0);
+    await page.close();
+  }, 60000);
+
+  it('holds the composed ending under reduced motion', async () => {
+    if (skip()) return;
+    const context = await browser!.newContext({ reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+    expect(await page.getAttribute('[data-dither]', 'data-ended')).toBe('1');
+    const caption = (await page.textContent('[data-dither-caption]')) ?? '';
+    expect(caption).toContain('V ·');
+    await context.close();
+  }, 60000);
+});
+
+describe('the performance budgets that need a browser', () => {
+  /*
+   * Soft by default: the numbers are printed on every run and only fail the
+   * build when BUAI_PERF_STRICT is set, because a shared CI machine can turn
+   * a frame budget into a coin toss. On this machine, over the loopback
+   * address, the landing page paints its largest element well under a second.
+   */
+  it('reports the largest contentful paint and the frame rate of the backdrop', async () => {
+    if (skip()) return;
+    const page = await browser!.newPage();
+    await page.goto(`${base}/`, { waitUntil: 'load' });
+    const lcp = await page.evaluate(
+      () =>
+        new Promise<number>((resolve) => {
+          let latest = 0;
+          const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) latest = entry.startTime;
+          });
+          observer.observe({ type: 'largest-contentful-paint', buffered: true });
+          setTimeout(() => {
+            observer.disconnect();
+            resolve(latest);
+          }, 1500);
+        }),
+    );
+    const frames = await page.evaluate(
+      () =>
+        new Promise<number[]>((resolve) => {
+          const gaps: number[] = [];
+          let last = performance.now();
+          const tick = (now: number) => {
+            gaps.push(now - last);
+            last = now;
+            if (gaps.length < 90) requestAnimationFrame(tick);
+            else resolve(gaps);
+          };
+          requestAnimationFrame(tick);
+        }),
+    );
+    const sorted = [...frames].sort((a, b) => a - b);
+    const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? 0;
+    // eslint-disable-next-line no-console
+    console.log(`  landing: LCP ${Math.round(lcp)} ms, 95th percentile frame gap ${p95.toFixed(1)} ms`);
+    if (process.env['BUAI_PERF_STRICT'] === '1') {
+      expect(lcp).toBeLessThan(2000);
+      expect(p95).toBeLessThan(34);
+    }
+    await page.close();
+  }, 60000);
+});

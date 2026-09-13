@@ -257,6 +257,121 @@
   color: var(--muted);
 }
 
+/* A note in body ink rather than muted, for where it sits over the dither
+   field: muted comes out at 3.76 to one on a filled cell and ink-2 at 9.3. */
+.note--ink {
+  color: var(--ink-2);
+}
+
+/* ---------------------------------------------------------------- cost --- */
+
+/*
+ * The cost diagram on the landing page: the prompt box at the right, and one
+ * routed trace running back through a fan-out to the three shapes it draws on.
+ * Drawn in the hairline grammar of the rest of the page. It does not move.
+ */
+.cost {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  color: var(--ink-2);
+  margin: var(--space-5) 0;
+}
+
+.cost__legend {
+  display: grid;
+  gap: var(--space-4) var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin: 0;
+  max-width: 720px;
+}
+
+.cost__legend dt {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-1);
+}
+
+.cost__legend dd {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------- steps --- */
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--measure);
+  counter-reset: step;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 3ch minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: var(--rule) solid var(--hairline);
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--accent);
+}
+
+.steps li:last-child {
+  border-bottom: var(--rule) solid var(--hairline);
+}
+
+/* --------------------------------------------------------------- proof --- */
+
+.proof {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 720px;
+}
+
+.proof li {
+  padding: var(--space-4) 0;
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.proof__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.proof__label {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.proof__figure {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-size: var(--step-1);
+  color: var(--ink);
+}
+
+.proof__figure small {
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
 /* Present to a screen reader, absent to the eye. Used where a decorative run
    of text would otherwise be read aloud several times over. */
 .buai-visually-hidden {
@@ -541,13 +656,15 @@
 /*
  * Names the pair currently on screen. Without it, soil strata and wafer layers
  * are both just stripes, and the claim the sequence is making does not land.
+ *
+ * Its position is fixed at the resting fade line and only its opacity follows
+ * the swell. It used to ride the fade line up and down, which meant a layout
+ * pass on every frame for one line of text; opacity is a compositor job.
  */
 .dither__caption {
   position: absolute;
   left: max(var(--gutter), calc(50vw - 590px + var(--gutter)));
-  /* Sits on the line where the field fades out, so it reads as a label for
-     what is above it rather than as a stray line of page furniture. */
-  top: calc(var(--reach) - 2.2rem);
+  top: calc(58% - 2.2rem);
   margin: 0;
   font-family: var(--font-mono);
   font-size: var(--step--2);
@@ -592,14 +709,57 @@
   padding-block-end: var(--space-6);
 }
 
+/*
+ * The caret over the drawn prompt box, shown once the sequence has ended and
+ * the composer is on screen. A CSS blink on the compositor: the one thing that
+ * still moves after the pass, and it costs nothing to run.
+ */
+.dither__caret {
+  position: absolute;
+  display: none;
+  left: var(--caret-x, 0);
+  top: var(--caret-y, 0);
+  width: var(--caret-w, 4px);
+  height: var(--caret-h, 12px);
+  background: var(--ink-2);
+  opacity: 0.85;
+  animation: caret-blink 1.1s steps(2, jump-none) infinite;
+}
+
+.dither[data-ended] .dither__caret {
+  display: block;
+}
+
+@keyframes caret-blink {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* With the still toggle on, the caret stands rather than blinks. */
+:root[data-still='1'] .dither__caret {
+  animation: none;
+}
+
+:root[data-still='1'] .dither {
+  --swell: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  /* The script holds one frame and never starts its clock. This keeps the
-     stage from swelling too, so nothing moves as the page is scrolled. */
+  /* The script holds the final frame and never starts its clock. This keeps
+     the stage from swelling too, so nothing moves as the page is scrolled. */
   .dither {
     --swell: 0;
   }
 
   .dither__caption {
     transition: none;
+  }
+
+  .dither__caret {
+    animation: none;
   }
 }

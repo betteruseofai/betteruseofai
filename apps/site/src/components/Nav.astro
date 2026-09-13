@@ -1,11 +1,12 @@
 ---
 /**
- * The top navigation. Four links and a theme toggle, on one rule.
+ * The top navigation. Five links and two toggles, on one rule.
  *
  * No dropdowns and no burger. At 390 px the links wrap onto a second row,
  * which is fine, and is why the brand sits on its own line there.
  */
 import ThemeToggle from './ThemeToggle.astro';
+import StillToggle from './StillToggle.astro';
 
 interface Props {
   here?: string;
@@ -31,5 +32,6 @@ const links = [
       </a>
     ))
   }
+  <StillToggle />
   <ThemeToggle />
 </nav>

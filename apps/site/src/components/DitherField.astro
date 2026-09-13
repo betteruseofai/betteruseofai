@@ -10,12 +10,17 @@
  *
  * With no JavaScript it renders nothing and the page reads exactly as it did
  * before, which is correct for a backdrop.
+ *
+ * The caret is the one moving thing left once the sequence has ended: a CSS
+ * blink over the cursor cell of the drawn prompt box. It costs nothing to run
+ * and stops with everything else under reduced motion or the still toggle.
  */
 ---
 
 <div class="dither" data-dither aria-hidden="true">
   <canvas class="dither__canvas" data-dither-canvas></canvas>
   <div class="dither__scrim"></div>
+  <span class="dither__caret"></span>
   <p class="dither__caption" data-dither-caption></p>
 </div>
 

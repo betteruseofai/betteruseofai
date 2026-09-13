@@ -21,7 +21,9 @@ NOW = "2026-09-15T12:00:00.000Z"
 
 
 def cli(*extra: str) -> tuple[str, str, int]:
-    return run([*extra, "--now", NOW, "--no-color", "--source", "claude-code", "--dir", str(CLAUDE_DIR)])
+    return run(
+        [*extra, "--now", NOW, "--no-color", "--source", "claude-code", "--dir", str(CLAUDE_DIR)]
+    )
 
 
 def test_brief_is_six_lines_or_fewer_and_counts_the_caveats() -> None:

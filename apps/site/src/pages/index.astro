@@ -9,6 +9,8 @@ import Redacted from '../components/Redacted.astro';
 import Tape from '../components/Tape.astro';
 import Faq from '../components/Faq.astro';
 import SourceChip from '../components/SourceChip.astro';
+import dataset from '../lib/dataset';
+import { displayNumber } from '@betteruseofai/core';
 import { CHOICES, PLACES, buildTable } from '../lib/landing';
 
 const table = buildTable();
@@ -19,6 +21,29 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
   value
     ? { low: value.low * start.prompts, central: value.central * start.prompts, high: value.high * start.prompts }
     : null;
+
+/*
+ * Every citation on this page is read out of the dataset row it rests on,
+ * rather than typed here. The first version linked the Google chip to a blog
+ * root instead of the paper, and nothing could have caught that.
+ */
+const row = (id: string) => dataset.benchmarks.find((one) => one.id === id);
+const google = row('google.gemini-apps.2025-median');
+const mistral = row('mistral.large-2.lca.2025');
+
+/*
+ * The same exchange, priced four ways. The ceiling is shared so the four bars
+ * can be read against each other, which is the whole point of showing them
+ * together: the gap between the rows is the one thing on this page anyone can
+ * act on.
+ */
+const proof = CHOICES.map((choice) => {
+  const one = table[`${choice.id}|${start.place}`]!;
+  return { choice, cell: one, row: one.rowId ? row(one.rowId) : undefined };
+});
+const ceiling = Math.max(...proof.map((one) => one.cell.energyWh?.high ?? 0));
+
+const sections = 7;
 ---
 
 <Base
@@ -36,7 +61,7 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
       <h1 class="statement">Your prompts have a water bill.</h1>
 
       <p class="dialer">
-      We send about
+      I send about
       <input
         type="number"
         min="1"
@@ -83,7 +108,7 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
       </div>
     </div>
 
-    <p class="note" style="margin-top: var(--space-5)" data-caveat>
+    <p class="note note--ink" style="margin-top: var(--space-5)" data-caveat>
       The spread is the disagreement between published measurements, not our own error bars.
     </p>
   </section>
@@ -92,7 +117,7 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
 
   <section class="band">
     <div class="band__head">
-      <Index n={1} of={6} />
+      <Index n={1} of={sections} />
       <h2 class="band__title">What the range is doing there</h2>
     </div>
 
@@ -101,17 +126,19 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
         Nobody outside the labs knows what a prompt costs. Google puts a median text prompt at
         0.24 Wh and 0.26 mL of water on site<SourceChip
           n="1"
-          title="Measuring the environmental impact of AI inference"
-          publisher="Google"
-          date="21 August 2025"
-          url="https://cloud.google.com/blog"
+          title={google?.source.title ?? 'Measuring the environmental impact of AI inference'}
+          publisher={google?.source.publisher ?? 'Google'}
+          date={google?.source.date ?? '2025-08-21'}
+          retrieved={google?.source.retrieved}
+          url={google?.source.url}
         />. A life cycle study of Mistral Large 2 lands nearer 45 mL for one page of
         text<SourceChip
           n="2"
-          title="Our contribution to a global environmental standard for AI"
-          publisher="Mistral, Carbone 4 and ADEME"
-          date="22 July 2025"
-          url="https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai"
+          title={mistral?.source.title ?? 'Our contribution to a global environmental standard for AI'}
+          publisher={mistral?.source.publisher ?? 'Mistral'}
+          date={mistral?.source.date ?? '2025-07-22'}
+          retrieved={mistral?.source.retrieved}
+          url={mistral?.source.url}
         />. Both are honest. They are counting different things across different boundaries.
       </p>
       <p>
@@ -129,8 +156,190 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
 
   <section class="band">
     <div class="band__head">
-      <Index n={2} of={6} />
-      <h2 class="band__title">Three ways in</h2>
+      <Index n={2} of={sections} />
+      <h2 class="band__title">What a prompt actually draws on</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        A prompt is a few hundred tokens leaving a box. Behind the box is a server drawing power, a
+        building keeping it cool, a grid making the electricity, and a power station using water
+        to make it. Further back still is the land the building stands on and the water that went
+        into the chips. The diagram traces the line back. What we count, we count with a source
+        beside it. What we cannot count is drawn without a number.
+      </p>
+    </div>
+
+    {/*
+      Decorative in the sense that the words beneath carry the meaning; the
+      picture is the same three shapes the backdrop uses, held still.
+    */}
+    <svg class="cost" viewBox="0 0 640 260" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <!-- the prompt box, and the cursor cell -->
+      <rect x="468" y="99" width="150" height="62" />
+      <rect x="480" y="111" width="5" height="20" fill="currentColor" stroke="none" />
+      <rect x="596" y="139" width="12" height="12" fill="currentColor" stroke="none" opacity="0.8" />
+
+      <!-- one trace out of the box, fanning to three -->
+      <path d="M468 130 H392" />
+      <circle cx="392" cy="130" r="3" fill="currentColor" stroke="none" />
+      <path d="M392 130 V50 H190" />
+      <path d="M392 130 H190" />
+      <path d="M392 130 V210 H190" />
+      <circle cx="190" cy="50" r="3" fill="currentColor" stroke="none" />
+      <circle cx="190" cy="130" r="3" fill="currentColor" stroke="none" />
+      <circle cx="190" cy="210" r="3" fill="currentColor" stroke="none" />
+
+      <!-- watts: a lattice, which is a rack and a grid at once -->
+      <g transform="translate(130 50)">
+        {[-40, -24, -8, 8, 24].map((x) =>
+          [-16, 0, 16].map((y) => <rect x={x} y={y - 4} width="8" height="8" fill="currentColor" stroke="none" opacity="0.85" />),
+        )}
+        <path d="M-52 -26 V26 M52 -26 V26 M-52 -26 H52 M-52 26 H52" opacity="0.7" />
+      </g>
+
+      <!-- water: rings, which are a ripple and a lithography pattern at once -->
+      <g transform="translate(130 130)">
+        <circle r="7" />
+        <circle r="16" opacity="0.85" />
+        <circle r="25" opacity="0.65" />
+        <circle r="34" opacity="0.45" />
+      </g>
+
+      <!-- land: strata, which are soil horizons and wafer layers at once -->
+      <g transform="translate(130 210)">
+        <path d="M-52 -24 H52 M-52 -8 H52 M-52 8 H52 M-52 24 H52" />
+        <path d="M-24 -24 V8 M16 -8 V24 M-4 8 V24" opacity="0.7" />
+      </g>
+    </svg>
+
+    <dl class="cost__legend">
+      <div>
+        <dt>Watts</dt>
+        <dd>
+          Counted. The energy the accelerator and its host drew for your tokens, plus the building
+          around them, from Google's own fleet measurement<SourceChip
+            n="3"
+            title={google?.source.title ?? 'Measuring the environmental impact of AI inference'}
+            publisher={google?.source.publisher ?? 'Google'}
+            date={google?.source.date ?? '2025-08-21'}
+            retrieved={google?.source.retrieved}
+            url={google?.source.url}
+          /> and from independent benchmarks where a provider has published nothing.
+        </dd>
+      </div>
+      <div>
+        <dt>Water</dt>
+        <dd>
+          Counted, twice. Water evaporated cooling the building, and water used at the power station
+          that made the electricity. The second is usually the larger and depends on where you are.
+          The <a href="/methodology#water">method page</a> has both factors and their sources.
+        </dd>
+      </div>
+      <div>
+        <dt>Land</dt>
+        <dd>
+          Not counted. Nobody has published a per-prompt figure for the ground a data centre stands
+          on or the ultrapure water that went into its chips, so this stays a shape without a number
+          rather than a number without a source.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={3} of={sections} />
+      <h2 class="band__title">How the figure is worked out</h2>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <span>
+          <strong>Count the tokens.</strong> Where the provider reports them we use theirs. Where it
+          does not, we count with an open tokenizer and apply a measured correction, and the figure
+          carries a tilde.
+        </span>
+      </li>
+      <li>
+        <span>
+          <strong>Pick a published measurement.</strong> Every model points at a benchmark row with a
+          source, a boundary, a method and a quality score. A model nobody has measured is scaled
+          from one that has, and says so.
+        </span>
+      </li>
+      <li>
+        <span>
+          <strong>Multiply, and keep the spread.</strong> Energy per token times tokens, then the grid
+          where you are for carbon and the building's water use for water. Every input is a range,
+          so the answer is one.
+        </span>
+      </li>
+      <li>
+        <span>
+          <strong>Show the working.</strong> Each figure names its row, its flags and its source. The
+          same engine runs in the extension, both command line tools and this page, from one
+          dataset with one hash.
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={4} of={sections} />
+      <h2 class="band__title">The same question, four ways</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        One typical exchange, four hundred tokens in and three hundred out, on the world average
+        grid. The bars share one scale, so the gap between them is real. The last row is a formula
+        rather than a measurement and is likely to be low; the <a href="/methodology#local">method
+        page</a> says by how much.
+      </p>
+    </div>
+
+    <ul class="proof">
+      {
+        proof.map(({ choice, cell: one, row: source }, i) => (
+          <li>
+            <div class="proof__row">
+              <span class="proof__label">
+                {choice.label}
+                {source ? (
+                  <SourceChip
+                    n={`p${i + 1}`}
+                    title={source.source.title}
+                    publisher={source.source.publisher}
+                    date={source.source.date}
+                    retrieved={source.source.retrieved}
+                    url={source.source.url}
+                  />
+                ) : null}
+              </span>
+              <span class="proof__figure">
+                {one.energyWh ? (
+                  <Fragment>
+                    {one.atLeast ? '≥ ' : ''}
+                    {displayNumber(one.energyWh.central)}{' '}<small>Wh an exchange</small>
+                  </Fragment>
+                ) : (
+                  'unknown'
+                )}
+              </span>
+            </div>
+            <RangeBar range={one.energyWh} ceiling={ceiling} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={5} of={sections} />
+      <h2 class="band__title">Four ways in</h2>
     </div>
 
     <div class="buai-scroll-x">
@@ -181,7 +390,7 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
 
   <section class="band">
     <div class="band__head">
-      <Index n={3} of={6} />
+      <Index n={6} of={sections} />
       <h2 class="band__title">Running it yourself</h2>
     </div>
 
@@ -194,6 +403,29 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
         <a href="/calculator">calculator</a> will say which way it falls for the work you actually do.
       </p>
     </Hazard>
+  </section>
+
+  <section class="band">
+    <div class="band__head">
+      <Index n={7} of={sections} />
+      <h2 class="band__title">Helping</h2>
+    </div>
+
+    <div class="prose">
+      <p>
+        The dataset is the part of this that matters, and it is only as good as its sources. The
+        most useful thing anyone can send is a published measurement we have missed, with its
+        boundary and its method written down. The second most useful is telling us a row is wrong,
+        with a reason.
+      </p>
+      <p>
+        The code, the data and every page here are in one{' '}
+        <a href="https://github.com/betteruseofai/betteruseofai">public repository</a> under the MIT
+        licence. <a href="https://github.com/betteruseofai/betteruseofai/blob/main/docs/dataset-contributing.md">What a row needs</a>{' '}
+        before we take it is written down, and so is the one rule that trips people up: no model is
+        ever named as an author here.
+      </p>
+    </div>
   </section>
 
   <section class="band">
@@ -231,6 +463,14 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
           The extension and both command line tools make no network requests at all, and there is a
           test in the repository that reads the built files and fails if one appears. This website
           loads one analytics script from Cloudflare, which the privacy page names in full.
+        </p>
+      </details>
+      <details>
+        <summary>What does the picture behind the headline cost?</summary>
+        <p>
+          About six kilobytes of script, and one pass of a small shader on your graphics chip that
+          plays once and then stops. The footer of every page prints what the page weighs. The Still
+          button at the top switches the motion off and remembers that you asked.
         </p>
       </details>
     </Faq>

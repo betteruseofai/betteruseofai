@@ -1,0 +1,56 @@
+---
+/**
+ * Still or moving, remembered.
+ *
+ * On this site the toggle is the thesis rather than a concession: a page
+ * arguing for less computation gives the reader a way to switch the one
+ * moving thing off, and keeps the choice. It writes one key to localStorage,
+ * named on the privacy page, and sets one attribute on the root element that
+ * the backdrop and the caret both read.
+ *
+ * With no JavaScript there is no motion to stop, so the button is not shown.
+ */
+---
+
+<button class="buai-themetoggle buai-still" type="button" data-still-toggle aria-live="polite" hidden>
+  Still
+</button>
+
+<script>
+  const KEY = 'buai-still';
+  const root = document.documentElement;
+
+  const isStill = (): boolean => root.dataset.still === '1';
+
+  const paint = (): void => {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-still-toggle]')) {
+      button.hidden = false;
+      button.textContent = isStill() ? 'Motion' : 'Still';
+      button.setAttribute(
+        'aria-label',
+        isStill() ? 'Let the picture behind the headline move' : 'Hold the picture behind the headline still',
+      );
+      button.setAttribute('aria-pressed', String(isStill()));
+    }
+  };
+
+  paint();
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-still-toggle]')) {
+    button.addEventListener('click', () => {
+      if (isStill()) {
+        delete root.dataset.still;
+      } else {
+        root.dataset.still = '1';
+      }
+      try {
+        if (isStill()) localStorage.setItem(KEY, '1');
+        else localStorage.removeItem(KEY);
+      } catch {
+        // A browser with site data switched off still gets the toggle, it
+        // just forgets between pages.
+      }
+      paint();
+    });
+  }
+</script>

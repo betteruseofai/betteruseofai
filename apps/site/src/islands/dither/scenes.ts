@@ -19,7 +19,7 @@
  * convincing when there is something underneath it to dissolve into.
  */
 
-export const SCENE_COUNT = 8;
+export const SCENE_COUNT = 9;
 
 export const SCENE_NAMES = [
   'canopy',
@@ -30,15 +30,23 @@ export const SCENE_NAMES = [
   'wafer',
   'roots',
   'traces',
+  'composer',
 ] as const;
 
-/** What the caption says, one per pair. */
+/** What the caption says, one per pair, and one for where it ends. */
 export const PAIR_LABELS = [
   'I · canopy becomes rack',
   'II · river becomes coolant',
   'III · soil becomes wafer',
   'IV · roots become fibre',
+  'V · fibre reaches the box you type in',
 ] as const;
+
+/**
+ * Where the prompt box sits, as fractions of the stage. Shared with the
+ * caret the page draws over it, so the blink lands inside the box.
+ */
+export const COMPOSER = { left: 0.6, top: 0.16, right: 0.93, bottom: 0.38 } as const;
 
 export interface Size {
   width: number;
@@ -497,7 +505,77 @@ const traces: Draw = (context, size, random) => {
   context.lineCap = 'round';
 };
 
-const DRAWERS: Draw[] = [canopy, rack, river, coolant, soil, wafer, roots, traces];
+// ------------------------------------------------------------ V. composer
+
+/*
+ * Where the sequence ends and stays: the box you type into, with the fibre
+ * from the fourth pair running into it. This is the frame the reduced-motion
+ * and still-mode readers see, so it is drawn as a composition in its own
+ * right rather than as a stopped animation: the traces thin out toward the
+ * box, the box is the one solid outline on the stage, and the cursor cell
+ * sits where the first letter would go.
+ */
+const composer: Draw = (context, size, random) => {
+  clear(context, size);
+  const { width, height } = size;
+  context.lineCap = 'butt';
+
+  const left = width * COMPOSER.left;
+  const top = height * COMPOSER.top;
+  const right = width * COMPOSER.right;
+  const bottom = height * COMPOSER.bottom;
+
+  // Fibre runs from the left edge into the box, fewer and fainter as they go.
+  const pitch = Math.max(6, Math.round(width / 26));
+  const pad = Math.max(2, Math.round(pitch * 0.34));
+  context.lineWidth = Math.max(1, pad * 0.5);
+  for (let i = 0; i < 7; i += 1) {
+    const y = top + ((i + 0.5) / 7) * (bottom - top);
+    const reach = random() < 0.5 ? left : left - pitch * (1 + Math.floor(random() * 3));
+    context.globalAlpha = 0.25 + random() * 0.45;
+    context.beginPath();
+    context.moveTo(0, y);
+    context.lineTo(reach, y);
+    if (reach < left) {
+      // A right-angled step onto the box, the way a trace meets a pad.
+      const step = y + (random() < 0.5 ? 1 : -1) * pitch * 0.5;
+      context.lineTo(reach, step);
+      context.lineTo(left, step);
+    }
+    context.stroke();
+    // A pad where the run meets the box.
+    context.globalAlpha = 0.8;
+    context.fillRect(left - pad, y - pad / 2, pad, pad);
+  }
+
+  // A sparse field of pads behind the runs, so the left is still a board.
+  for (let y = pitch; y < height * (BASE + 0.02); y += pitch) {
+    for (let x = pitch; x < left - pitch; x += pitch) {
+      if (random() < 0.82) continue;
+      context.globalAlpha = 0.35;
+      context.fillRect(x - pad / 2, y - pad / 2, pad, pad);
+    }
+  }
+
+  // The box. The one thing on the stage drawn as a closed outline.
+  context.globalAlpha = 1;
+  context.lineWidth = Math.max(2, width * 0.005);
+  context.strokeRect(left, top, right - left, bottom - top);
+
+  // The cursor cell, where the first letter goes. The page blinks a caret
+  // over this spot; with motion off the cell simply stays.
+  const cell = Math.max(3, width * 0.008);
+  context.fillRect(left + cell * 1.6, top + cell * 1.6, cell, cell * 3);
+
+  // A send control at the far end of the box, drawn as a filled square.
+  context.globalAlpha = 0.9;
+  context.fillRect(right - cell * 4, bottom - cell * 4, cell * 2.4, cell * 2.4);
+
+  context.globalAlpha = 1;
+  context.lineCap = 'round';
+};
+
+const DRAWERS: Draw[] = [canopy, rack, river, coolant, soil, wafer, roots, traces, composer];
 
 /**
  * Renders all eight fields into one interleaved byte array, ready to upload as

@@ -39,6 +39,8 @@ export interface Cell {
   /** Set when the model thinks and did not say how much. */
   atLeast: boolean;
   flags: string[];
+  /** The benchmark row the figure rests on, so the page can cite it. */
+  rowId: string | null;
 }
 
 /**
@@ -73,6 +75,7 @@ const cellFor = (modelId: string, regionCode: string): Cell => {
     carbonG: result.carbonG,
     atLeast: result.basis.flags.includes('thinking-unknown'),
     flags: result.basis.flags,
+    rowId: result.basis.benchmarkRowId ?? null,
   };
 };
 

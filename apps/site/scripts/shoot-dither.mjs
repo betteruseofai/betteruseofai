@@ -37,6 +37,9 @@ PAIRS.forEach((name, index) => {
   beats.push([`${name}-2-dither`, base + HOLD_NATURE + DISSOLVE * 0.5]);
   beats.push([`${name}-3-built`, base + HOLD_NATURE + DISSOLVE + HOLD_BUILT * 0.6]);
 });
+// The sequence plays once and ends on the composer. This is the frame the
+// still readers get, so it is captured as its own beat.
+beats.push(['V-composer-end', PAIR * PAIRS.length + 0.5]);
 
 const server = await serve(join(root, 'dist'));
 const browser = await chromium.launch();

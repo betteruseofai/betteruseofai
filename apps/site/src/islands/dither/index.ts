@@ -1,5 +1,6 @@
 /**
- * The backdrop: four things from the ground becoming four things built on it.
+ * The backdrop: four things from the ground becoming four things built on it,
+ * and then the box you type into.
  *
  * Scroll controls the frame, time controls the content. The stage swells from
  * a backdrop behind the headline to full bleed and back as you scroll past,
@@ -7,25 +8,39 @@
  * Nothing here moves the page, pins it, or intercepts a wheel: scroll position
  * is read, never written.
  *
- * With reduced motion asked for, the clock never starts. One frame is held,
- * the stage does not swell, and the page is otherwise identical.
+ * It plays once. Four pairs, a connective move into the composer, and then it
+ * stops on that frame for as long as the page is open. A loop that runs for
+ * ever is decoration, and decoration has no business drawing power on a page
+ * about the cost of computation. One pass is the argument; after that the
+ * page is still, and its cost is fixed and small enough to print in the footer.
+ *
+ * With reduced motion asked for, or the still toggle on, or no WebGL2, the
+ * clock never starts. The frame the sequence ends on is drawn once and held,
+ * so the still readers see the composed ending rather than a stopped middle.
  */
 
-import { buildScenes, PAIR_LABELS, SCENE_COUNT, type Size } from './scenes';
+import { buildScenes, COMPOSER, PAIR_LABELS, SCENE_COUNT, type Size } from './scenes';
 import { createRenderer, type Frame, type Renderer } from './render';
 
 /**
  * The score, in seconds. Four pairs, each one a hold on the natural field, a
  * slow dissolve, a hold on the built one, then a quicker connective move to
  * the next pair. The dissolve is the slowest part because it is the only part
- * making an argument.
+ * making an argument. The fourth connective move lands on the composer, and
+ * the sequence ends there.
  */
 const HOLD_NATURE = 1.5;
 const DISSOLVE = 2.6;
 const HOLD_BUILT = 1.7;
 const CONNECT = 1.0;
 const PAIR = HOLD_NATURE + DISSOLVE + HOLD_BUILT + CONNECT;
-const LOOP = PAIR * 4;
+const PAIRS = 4;
+
+/** When the sequence has finished and holds. */
+export const END = PAIR * PAIRS;
+
+/** The frame held for reduced motion, still mode, and after the pass. */
+const FINAL = SCENE_COUNT - 1;
 
 interface Beat {
   from: number;
@@ -38,15 +53,17 @@ interface Beat {
 /** Smoothstep, so nothing starts or stops abruptly. */
 const ease = (t: number): number => t * t * (3 - 2 * t);
 
-/** Where the sequence is at a given moment. */
+/** Where the sequence is at a given moment. Past the end, it is at the end. */
 export const beatAt = (seconds: number): Beat => {
-  const clock = ((seconds % LOOP) + LOOP) % LOOP;
+  if (seconds >= END) return { from: FINAL, to: FINAL, mix: 1, churn: 0, pair: PAIRS };
+
+  const clock = Math.max(0, seconds);
   const pair = Math.floor(clock / PAIR);
   const within = clock - pair * PAIR;
 
-  const nature = (pair * 2) % SCENE_COUNT;
+  const nature = pair * 2;
   const built = nature + 1;
-  const nextNature = (built + 1) % SCENE_COUNT;
+  const next = Math.min(built + 1, FINAL);
 
   if (within < HOLD_NATURE) {
     return { from: nature, to: nature, mix: 0, churn: 0, pair };
@@ -68,11 +85,12 @@ export const beatAt = (seconds: number): Beat => {
   const t = (within - HOLD_NATURE - DISSOLVE - HOLD_BUILT) / CONNECT;
   return {
     from: built,
-    to: nextNature,
+    to: next,
     mix: ease(t),
     // Quieter than a dissolve. This move is connective tissue, not an argument.
     churn: Math.sin(t * Math.PI) * 0.3,
-    pair,
+    // The last connective move is captioned as the ending it leads to.
+    pair: next === FINAL ? PAIRS : pair,
   };
 };
 
@@ -110,18 +128,35 @@ export const mountDither = ({
   if (!renderer) return () => {};
 
   const quiet = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const root = document.documentElement;
+
+  /** Reduced motion, or the reader's own toggle. Either one holds the frame. */
+  const still = (): boolean => quiet.matches || root.dataset['still'] === '1';
 
   let grid: Size = { width: 0, height: 0 };
   let ink: [number, number, number] = [207, 203, 196];
   let ground: [number, number, number] = [238, 236, 233];
   let started = 0;
+  let elapsed = 0;
   let running = false;
+  let ended = false;
   let frame = 0;
   let visible = true;
   let shownPair = -1;
 
+  // The caret the page blinks over the cursor cell, placed from the same
+  // geometry the scene was drawn with.
+  const cellPx = () => Math.max(3, stage.clientWidth * 0.008);
+  const placeCaret = (): void => {
+    const size = cellPx();
+    stage.style.setProperty('--caret-x', `${stage.clientWidth * COMPOSER.left + size * 1.6}px`);
+    stage.style.setProperty('--caret-y', `${stage.clientHeight * COMPOSER.top + size * 1.6}px`);
+    stage.style.setProperty('--caret-w', `${size}px`);
+    stage.style.setProperty('--caret-h', `${size * 3}px`);
+  };
+
   const readColours = (): void => {
-    const styles = getComputedStyle(document.documentElement);
+    const styles = getComputedStyle(root);
     const parse = (value: string, fallback: [number, number, number]): [number, number, number] => {
       const hex = value.trim();
       if (!/^#[0-9a-f]{6}$/i.test(hex)) return fallback;
@@ -151,15 +186,19 @@ export const mountDither = ({
     };
     renderer.resize(grid, buildScenes(grid));
     readColours();
+    placeCaret();
+  };
+
+  const swell = (): void => {
+    const value = still()
+      ? 0
+      : swellAt(track.getBoundingClientRect().top, track.offsetHeight, window.innerHeight);
+    stage.style.setProperty('--swell', value.toFixed(3));
   };
 
   const paint = (seconds: number): void => {
     const beat = beatAt(seconds);
-    const swell = quiet.matches
-      ? 0
-      : swellAt(track.getBoundingClientRect().top, track.offsetHeight, window.innerHeight);
-
-    stage.style.setProperty('--swell', swell.toFixed(3));
+    swell();
 
     const payload: Frame = { ...beat, time: seconds, ink, ground };
     renderer.draw(payload);
@@ -170,16 +209,30 @@ export const mountDither = ({
     }
   };
 
+  /** The composed ending, drawn once and held. */
+  const finish = (): void => {
+    ended = true;
+    stop();
+    paint(END);
+    stage.dataset['ended'] = '1';
+  };
+
   const tick = (now: number): void => {
     if (!running) return;
+    if (started === 0) started = now - elapsed * 1000;
+    elapsed = (now - started) / 1000;
+    if (elapsed >= END) {
+      finish();
+      return;
+    }
     frame = requestAnimationFrame(tick);
-    if (started === 0) started = now;
-    paint((now - started) / 1000);
+    paint(elapsed);
   };
 
   const start = (): void => {
-    if (running || quiet.matches) return;
+    if (running || ended || still() || document.hidden) return;
     running = true;
+    started = 0;
     frame = requestAnimationFrame(tick);
   };
 
@@ -192,7 +245,7 @@ export const mountDither = ({
   /**
    * Off screen means no work at all. A backdrop nobody can see has no business
    * holding a frame loop open, least of all on a page arguing about the cost
-   * of computation.
+   * of computation. Coming back into view resumes from where it paused.
    */
   const watcher = new IntersectionObserver(
     (entries) => {
@@ -204,51 +257,81 @@ export const mountDither = ({
   );
   watcher.observe(track);
 
+  // A hidden tab stops the clock outright. Browsers throttle animation frames
+  // there already; this says so in the code rather than relying on it.
+  const onVisibility = (): void => {
+    if (document.hidden) stop();
+    else if (visible) start();
+  };
+
   let resizeTimer = 0;
   const onResize = (): void => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
       build();
-      if (!running) paint(0);
+      if (!running) paint(ended || still() ? END : elapsed);
     }, 200);
+  };
+
+  // Once the clock has stopped, scrolling still shapes the stage. This writes
+  // one custom property and draws nothing.
+  const onScroll = (): void => {
+    if (!running) swell();
   };
 
   const onTheme = (): void => {
     readColours();
-    if (!running) paint(0);
+    if (!running) paint(ended || still() ? END : elapsed);
   };
 
-  const onQuiet = (): void => {
-    if (quiet.matches) {
+  const onStill = (): void => {
+    if (still()) {
       stop();
-      stage.style.setProperty('--swell', '0');
-      paint(HOLD_NATURE + DISSOLVE * 0.5);
-    } else if (visible) {
-      started = 0;
-      start();
+      paint(END);
+      stage.dataset['ended'] = '1';
+    } else if (!ended) {
+      delete stage.dataset['ended'];
+      if (visible) start();
     }
   };
 
   build();
-  // One frame immediately, so the page never shows an empty rectangle while
-  // it waits for the observer to fire.
-  paint(quiet.matches ? HOLD_NATURE + DISSOLVE * 0.5 : 0);
+
+  if (renderer.kind === 'canvas2d') {
+    // No WebGL2 means a machine that should not be asked to animate. It gets
+    // the ending, drawn once in JavaScript, and nothing else.
+    paint(END);
+    stage.dataset['ended'] = '1';
+  } else if (still()) {
+    paint(END);
+    stage.dataset['ended'] = '1';
+  } else {
+    // One frame immediately, so the page never shows an empty rectangle while
+    // it waits for the observer to fire.
+    paint(0);
+  }
 
   window.addEventListener('resize', onResize);
-  quiet.addEventListener('change', onQuiet);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  document.addEventListener('visibilitychange', onVisibility);
+  quiet.addEventListener('change', onStill);
 
-  const themeWatcher = new MutationObserver(onTheme);
-  themeWatcher.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['data-theme'],
+  const rootWatcher = new MutationObserver((records) => {
+    for (const record of records) {
+      if (record.attributeName === 'data-theme') onTheme();
+      if (record.attributeName === 'data-still') onStill();
+    }
   });
+  rootWatcher.observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-still'] });
 
   return () => {
     stop();
     watcher.disconnect();
-    themeWatcher.disconnect();
+    rootWatcher.disconnect();
     window.removeEventListener('resize', onResize);
-    quiet.removeEventListener('change', onQuiet);
+    window.removeEventListener('scroll', onScroll);
+    document.removeEventListener('visibilitychange', onVisibility);
+    quiet.removeEventListener('change', onStill);
     renderer.destroy();
   };
 };

@@ -1,7 +1,12 @@
 ---
 /**
  * The strip along the bottom of every page: what built this, from what data,
- * when, and what it sends. The telemetry line is the point of the whole strip.
+ * when, what it weighs, and what it sends.
+ *
+ * The weight is filled in after the build by scripts/weigh.mjs, because the
+ * hashed asset sizes do not exist while this renders. The analytics item says
+ * "one beacon" only when the beacon is actually on this build, so the strip
+ * never claims a script that is not there or hides one that is.
  */
 import dataset from '../lib/dataset';
 
@@ -12,12 +17,17 @@ interface Props {
 
 const { builtAt = new Date().toISOString().replace('T', ' ').slice(0, 19) } = Astro.props;
 const sha = dataset.sha256.slice(0, 6);
+const beacon = Boolean(import.meta.env.PUBLIC_CF_BEACON_TOKEN);
 ---
 
 <div class="buai-metastrip">
   <span class="buai-metastrip__item">Dataset {dataset.version}</span>
   <span class="buai-metastrip__item">sha {sha}</span>
   <span class="buai-metastrip__item">{builtAt} UTC</span>
-  <span class="buai-metastrip__item">Telemetry: none</span>
+  <span class="buai-metastrip__item" data-page-weight>weighed after the build</span>
+  <span class="buai-metastrip__item">Tools send: nothing</span>
+  <span class="buai-metastrip__item">
+    {beacon ? <a href="/privacy">Analytics: one beacon</a> : 'Analytics: none'}
+  </span>
   <span class="buai-metastrip__item">MIT</span>
 </div>
