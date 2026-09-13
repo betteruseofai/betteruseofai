@@ -101,9 +101,10 @@ against. The decisions taken on it, on 2026-09-13:
     `packages/tokens/logo/README.md`. The Chrome toolbar tone is a token, `icon.toolbar`, chosen
     to clear three to one on both toolbar colours and asserted by test.
 
-## Still open
+39. **A code of conduct**, `CODE_OF_CONDUCT.md`, modelled on the Contributor Covenant 2.1 and
+    rewritten in the project's voice, with the Covenant credited under CC BY 4.0. Asked for by
+    the owner on 2026-09-13.
 
-- A code of conduct. The Contributor Covenant is CC BY 4.0 and compatible; its register is warmer
-  than `docs/STYLE.md`, which is acceptable for a conduct document. Owner's call.
+## Still open
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.
