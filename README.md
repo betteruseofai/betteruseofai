@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="packages/tokens/logo/png/lockup-horizontal-paper.png">
+  <img src="packages/tokens/logo/png/lockup-horizontal-ink.png" alt="Better Use of AI" width="252" height="32">
+</picture>
+
 # Better Use of AI
 
 > Status: draft. This copy hasn't been through a voice review yet.

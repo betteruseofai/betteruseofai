@@ -1,7 +1,7 @@
 # Brand
 
 > Working document. Written 2026-09-13 from the audit in `CONFLICTS.md` and the decisions taken on
-> it. The mark itself is still at the three-directions gate; see the last section.
+> it. The mark was chosen the same day; see the last section.
 
 ## The idea
 
@@ -124,8 +124,12 @@ stay as text, because a bar of a range with a hidden floor invites reading the b
 
 ## The mark
 
-Three cell-grid routes were drawn in `packages/tokens/logo` on 2026-09-12 and the owner asked for
-something more visually appealing that helps the brand. Three new directions follow as SVG with a
-16 px preview each, and work stops there until one is chosen. Whichever it is: 16 px first, hand
-written SVG, a two-cell margin for the circular avatar export, a mid-tone colour for the Chrome
-toolbar so it reads on both toolbar themes, and `theme_icons` for Firefox.
+The die. A square with two opposite corners chamfered, so the outline is a die from above and a
+leaf from the side; inside, a midrib and four veins that are vertical and horizontal lines, so leaf
+venation and orthogonal routing are the same strokes. Drawn once at sixteen units with a 1.5 unit
+stroke in `currentColor`, and every size is that drawing scaled. Chosen on 2026-09-13 from three
+shape directions after the cell-grid routes of the day before were set aside.
+`packages/tokens/logo/README.md` carries the drawing, the files, the colours it uses where it
+cannot inherit one (the Chrome toolbar tone `#717c75` clears 3 to 1 on both toolbar colours),
+clear space, minimum sizes and the do-and-do-not list. It sits beside the wordmark in the site's
+navigation, in the browser tab, on the toolbar, and at the top of the README.

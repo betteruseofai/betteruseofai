@@ -575,6 +575,13 @@ samp {
   letter-spacing: 0.1em;
 }
 
+.buai-nav__mark {
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  margin-right: 0.45em;
+}
+
 .buai-nav__brand {
   font-family: var(--font-display);
   font-size: var(--step-1);

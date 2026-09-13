@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 104" width="297" height="104" role="img" aria-label="Better Use of AI">
+  <g transform="translate(124.5 0) scale(3)" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M2.5 5.5 V13.5 H10.5 L13.5 10.5 V2.5 H5.5 Z" />
+  <path d="M3.5 12.5 L12.5 3.5" />
+  <path d="M5.5 10.5 V6.5 M8 8 V4.5" />
+  <path d="M5.5 10.5 H9.5 M8 8 H11.5" />
+  </g>
+  <text x="148.5" y="94" text-anchor="middle" font-family="'Big Shoulders', 'Haettenschweiler', 'Arial Narrow Bold', sans-serif" font-weight="800" font-size="27" letter-spacing="0.5" fill="currentColor">BETTER USE OF AI</text>
+</svg>

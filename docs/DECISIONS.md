@@ -94,13 +94,15 @@ against. The decisions taken on it, on 2026-09-13:
     element under a strict host `style-src` is blocked in Chromium.
 37. **Every page prints its own weight** over the wire, computed after the build by the same
     arithmetic as the budget test.
-38. **The mark is being redrawn.** The three cell-grid routes of 2026-09-12 were judged not to
-    help the brand; three new directions are at the gate.
+38. **The mark is the die.** The three cell-grid routes of 2026-09-12 were judged not to help
+    the brand. Three shape directions were drawn and direction B, a die with two corners
+    chamfered into a leaf and veins that are also routing, was chosen on 2026-09-13. The
+    icons for both browsers, the favicons, the lockups and the usage document are in
+    `packages/tokens/logo/README.md`. The Chrome toolbar tone is a token, `icon.toolbar`, chosen
+    to clear three to one on both toolbar colours and asserted by test.
 
 ## Still open
 
-- Which of the three new mark directions, and after that the icon exports at 16, 32, 48 and 128,
-  the site favicon, the Firefox `theme_icons`, the lockups and the usage document.
 - A code of conduct. The Contributor Covenant is CC BY 4.0 and compatible; its register is warmer
   than `docs/STYLE.md`, which is acceptable for a conduct document. Owner's call.
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists

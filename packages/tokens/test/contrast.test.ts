@@ -264,6 +264,20 @@ describe('the rules that keep it from looking generated', () => {
   });
 });
 
+describe('the icon tone', () => {
+  it('clears three to one on both Chrome toolbars and both grounds', () => {
+    const tone = tokens.icon.toolbar as string;
+    for (const behind of [
+      tokens.icon.chromeToolbars.light,
+      tokens.icon.chromeToolbars.dark,
+      light['bg'],
+      dark['bg'],
+    ] as string[]) {
+      expect(contrast(tone, behind), `icon tone on ${behind}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+});
+
 describe('the terminal block', () => {
   it('keeps figures and caveats on colours a red-green reader can tell apart', () => {
     const { codes, roles } = tokens.terminal;

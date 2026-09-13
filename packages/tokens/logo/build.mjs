@@ -52,18 +52,23 @@ const wafer = `  <path d="M3.9 12.5 A6.25 6.25 0 1 1 12.1 12.5 Z" />
   <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />`;
 
 /*
- * B. The die.
+ * B. The die. Chosen on 2026-09-13.
  *
- * A square with one corner drawn to a point, and inside it a midrib running to
- * that point with veins leaving it at right angles. The outline is a die, and
- * the point is where a leaf ends; the veins are the venation of the leaf and
- * the routing of the chip, and they are the same lines. Read the square first
- * and it is a floorplan. Read the point first and it is a leaf.
+ * A square with two opposite corners chamfered, so the outline is a die seen
+ * from above and a leaf seen from the side, pointed at the tip and the stem.
+ * Inside, a midrib runs stem to tip, and four veins leave it. A vein at
+ * forty-five degrees to a diagonal midrib is a vertical or a horizontal line,
+ * so the veins are drawn as exactly that: leaf venation and orthogonal
+ * routing in the same strokes. Read the square first and it is a floorplan.
+ * Read the point first and it is a leaf.
+ *
+ * The first draft had eight short veins with a turn in each, and at sixteen
+ * pixels they crowded into a smudge. Four longer straight veins hold.
  */
 const die = `  <path d="M2.5 5.5 V13.5 H10.5 L13.5 10.5 V2.5 H5.5 Z" />
-  <path d="M3.5 12.5 L12.6 3.4" />
-  <path d="M6 10 L6 7.5 M8 8 L8 5 M10 6 L10 4.5" />
-  <path d="M6 10 L8.5 10 M8 8 L11 8 M10 6 L11.5 6" />`;
+  <path d="M3.5 12.5 L12.5 3.5" />
+  <path d="M5.5 10.5 V6.5 M8 8 V4.5" />
+  <path d="M5.5 10.5 H9.5 M8 8 H11.5" />`;
 
 /*
  * C. The delta.
@@ -95,7 +100,7 @@ export const DIRECTIONS = [
     body: die,
     glyph: '◩',
     ascii: '[/]',
-    line: 'A die with one corner drawn to a leaf tip, and a midrib whose veins leave at right angles: venation that is also routing.',
+    line: 'A die with two corners chamfered into a leaf, and a midrib whose veins are vertical and horizontal lines: venation that is also routing. Chosen.',
   },
   {
     id: 'c-delta',

@@ -61,6 +61,13 @@ const full = `${title} · Better Use of AI`;
 
     <link rel="alternate" type="application/rss+xml" title="Better Use of AI" href="/rss.xml" />
 
+    {/* The mark. The SVG follows the browser's colour scheme; the PNG is for
+        browsers that cannot show an SVG favicon; the touch icon is ink on the
+        ground, since a home screen gives it no background of ours. */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
     {/*
       A file, not an inline script, so the policy needs no exception for inline
       execution. No defer and no module, so it blocks the parser and runs

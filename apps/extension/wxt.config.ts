@@ -35,6 +35,14 @@ export default defineConfig({
     version: '0.0.0',
     homepage_url: 'https://betteruseofai.org',
 
+    /*
+     * The mark, in the one tone that reads on both of Chrome's toolbars. A
+     * manifest icon is a fixed image with no way to know which toolbar it is
+     * on; tokens.json chose the tone and the tokens test asserts the contrast.
+     * Firefox can be told, so it gets ink and paper through theme_icons.
+     */
+    icons: { 16: 'icon/16.png', 32: 'icon/32.png', 48: 'icon/48.png', 128: 'icon/128.png' },
+
     permissions: ['storage', 'unlimitedStorage', 'alarms'],
 
     host_permissions: [
@@ -66,6 +74,13 @@ export default defineConfig({
 
     ...(browser === 'firefox'
       ? {
+          // Light is the icon for a dark theme and dark for a light one, in
+          // Firefox's naming: the colour of the icon, not of the toolbar.
+          theme_icons: [16, 32, 48, 128].map((size) => ({
+            light: `icon/${size}-paper.png`,
+            dark: `icon/${size}-ink.png`,
+            size,
+          })),
           browser_specific_settings: {
             gecko: {
               id: 'betteruseofai@betteruseofai.org',

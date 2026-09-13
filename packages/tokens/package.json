@@ -13,6 +13,7 @@
     "fonts/",
     "design",
     "logo/svg",
+    "logo/png",
     "logo/README.md"
   ],
   "exports": {
@@ -26,7 +27,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "shoot": "node scripts/shoot.mjs",
-    "logo": "node logo/build.mjs",
+    "logo": "node logo/build.mjs && node logo/export.mjs",
+    "logo:shoot": "node scripts/shoot-logo.mjs",
     "tokens": "node scripts/build-tokens.mjs"
   },
   "devDependencies": {

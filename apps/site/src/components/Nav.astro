@@ -7,6 +7,13 @@
  */
 import ThemeToggle from './ThemeToggle.astro';
 import StillToggle from './StillToggle.astro';
+import markSvg from '../../../../packages/tokens/logo/svg/b-die.svg?raw';
+
+// The mark, inlined at build time so it inherits the brand's ink and needs no
+// request of its own. Stripped of its label; the words beside it are the label.
+const mark = markSvg
+  .replace(/ role="img" aria-label="[^"]*"/, ' aria-hidden="true" class="buai-nav__mark"')
+  .replace(/ width="16" height="16"/, '');
 
 interface Props {
   here?: string;
@@ -24,7 +31,7 @@ const links = [
 ---
 
 <nav class="buai-nav" aria-label="Main">
-  <a class="buai-nav__brand" href="/">Better Use of AI</a>
+  <a class="buai-nav__brand" href="/"><Fragment set:html={mark} />Better Use of AI</a>
   {
     links.map((link) => (
       <a href={link.href} aria-current={here === link.href ? 'page' : undefined}>
