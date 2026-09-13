@@ -33,7 +33,7 @@ anywhere else that represents it, is expected to:
 ## Reporting
 
 Write to the maintainer at the address on the GitHub profile of `gordianknot-legacy`, with the
-subject line starting `conduct:`. Say what happened, where it happened, when, and who was involved, and include links where you
+subject line starting `conduct:`. Say what happened and where. Say when it happened and who was involved. Include links where you
 can. Reports are read by the maintainer only, and are not shared further without your agreement,
 except where the law requires it.
 
