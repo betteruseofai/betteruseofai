@@ -71,7 +71,7 @@ describe('saying no', () => {
   it('removes the hint and asks for that rule to be muted for a day', () => {
     const hint = showHint(composer, content);
     const dismissals: Array<{ ruleId: string; until: number }> = [];
-    document.addEventListener('buoa:dismiss', (event) => {
+    document.addEventListener('buai:dismiss', (event) => {
       dismissals.push((event as CustomEvent).detail);
     });
 

@@ -127,7 +127,7 @@ describe('reading a transcript as it is being written', () => {
   const lines = seed.split('\n').filter(Boolean);
 
   it('reads only what has been appended since last time', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'buoa-'));
+    const dir = mkdtempSync(join(tmpdir(), 'buai-'));
     const path = join(dir, 'live.jsonl');
     writeFileSync(path, `${lines.slice(0, 2).join('\n')}\n`);
 
@@ -148,7 +148,7 @@ describe('reading a transcript as it is being written', () => {
   });
 
   it('leaves a half-written line for next time rather than dropping it', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'buoa-'));
+    const dir = mkdtempSync(join(tmpdir(), 'buai-'));
     const path = join(dir, 'partial.jsonl');
     const complete = `${lines[1]}\n`;
     writeFileSync(path, complete + lines[2]?.slice(0, 40));
@@ -164,7 +164,7 @@ describe('reading a transcript as it is being written', () => {
   });
 
   it('starts again when the file has been replaced by a shorter one', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'buoa-'));
+    const dir = mkdtempSync(join(tmpdir(), 'buai-'));
     const path = join(dir, 'rotated.jsonl');
     writeFileSync(path, `${lines.slice(0, 5).join('\n')}\n`);
     const first = await readClaudeCodeIncremental(path, emptyIncrementalState());

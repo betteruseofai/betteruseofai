@@ -20,10 +20,10 @@ const { n, title, publisher, date, retrieved, url } = Astro.props;
 const meta = [publisher, date, retrieved ? `read ${retrieved}` : null].filter(Boolean).join(' · ');
 ---
 
-<details class="buoa-source">
+<details class="buai-source">
   <summary>[{n}]</summary>
-  <span class="buoa-source__body">
+  <span class="buai-source__body">
     {url ? <a href={url}>{title}</a> : title}
-    {meta ? <span class="buoa-source__meta">{meta}</span> : null}
+    {meta ? <span class="buai-source__meta">{meta}</span> : null}
   </span>
 </details>

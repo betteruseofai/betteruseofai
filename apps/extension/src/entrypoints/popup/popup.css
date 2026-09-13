@@ -9,7 +9,7 @@ body {
   margin: 0;
 }
 
-.buoa-popup {
+.buai-popup {
   padding: var(--space-4);
   background: var(--bg);
 }
@@ -18,14 +18,14 @@ body {
  * The brand and the tape stack. Side by side at 360 px the brand wrapped onto
  * two lines and broke across "OF / AI", which is worse than the extra row.
  */
-.buoa-popup__header {
+.buai-popup__header {
   display: grid;
   gap: var(--space-1);
   padding-bottom: var(--space-3);
   border-bottom: var(--rule) solid var(--hairline);
 }
 
-.buoa-popup__brand {
+.buai-popup__brand {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--step-2);
@@ -36,7 +36,7 @@ body {
   white-space: nowrap;
 }
 
-.buoa-popup__tape {
+.buai-popup__tape {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   letter-spacing: 0.16em;
@@ -45,22 +45,22 @@ body {
   white-space: nowrap;
 }
 
-.buoa-popup__hidden {
+.buai-popup__hidden {
   display: none;
 }
 
-.buoa-popup__equivalent {
+.buai-popup__equivalent {
   font-size: var(--step--1);
   color: var(--muted);
   margin: var(--space-3) 0 0;
 }
 
-.buoa-popup__models {
+.buai-popup__models {
   margin-top: var(--space-4);
   border-top: var(--rule) solid var(--hairline);
 }
 
-.buoa-popup__model {
+.buai-popup__model {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
@@ -69,36 +69,36 @@ body {
   border-bottom: var(--rule) solid var(--hairline);
 }
 
-.buoa-popup__note {
+.buai-popup__note {
   font-size: var(--step--1);
   color: var(--muted);
   margin: var(--space-3) 0 0;
 }
 
-.buoa-popup .buoa-hazard {
+.buai-popup .buai-hazard {
   margin-top: var(--space-4);
   font-size: var(--step--1);
 }
 
-.buoa-popup__caveat {
+.buai-popup__caveat {
   margin: 0 0 var(--space-3);
 }
 
-.buoa-popup__caveat:last-child {
+.buai-popup__caveat:last-child {
   margin-bottom: 0;
 }
 
-.buoa-popup .buoa-metastrip {
+.buai-popup .buai-metastrip {
   margin-top: var(--space-4);
 }
 
-.buoa-popup__actions {
+.buai-popup__actions {
   display: flex;
   gap: var(--space-2);
   margin-top: var(--space-4);
 }
 
-.buoa-popup__actions .buoa-button {
+.buai-popup__actions .buai-button {
   flex: 1 1 0;
   text-align: center;
   padding: var(--space-2) var(--space-3);

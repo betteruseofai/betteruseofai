@@ -65,7 +65,7 @@ for (const [label, viewport, scale] of VIEWPORTS) {
     await page.goto(`http://127.0.0.1:${port}/design/index.html`, { waitUntil: 'networkidle' });
     // The sheet remembers a theme, so set it rather than trusting the default.
     await page.evaluate((wanted) => {
-      localStorage.setItem('buoa-theme', wanted);
+      localStorage.setItem('buai-theme', wanted);
     }, theme);
     await page.reload({ waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);

@@ -5,34 +5,34 @@ body {
   background: var(--bg);
 }
 
-.buoa-options {
+.buai-options {
   max-width: 44rem;
   margin: 0 auto;
   padding: var(--space-7) var(--gutter) var(--space-9);
 }
 
-.buoa-options h1 {
+.buai-options h1 {
   font-size: var(--step-4);
   margin-bottom: var(--space-6);
 }
 
-.buoa-options h2 {
+.buai-options h2 {
   font-size: var(--step-1);
   margin-bottom: var(--space-3);
 }
 
-.buoa-options__section {
+.buai-options__section {
   padding-block: var(--space-5);
   border-top: var(--rule) solid var(--hairline);
 }
 
-.buoa-options__field {
+.buai-options__field {
   display: grid;
   gap: var(--space-2);
   max-width: 22rem;
 }
 
-.buoa-options__field select {
+.buai-options__field select {
   font-family: var(--font-mono);
   font-size: var(--step--1);
   padding: var(--space-2) var(--space-3);
@@ -42,7 +42,7 @@ body {
   border-radius: var(--radius);
 }
 
-.buoa-options__radio {
+.buai-options__radio {
   display: flex;
   gap: var(--space-3);
   align-items: start;
@@ -51,27 +51,27 @@ body {
   cursor: pointer;
 }
 
-.buoa-options__radio input {
+.buai-options__radio input {
   margin-top: 0.35em;
   accent-color: var(--accent);
   width: 1rem;
   height: 1rem;
 }
 
-.buoa-options__radio > span {
+.buai-options__radio > span {
   display: grid;
   gap: var(--space-1);
 }
 
-.buoa-options__hint {
+.buai-options__hint {
   font-size: var(--step--1);
   color: var(--muted);
 }
 
-.buoa-options .buoa-hazard {
+.buai-options .buai-hazard {
   margin-block: var(--space-6);
 }
 
-.buoa-options .buoa-metastrip {
+.buai-options .buai-metastrip {
   margin-top: var(--space-7);
 }

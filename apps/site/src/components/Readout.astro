@@ -29,23 +29,23 @@ const show = (value: number): string => displayNumber(value);
 
 {
   range ? (
-    <div class="buoa-readout">
-      <span class="buoa-readout__label">{label}</span>
-      <span class="buoa-readout__figure">
+    <div class="buai-readout">
+      <span class="buai-readout__label">{label}</span>
+      <span class="buai-readout__figure">
         {atLeast ? <Fragment>&ge; </Fragment> : null}
         {show(range.central)}
-        {unit ? <span class="buoa-readout__unit">{unit}</span> : null}
+        {unit ? <span class="buai-readout__unit">{unit}</span> : null}
       </span>
-      <span class="buoa-readout__bounds">
+      <span class="buai-readout__bounds">
         [ {show(range.low)} to {show(range.high)} ]
         {note ? <Fragment> &middot; {note}</Fragment> : null}
       </span>
     </div>
   ) : (
-    <div class="buoa-readout buoa-readout--unknown">
-      <span class="buoa-readout__label">{label}</span>
-      <span class="buoa-readout__figure">unknown</span>
-      <span class="buoa-readout__bounds">{absence}</span>
+    <div class="buai-readout buai-readout--unknown">
+      <span class="buai-readout__label">{label}</span>
+      <span class="buai-readout__figure">unknown</span>
+      <span class="buai-readout__bounds">{absence}</span>
     </div>
   )
 }

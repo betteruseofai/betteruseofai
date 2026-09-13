@@ -33,7 +33,7 @@ beforeAll(async () => {
     execFileSync('npx', ['wxt', 'build'], { cwd: root, shell: process.platform === 'win32' });
   }
 
-  profile = mkdtempSync(join(tmpdir(), 'buoa-e2e-'));
+  profile = mkdtempSync(join(tmpdir(), 'buai-e2e-'));
   try {
     context = await chromium.launchPersistentContext(profile, {
       // An extension needs a real browser, not the headless shell, and it
@@ -77,13 +77,13 @@ describe('the extension in a browser', () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/popup.html`);
-    await page.waitForSelector('.buoa-popup', { timeout: 10000 });
+    await page.waitForSelector('.buai-popup', { timeout: 10000 });
     // A fresh profile has counted nothing, and the popup has to say so rather
     // than showing three zeroes.
     // Vitest's expect is the one in scope here, so these are plain assertions
     // rather than Playwright's own matchers.
-    await page.waitForSelector('.buoa-standby', { timeout: 10000 });
-    expect(await page.textContent('.buoa-standby')).toContain('nothing yet');
+    await page.waitForSelector('.buai-standby', { timeout: 10000 });
+    expect(await page.textContent('.buai-standby')).toContain('nothing yet');
     await page.close();
   }, 30000);
 
@@ -91,16 +91,16 @@ describe('the extension in a browser', () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/options.html`);
-    await page.waitForSelector('.buoa-options', { timeout: 10000 });
+    await page.waitForSelector('.buai-options', { timeout: 10000 });
 
-    await page.selectOption('.buoa-options__field select', 'GB');
+    await page.selectOption('.buai-options__field select', 'GB');
     await page.waitForTimeout(500);
 
     // Reload and the choice is still there, which means it reached the
     // background and came back.
     await page.reload();
-    await page.waitForSelector('.buoa-options__field select', { timeout: 10000 });
-    expect(await page.locator('.buoa-options__field select').first().inputValue()).toBe('GB');
+    await page.waitForSelector('.buai-options__field select', { timeout: 10000 });
+    expect(await page.locator('.buai-options__field select').first().inputValue()).toBe('GB');
     await page.close();
   }, 30000);
 
@@ -108,7 +108,7 @@ describe('the extension in a browser', () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
-    await page.waitForSelector('.buoa-dash', { timeout: 10000 });
+    await page.waitForSelector('.buai-dash', { timeout: 10000 });
     await page.close();
   }, 30000);
 
@@ -116,7 +116,7 @@ describe('the extension in a browser', () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/popup.html`);
-    await page.waitForSelector('.buoa-popup', { timeout: 10000 });
+    await page.waitForSelector('.buai-popup', { timeout: 10000 });
 
     const summary = await page.evaluate(async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -140,7 +140,7 @@ describe('the extension in a browser', () => {
     });
 
     await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
-    await page.waitForSelector('.buoa-dash', { timeout: 10000 });
+    await page.waitForSelector('.buai-dash', { timeout: 10000 });
     await page.waitForTimeout(2000);
 
     expect(outbound).toEqual([]);

@@ -45,7 +45,7 @@ interface Cached {
 }
 
 export const stateDir = (): string =>
-  process.env['BUOA_STATE_DIR'] ??
+  process.env['BUAI_STATE_DIR'] ??
   join(process.env['CLAUDE_PLUGIN_DATA'] ?? join(homedir(), '.claude'), 'betteruseofai', 'state');
 
 const safeName = (sessionId: string): string => sessionId.replace(/[^A-Za-z0-9_-]/g, '_');

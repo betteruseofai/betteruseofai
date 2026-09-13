@@ -30,11 +30,11 @@ export const Readout = ({ label, value, unit, flags = [] }: ReadoutProps) => {
    */
   if (value === null || value === undefined) {
     return (
-      <div class="buoa-readout-group">
-        <div class="buoa-readout buoa-readout--unknown">
-          <span class="buoa-readout__label">{label}</span>
-          <span class="buoa-readout__figure">unknown</span>
-          <span class="buoa-readout__bounds">nothing we can stand behind</span>
+      <div class="buai-readout-group">
+        <div class="buai-readout buai-readout--unknown">
+          <span class="buai-readout__label">{label}</span>
+          <span class="buai-readout__figure">unknown</span>
+          <span class="buai-readout__bounds">nothing we can stand behind</span>
         </div>
       </div>
     );
@@ -45,15 +45,15 @@ export const Readout = ({ label, value, unit, flags = [] }: ReadoutProps) => {
   const lowerBound = flags.includes('thinking-unknown');
 
   return (
-    <div class="buoa-readout-group">
-      <div class="buoa-readout">
-        <span class="buoa-readout__label">{label}</span>
-        <span class="buoa-readout__figure">
+    <div class="buai-readout-group">
+      <div class="buai-readout">
+        <span class="buai-readout__label">{label}</span>
+        <span class="buai-readout__figure">
           {lowerBound ? '≥ ' : ''}
           {displayNumber(scaled.value)}
-          <span class="buoa-readout__unit">{scaled.unit}</span>
+          <span class="buai-readout__unit">{scaled.unit}</span>
         </span>
-        <span class="buoa-readout__bounds">
+        <span class="buai-readout__bounds">
           [ {displayNumber(value.low / divisor)} to {displayNumber(value.high / divisor)} ]
         </span>
       </div>
@@ -77,24 +77,24 @@ export const RangeBar = ({ value }: { value: Range }) => {
   };
 
   const style = {
-    '--buoa-low': '0%',
-    '--buoa-central': `${position(value.central).toFixed(1)}%`,
-    '--buoa-high': '100%',
+    '--buai-low': '0%',
+    '--buai-central': `${position(value.central).toFixed(1)}%`,
+    '--buai-high': '100%',
   } as unknown as Record<string, string>;
 
   return (
-    <div class="buoa-rangebar" style={style} aria-hidden="true">
-      <div class="buoa-rangebar__band" />
-      <div class="buoa-rangebar__hazard" />
-      <div class="buoa-rangebar__tick" />
+    <div class="buai-rangebar" style={style} aria-hidden="true">
+      <div class="buai-rangebar__band" />
+      <div class="buai-rangebar__hazard" />
+      <div class="buai-rangebar__tick" />
     </div>
   );
 };
 
 export const MetaStrip = ({ items }: { items: string[] }) => (
-  <div class="buoa-metastrip">
+  <div class="buai-metastrip">
     {items.map((item) => (
-      <span class="buoa-metastrip__item" key={item}>
+      <span class="buai-metastrip__item" key={item}>
         {item}
       </span>
     ))}
@@ -102,8 +102,8 @@ export const MetaStrip = ({ items }: { items: string[] }) => (
 );
 
 export const Hazard = ({ label, children }: { label: string; children: preact.ComponentChildren }) => (
-  <div class="buoa-hazard">
-    <span class="buoa-hazard__label">{label}</span>
+  <div class="buai-hazard">
+    <span class="buai-hazard__label">{label}</span>
     {children}
   </div>
 );

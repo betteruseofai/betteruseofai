@@ -43,7 +43,7 @@ const textOf = (html) =>
     // not our copy, and we are not entitled to rewrite them to suit a style
     // guide. "Assessing Energy, Water, and Carbon Footprint of LLM Inference"
     // is a paper, not a list of three that we chose to write.
-    .replace(/<span class="buoa-source__body">[\s\S]*?<\/span><\/details>/gi, ' ')
+    .replace(/<span class="buai-source__body">[\s\S]*?<\/span><\/details>/gi, ' ')
     // A summary is a heading by role. Emitting it as one keeps the FAQ out of
     // the rules aimed at body copy, where a question mark is the whole point.
     .replace(/<summary[^>]*>([\s\S]*?)<\/summary>/gi, '\n\n## $1\n\n')
@@ -81,7 +81,7 @@ const RAN_TOGETHER = /(\w)(<a |<code>|<strong>|<em>)|(<\/a>|<\/code>|<\/strong>|
 const ALLOWED_FLUSH = [
   /<\/a><a /,
   /<\/a><button/,
-  /<\/a><span class="buoa-source__meta"/,
+  /<\/a><span class="buai-source__meta"/,
   /<\/a><div/,
   /<\/a><\/li>/,
 ];
@@ -108,8 +108,8 @@ for (const file of files) {
   // A page that states figures has to show where they came from. The
   // calculator carries its sources in its own panel rather than in chips, so
   // that counts too.
-  const statesFigures = /buoa-readout__figure|buoa-num/.test(body);
-  const showsSources = /buoa-source|calc__why/.test(body);
+  const statesFigures = /buai-readout__figure|buai-num/.test(body);
+  const showsSources = /buai-source|calc__why/.test(body);
   if (statesFigures && !showsSources) {
     problems.push(`${name}: prints figures with no source anywhere on the page.`);
   }
@@ -168,7 +168,7 @@ for (const file of files) {
 
 // -------------------------------------------------------------------- vale
 
-const scratch = mkdtempSync(join(tmpdir(), 'buoa-copy-'));
+const scratch = mkdtempSync(join(tmpdir(), 'buai-copy-'));
 try {
   for (const file of files) {
     const name = relative(dist, file).replace(/[\\/]/g, '-').replace(/\.html$/, '.md');

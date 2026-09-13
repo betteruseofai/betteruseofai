@@ -238,7 +238,7 @@ browser.runtime.onInstalled.addListener(() => {
     await repriceAll(current);
     // Once a day: prune anything past the retention setting. Nothing is sent
     // anywhere by this; it only deletes.
-    await browser.alarms.create('buoa:daily', { periodInMinutes: 60 * 24 });
+    await browser.alarms.create('buai:daily', { periodInMinutes: 60 * 24 });
   })();
 });
 
@@ -249,7 +249,7 @@ browser.runtime.onStartup?.addListener(() => {
 });
 
 browser.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name !== 'buoa:daily') return;
+  if (alarm.name !== 'buai:daily') return;
   void (async () => {
     const current = await settings.get();
     const removed = await prune(current.retentionDays, new Date());

@@ -52,7 +52,7 @@ interface AssistantLine {
 const NOT_A_REGION = new Set(['not_available', 'unknown', '']);
 
 export const defaultClaudeDir = (): string =>
-  process.env['BUOA_CLAUDE_DIR'] ?? join(process.env['CLAUDE_CONFIG_DIR'] ?? join(homedir(), '.claude'), 'projects');
+  process.env['BUAI_CLAUDE_DIR'] ?? join(process.env['CLAUDE_CONFIG_DIR'] ?? join(homedir(), '.claude'), 'projects');
 
 /** True when the line is an assistant turn we should count. */
 const classify = (

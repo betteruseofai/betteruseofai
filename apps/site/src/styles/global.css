@@ -259,7 +259,7 @@
 
 /* Present to a screen reader, absent to the eye. Used where a decorative run
    of text would otherwise be read aloud several times over. */
-.buoa-visually-hidden {
+.buai-visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -447,18 +447,18 @@
 
 /* The footer lists are navigation, so they read as rules rather than bullets.
    Same reasoning as the rest of the system: no decoration that is not data. */
-.buoa-footer ul {
+.buai-footer ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.buoa-footer li {
+.buai-footer li {
   border-top: var(--rule) solid var(--hairline);
   padding: var(--space-2) 0;
 }
 
-.buoa-footer li a {
+.buai-footer li a {
   font-family: var(--font-mono);
   font-size: var(--step--1);
 }

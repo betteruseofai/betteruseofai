@@ -51,17 +51,17 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   const continents = [...new Set(dataset.regions.map((one) => one.continent ?? 'Global'))].sort();
 
   return (
-    <main class="buoa-options">
+    <main class="buai-options">
       <h1>Settings</h1>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>Where you are</h2>
         <p>
           Carbon depends on the grid the electricity came from, and grids differ by a factor of
           thirty. We use the world average until you say otherwise.
         </p>
-        <label class="buoa-options__field">
-          <span class="buoa-readout__label">Region</span>
+        <label class="buai-options__field">
+          <span class="buai-readout__label">Region</span>
           <select
             value={settings.regionCode ?? ''}
             onChange={(event) =>
@@ -84,7 +84,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         </label>
       </section>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>What counts as water</h2>
         <p>
           Published water figures differ by more than a hundred times, almost entirely over where
@@ -93,7 +93,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           building the hardware.
         </p>
         {(['on-site', 'on-site + off-site', 'lifecycle'] as const).map((scope) => (
-          <label class="buoa-options__radio" key={scope}>
+          <label class="buai-options__radio" key={scope}>
             <input
               type="radio"
               name="water-scope"
@@ -102,7 +102,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
             />
             <span>
               <strong>{scope}</strong>
-              <span class="buoa-options__hint">
+              <span class="buai-options__hint">
                 {scope === 'on-site'
                   ? 'Cooling at the building, and nothing else.'
                   : scope === 'on-site + off-site'
@@ -114,7 +114,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         ))}
       </section>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>Which carbon figure</h2>
         <p>
           A provider's market-based factor is a claim about what it bought, not about the electrons
@@ -122,7 +122,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           times. Location-based is the default for that reason.
         </p>
         {(['location-based', 'provider-reported'] as const).map((basis) => (
-          <label class="buoa-options__radio" key={basis}>
+          <label class="buai-options__radio" key={basis}>
             <input
               type="radio"
               name="carbon-basis"
@@ -136,9 +136,9 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         ))}
       </section>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>Nudges</h2>
-        <label class="buoa-options__radio">
+        <label class="buai-options__radio">
           <input
             type="checkbox"
             checked={settings.hintsEnabled}
@@ -148,13 +148,13 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           />
           <span>
             <strong>Say something before I send</strong>
-            <span class="buoa-options__hint">
+            <span class="buai-options__hint">
               Only when a rule is confident, and never for anything that looks like real work. Every
               nudge names the rule that produced it.
             </span>
           </span>
         </label>
-        <label class="buoa-options__radio">
+        <label class="buai-options__radio">
           <input
             type="checkbox"
             checked={settings.hasLocalModel}
@@ -164,21 +164,21 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           />
           <span>
             <strong>I run models on this machine</strong>
-            <span class="buoa-options__hint">
+            <span class="buai-options__hint">
               Off by default. We will not suggest a tool you have not said you have.
             </span>
           </span>
         </label>
       </section>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>What we keep</h2>
         <p>
           Counts, timestamps and model names, in this browser. Never the prompt, never the answer,
           never a fragment of either. Turns older than this are deleted.
         </p>
-        <label class="buoa-options__field">
-          <span class="buoa-readout__label">Keep for</span>
+        <label class="buai-options__field">
+          <span class="buai-readout__label">Keep for</span>
           <select
             /*
              * Falls back to the default when the stored value is not one of
@@ -218,14 +218,14 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         </p>
       </Hazard>
 
-      <section class="buoa-options__section">
+      <section class="buai-options__section">
         <h2>Forget everything</h2>
         <p>
           {count} turns are stored. This deletes all of them at once, and there is nothing to
           recover afterwards, here or anywhere else.
         </p>
         <button
-          class="buoa-button"
+          class="buai-button"
           type="button"
           onClick={() => {
             void browser.runtime.sendMessage({ type: 'events:forget' }).then(() => {
@@ -236,7 +236,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         >
           Delete everything stored
         </button>
-        {forgotten ? <p class="buoa-options__hint">Gone.</p> : null}
+        {forgotten ? <p class="buai-options__hint">Gone.</p> : null}
       </section>
 
       <MetaStrip

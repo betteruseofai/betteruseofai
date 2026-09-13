@@ -26,22 +26,22 @@ const pc = (value: number): string =>
   range && top > 0 ? (
     <Fragment>
       <div
-        class="buoa-rangebar"
+        class="buai-rangebar"
         role="img"
         aria-label={`From ${displayNumber(range.low)} to ${displayNumber(range.high)}, central ${displayNumber(range.central)}`}
-        style={`--buoa-low: ${pc(range.low)}; --buoa-central: ${pc(range.central)}; --buoa-high: ${pc(range.high)}`}
+        style={`--buai-low: ${pc(range.low)}; --buai-central: ${pc(range.central)}; --buai-high: ${pc(range.high)}`}
       >
-        <div class="buoa-rangebar__band" />
-        <div class="buoa-rangebar__hazard" />
-        <div class="buoa-rangebar__tick" />
+        <div class="buai-rangebar__band" />
+        <div class="buai-rangebar__hazard" />
+        <div class="buai-rangebar__tick" />
       </div>
-      <div class="buoa-rangebar__scale">
+      <div class="buai-rangebar__scale">
         <span>{displayNumber(range.low)}</span>
         <span>{displayNumber(range.central)}</span>
         <span>{displayNumber(range.high)}</span>
       </div>
     </Fragment>
   ) : (
-    <div class="buoa-rangebar buoa-rangebar--absent" role="img" aria-label="No range to draw" />
+    <div class="buai-rangebar buai-rangebar--absent" role="img" aria-label="No range to draw" />
   )
 }

@@ -192,7 +192,7 @@ describe('the rules that keep it from looking generated', () => {
   });
 
   it('every number in the interface is set in the mono face', () => {
-    for (const selector of ['.buoa-readout__figure', '.buoa-readout__bounds', 'td.buoa-num']) {
+    for (const selector of ['.buai-readout__figure', '.buai-readout__bounds', 'td.buai-num']) {
       const index = componentsCss.indexOf(selector);
       expect(index, `${selector} is missing`).toBeGreaterThan(-1);
       const block = componentsCss.slice(index, componentsCss.indexOf('}', index));

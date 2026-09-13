@@ -50,18 +50,18 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
    */
   if (summary === null) {
     return (
-      <main class="buoa-dash">
-        <p class="buoa-readout__label">Reading what is stored</p>
+      <main class="buai-dash">
+        <p class="buai-readout__label">Reading what is stored</p>
       </main>
     );
   }
 
   if (!summary.total || summary.total.count === 0) {
     return (
-      <main class="buoa-dash">
+      <main class="buai-dash">
         <h1>Nothing to show yet</h1>
-        <div class="buoa-standby">
-          <span class="buoa-standby__code">empty</span>
+        <div class="buai-standby">
+          <span class="buai-standby__code">empty</span>
           Send a message on one of the sites this extension reads and it will appear here.
         </div>
       </main>
@@ -72,10 +72,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   const peak = Math.max(...summary.byDay.map((one) => one.energyWh?.central ?? 0), 1);
 
   return (
-    <main class="buoa-dash">
+    <main class="buai-dash">
       <h1>What this browser has cost</h1>
 
-      <div class="buoa-dash__readouts">
+      <div class="buai-dash__readouts">
         <Readout label="Energy" value={total.energyWh} unit="Wh" flags={total.flags} />
         <Readout label="Water" value={total.waterMl} unit="mL" flags={total.flags} />
         <Readout label="Carbon" value={total.carbonG} unit="g" flags={total.flags} />
@@ -83,17 +83,17 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       <section>
         <h2>Every day</h2>
-        <div class="buoa-dash__days">
+        <div class="buai-dash__days">
           {summary.byDay.map((day) => (
-            <div class="buoa-dash__day" key={day.key}>
-              <div class="buoa-dash__bar-track">
+            <div class="buai-dash__day" key={day.key}>
+              <div class="buai-dash__bar-track">
                 <div
-                  class="buoa-dash__bar"
+                  class="buai-dash__bar"
                   style={{ height: `${((day.energyWh?.central ?? 0) / peak) * 100}%` }}
                 />
               </div>
-              <span class="buoa-dash__daylabel">{day.key.slice(5)}</span>
-              <span class="buoa-dash__dayvalue">{short(day.energyWh, 'Wh')}</span>
+              <span class="buai-dash__daylabel">{day.key.slice(5)}</span>
+              <span class="buai-dash__dayvalue">{short(day.energyWh, 'Wh')}</span>
             </div>
           ))}
         </div>
@@ -101,8 +101,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       <section>
         <h2>Which models</h2>
-        <div class="buoa-scroll-x">
-          <table class="buoa-table">
+        <div class="buai-scroll-x">
+          <table class="buai-table">
             <thead>
               <tr>
                 <th scope="col">Model</th>
@@ -116,10 +116,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
               {summary.byModel.map((one) => (
                 <tr key={one.key}>
                   <td>{one.key === 'unknown' ? 'we do not recognise this one' : one.key}</td>
-                  <td class="buoa-num">{one.count}</td>
-                  <td class="buoa-num">{short(one.energyWh, 'Wh')}</td>
-                  <td class="buoa-num">{short(one.waterMl, 'mL')}</td>
-                  <td class="buoa-num">{short(one.carbonG, 'g')}</td>
+                  <td class="buai-num">{one.count}</td>
+                  <td class="buai-num">{short(one.energyWh, 'Wh')}</td>
+                  <td class="buai-num">{short(one.waterMl, 'mL')}</td>
+                  <td class="buai-num">{short(one.carbonG, 'g')}</td>
                 </tr>
               ))}
             </tbody>
@@ -129,7 +129,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       <section>
         <h2>Put another way</h2>
-        <ul class="buoa-dash__equivalents">
+        <ul class="buai-dash__equivalents">
           {(['energy', 'water', 'carbon'] as const).flatMap((quantity) => {
             const value =
               quantity === 'energy'

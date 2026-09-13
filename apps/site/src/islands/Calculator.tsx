@@ -154,10 +154,10 @@ const Figure = ({
 }) => {
   if (!range) {
     return (
-      <div class="buoa-readout buoa-readout--unknown">
-        <span class="buoa-readout__label">{label}</span>
-        <span class="buoa-readout__figure">unknown</span>
-        <span class="buoa-readout__bounds">{note ?? 'we have no figure for this'}</span>
+      <div class="buai-readout buai-readout--unknown">
+        <span class="buai-readout__label">{label}</span>
+        <span class="buai-readout__figure">unknown</span>
+        <span class="buai-readout__bounds">{note ?? 'we have no figure for this'}</span>
       </div>
     );
   }
@@ -168,33 +168,33 @@ const Figure = ({
 
   return (
     <div>
-      <div class="buoa-readout">
-        <span class="buoa-readout__label">{label}</span>
-        <span class="buoa-readout__figure">
+      <div class="buai-readout">
+        <span class="buai-readout__label">{label}</span>
+        <span class="buai-readout__figure">
           {atLeast ? '≥ ' : ''}
           {show(scaled.range.central)}
-          <span class="buoa-readout__unit">{scaled.unit}</span>
+          <span class="buai-readout__unit">{scaled.unit}</span>
         </span>
-        <span class="buoa-readout__bounds">
+        <span class="buai-readout__bounds">
           [ {show(scaled.range.low)} to {show(scaled.range.high)} ]
           {note ? ` · ${note}` : ''}
         </span>
       </div>
       <div
-        class="buoa-rangebar"
+        class="buai-rangebar"
         role="img"
         aria-label={`From ${show(scaled.range.low)} to ${show(scaled.range.high)} ${scaled.unit}`}
         style={{
-          '--buoa-low': pc(scaled.range.low),
-          '--buoa-central': pc(scaled.range.central),
-          '--buoa-high': '100%',
+          '--buai-low': pc(scaled.range.low),
+          '--buai-central': pc(scaled.range.central),
+          '--buai-high': '100%',
         } as never}
       >
-        <div class="buoa-rangebar__band" />
-        <div class="buoa-rangebar__hazard" />
-        <div class="buoa-rangebar__tick" />
+        <div class="buai-rangebar__band" />
+        <div class="buai-rangebar__hazard" />
+        <div class="buai-rangebar__tick" />
       </div>
-      <div class="buoa-rangebar__scale">
+      <div class="buai-rangebar__scale">
         <span>{show(scaled.range.low)}</span>
         <span>{show(scaled.range.central)}</span>
         <span>{show(scaled.range.high)}</span>
@@ -481,8 +481,8 @@ export default function Calculator() {
               <Figure label="Carbon" range={times(local.carbonG, factor)} unit="g" atLeast={false} />
             </div>
             {verdict ? <p class="measure">{verdict}</p> : null}
-            <div class="buoa-hazard measure">
-              <span class="buoa-hazard__label">Before you act on that</span>
+            <div class="buai-hazard measure">
+              <span class="buai-hazard__label">Before you act on that</span>
               <p style="margin-bottom: 0">
                 The local figure comes from a formula, not a measurement, and it assumes your
                 accelerator is kept busy. One case we checked against a real card came out about a
@@ -492,9 +492,9 @@ export default function Calculator() {
           </div>
         ) : null}
 
-        <details class="buoa-source calc__why">
+        <details class="buai-source calc__why">
           <summary>Where this range comes from</summary>
-          <span class="buoa-source__body">
+          <span class="buai-source__body">
             <ul>
               {explainFlags(cloud.basis.flags).map((line) => (
                 <li key={line}>{line}</li>
@@ -504,7 +504,7 @@ export default function Calculator() {
               {cloud.basis.sources.map((source) => (
                 <li key={source.url}>
                   <a href={source.url}>{source.title}</a>
-                  <span class="buoa-source__meta">
+                  <span class="buai-source__meta">
                     {source.publisher} · {source.date}
                   </span>
                 </li>
@@ -515,7 +515,7 @@ export default function Calculator() {
 
         <div class="row">
           <button
-            class="buoa-button"
+            class="buai-button"
             type="button"
             onClick={() => {
               void navigator.clipboard?.writeText(plain()).then(
@@ -526,7 +526,7 @@ export default function Calculator() {
           >
             {copied ? 'Copied as text' : 'Copy as text'}
           </button>
-          <a class="buoa-button buoa-button--quiet" href="/methodology">
+          <a class="buai-button buai-button--quiet" href="/methodology">
             Read the method
           </a>
         </div>

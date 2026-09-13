@@ -45,9 +45,9 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
   if (failed) {
     return (
-      <main class="buoa-popup">
-        <div class="buoa-standby">
-          <span class="buoa-standby__code">no reply</span>
+      <main class="buai-popup">
+        <div class="buai-standby">
+          <span class="buai-standby__code">no reply</span>
           The background worker did not answer. Reload the extension and try again.
         </div>
       </main>
@@ -56,8 +56,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
   if (!summary) {
     return (
-      <main class="buoa-popup">
-        <p class="buoa-readout__label">Reading what is stored</p>
+      <main class="buai-popup">
+        <p class="buai-readout__label">Reading what is stored</p>
       </main>
     );
   }
@@ -68,10 +68,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   /* A first run has nothing to show, and saying so beats three zeroes. */
   if (!total || total.count === 0) {
     return (
-      <main class="buoa-popup">
+      <main class="buai-popup">
         <Header datasetVersion={summary.datasetVersion} />
-        <div class="buoa-standby">
-          <span class="buoa-standby__code">nothing yet</span>
+        <div class="buai-standby">
+          <span class="buai-standby__code">nothing yet</span>
           Send a message on claude.ai, chatgpt.com or gemini.google.com and it will appear here.
           Nothing is counted until you do, and nothing leaves this machine when you have.
         </div>
@@ -95,7 +95,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   }
 
   return (
-    <main class="buoa-popup">
+    <main class="buai-popup">
       <Header datasetVersion={summary.datasetVersion} />
 
       <Readout label="Energy" value={total.energyWh} unit="Wh" flags={flags} />
@@ -103,17 +103,17 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <Readout label="Carbon" value={total.carbonG} unit="g" flags={flags} />
 
       {energyEquivalent ? (
-        <p class="buoa-popup__equivalent">
+        <p class="buai-popup__equivalent">
           About {energyEquivalent.count.toFixed(1)} {energyEquivalent.label}
           {energyEquivalent.stale ? ', from a figure now seventeen years old' : ''}.
         </p>
       ) : null}
 
-      <div class="buoa-popup__models">
+      <div class="buai-popup__models">
         {summary.byModel.slice(0, 4).map((one) => (
-          <div class="buoa-popup__model" key={one.key}>
+          <div class="buai-popup__model" key={one.key}>
             <span>{one.key === 'unknown' ? 'unrecognised' : one.key}</span>
-            <span class="buoa-mono">{one.count}</span>
+            <span class="buai-mono">{one.count}</span>
           </div>
         ))}
       </div>
@@ -126,7 +126,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       {caveats.length > 0 ? (
         <Hazard label={caveats.length === 1 ? 'Worth knowing' : 'Worth knowing, on both counts'}>
           {caveats.map((line) => (
-            <p class="buoa-popup__caveat" key={line}>
+            <p class="buai-popup__caveat" key={line}>
               {line}
             </p>
           ))}
@@ -134,7 +134,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       ) : null}
 
       {flags.includes('thinking-unknown') ? (
-        <p class="buoa-popup__note">
+        <p class="buai-popup__note">
           Some turns hid their reasoning tokens, so these are lower bounds.
         </p>
       ) : null}
@@ -148,11 +148,11 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         ]}
       />
 
-      <div class="buoa-popup__actions">
-        <button class="buoa-button buoa-button--quiet" type="button" onClick={() => openPage('dashboard')}>
+      <div class="buai-popup__actions">
+        <button class="buai-button buai-button--quiet" type="button" onClick={() => openPage('dashboard')}>
           See the detail
         </button>
-        <button class="buoa-button buoa-button--quiet" type="button" onClick={() => openPage('options')}>
+        <button class="buai-button buai-button--quiet" type="button" onClick={() => openPage('options')}>
           Change the settings
         </button>
       </div>
@@ -161,12 +161,12 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 };
 
 const Header = ({ datasetVersion }: { datasetVersion: string }) => (
-  <header class="buoa-popup__header">
+  <header class="buai-popup__header">
     {/* The brand takes its own line at this width. Letting it share one with
         the tape wrapped it across two lines and broke the word in half. */}
-    <span class="buoa-popup__brand">Better Use of AI</span>
-    <span class="buoa-popup__tape">Estimate, not a measurement</span>
-    <span class="buoa-popup__hidden">{datasetVersion}</span>
+    <span class="buai-popup__brand">Better Use of AI</span>
+    <span class="buai-popup__tape">Estimate, not a measurement</span>
+    <span class="buai-popup__hidden">{datasetVersion}</span>
   </header>
 );
 

@@ -76,7 +76,7 @@ for await (const chunk of process.stdin) payload += chunk;
 try {
   const input = JSON.parse(payload);
   const dir =
-    process.env.BUOA_STATE_DIR ??
+    process.env.BUAI_STATE_DIR ??
     join(process.env.CLAUDE_PLUGIN_DATA ?? join(homedir(), '.claude'), 'betteruseofai', 'state');
   const safe = String(input.session_id).replace(/[^A-Za-z0-9_-]/g, '_');
   process.stdout.write(readFileSync(join(dir, safe + '.line'), 'utf8').trimEnd());

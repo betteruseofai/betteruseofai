@@ -165,14 +165,14 @@ describe('every page', () => {
       await page.goto(`${base}${path}`);
       // Everything except the calculator's interactivity has to work. The
       // nav, the copy, the tables and the FAQ are all markup.
-      const nav = await page.locator('nav.buoa-nav a').count();
+      const nav = await page.locator('nav.buai-nav a').count();
       const headline = (await page.textContent('h1')) ?? '';
       if (nav < 5) missing.push(`${path}: navigation did not render`);
       if (headline.trim().length === 0) missing.push(`${path}: no headline`);
     }
     // The landing readouts are rendered on the server, so they are there too.
     await page.goto(`${base}/`);
-    const figure = (await page.textContent('.buoa-readout__figure')) ?? '';
+    const figure = (await page.textContent('.buai-readout__figure')) ?? '';
     if (!/\d/.test(figure)) missing.push('landing: no figure without script');
     expect(missing).toEqual([]);
     await context.close();
@@ -247,9 +247,9 @@ describe('the calculator', () => {
   it('answers, and puts its state in the hash rather than the query', async () => {
     if (skip()) return;
     const { page } = await open('/calculator');
-    await page.waitForSelector('.calc__out .buoa-readout__figure');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
 
-    const before = (await page.textContent('.calc__out .buoa-readout__figure')) ?? '';
+    const before = (await page.textContent('.calc__out .buai-readout__figure')) ?? '';
     expect(before.trim().length).toBeGreaterThan(0);
 
     await page.locator('.calc__dials input[type="number"]').first().fill('200');
@@ -258,7 +258,7 @@ describe('the calculator', () => {
     await page.waitForFunction(() => window.location.hash.includes('prompts=200'), undefined, {
       timeout: 10000,
     });
-    expect((await page.textContent('.calc__out .buoa-readout__figure')) ?? '').not.toBe(before);
+    expect((await page.textContent('.calc__out .buai-readout__figure')) ?? '').not.toBe(before);
 
     const url = new URL(page.url());
     expect(url.search).toBe('');
@@ -270,7 +270,7 @@ describe('the calculator', () => {
     if (skip()) return;
     const hash = '#model=claude-haiku-4.5&region=FR&prompts=7&in=400&out=300&period=day&scope=on-site';
     const { page } = await open(`/calculator${hash}`);
-    await page.waitForSelector('.calc__out .buoa-readout__figure');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
 
     expect(await page.locator('.calc__dials select').first().inputValue()).toBe('claude-haiku-4.5');
     expect(await page.locator('.calc__dials input[type="number"]').first().inputValue()).toBe('7');
@@ -280,9 +280,9 @@ describe('the calculator', () => {
   it('never renders a missing figure as zero', async () => {
     if (skip()) return;
     const { page } = await open('/calculator');
-    await page.waitForSelector('.calc__out .buoa-readout__figure');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
 
-    const figures = await page.locator('.calc__out .buoa-readout__figure').allTextContents();
+    const figures = await page.locator('.calc__out .buai-readout__figure').allTextContents();
     for (const figure of figures) {
       const text = figure.trim();
       expect(text === '0' || text === '0.00').toBe(false);

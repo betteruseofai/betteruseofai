@@ -71,7 +71,7 @@ a:hover {
   outline-offset: 2px;
 }
 
-.buoa-mono,
+.buai-mono,
 code,
 kbd,
 samp {
@@ -81,7 +81,7 @@ samp {
 
 /* ------------------------------------------------------------- hairlines */
 
-.buoa-hairline {
+.buai-hairline {
   border: 0;
   border-top: var(--rule) solid var(--hairline);
   margin: 0;
@@ -92,7 +92,7 @@ samp {
  * The paper grid. Twelve columns of visible rule with a crosshair at each
  * intersection, so the page shows its own structure rather than floating.
  */
-.buoa-grid-paper {
+.buai-grid-paper {
   position: relative;
   /* The rules have to reach the bottom of whatever they wrap, so this goes on
      a container with content in it rather than on an empty element. */
@@ -109,12 +109,12 @@ samp {
   background-position: left top;
 }
 
-.buoa-crosshair {
+.buai-crosshair {
   position: relative;
 }
 
-.buoa-crosshair::before,
-.buoa-crosshair::after {
+.buai-crosshair::before,
+.buai-crosshair::after {
   content: '+';
   position: absolute;
   left: -0.32em;
@@ -125,17 +125,17 @@ samp {
   pointer-events: none;
 }
 
-.buoa-crosshair::before {
+.buai-crosshair::before {
   top: 0;
 }
 
-.buoa-crosshair::after {
+.buai-crosshair::after {
   bottom: 0;
 }
 
 /* -------------------------------------------------------------- readout */
 
-.buoa-readout {
+.buai-readout {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -143,7 +143,7 @@ samp {
   border-top: var(--rule) solid var(--hairline);
 }
 
-.buoa-readout__label {
+.buai-readout__label {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   font-weight: 500;
@@ -152,7 +152,7 @@ samp {
   color: var(--muted);
 }
 
-.buoa-readout__figure {
+.buai-readout__figure {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums slashed-zero;
   font-weight: 500;
@@ -164,12 +164,12 @@ samp {
   gap: 0.35em;
 }
 
-.buoa-readout__unit {
+.buai-readout__unit {
   font-size: var(--step-1);
   color: var(--muted);
 }
 
-.buoa-readout__bounds {
+.buai-readout__bounds {
   font-family: var(--font-mono);
   font-size: var(--step--1);
   color: var(--muted);
@@ -177,7 +177,7 @@ samp {
 }
 
 /* A figure we cannot give is a word, never a nought. */
-.buoa-readout--unknown .buoa-readout__figure {
+.buai-readout--unknown .buai-readout__figure {
   color: var(--muted);
   font-size: var(--step-2);
   text-transform: lowercase;
@@ -185,10 +185,10 @@ samp {
 
 /* -------------------------------------------------------------- rangebar */
 
-.buoa-rangebar {
-  --buoa-low: 0%;
-  --buoa-central: 50%;
-  --buoa-high: 100%;
+.buai-rangebar {
+  --buai-low: 0%;
+  --buai-central: 50%;
+  --buai-high: 100%;
   position: relative;
   height: 1.25rem;
   background: var(--bg-sunken);
@@ -196,11 +196,11 @@ samp {
   margin-top: var(--space-3);
 }
 
-.buoa-rangebar__band {
+.buai-rangebar__band {
   position: absolute;
   inset-block: 0;
-  left: var(--buoa-low);
-  width: calc(var(--buoa-high) - var(--buoa-low));
+  left: var(--buai-low);
+  width: calc(var(--buai-high) - var(--buai-low));
   background: var(--accent-tint);
   border-inline: var(--rule) solid var(--accent);
 }
@@ -209,11 +209,11 @@ samp {
  * The upper band is hatched as well as tinted, so it still reads as the
  * uncertain end for anyone who cannot separate the two colours.
  */
-.buoa-rangebar__hazard {
+.buai-rangebar__hazard {
   position: absolute;
   inset-block: 0;
-  left: var(--buoa-central);
-  width: calc(var(--buoa-high) - var(--buoa-central));
+  left: var(--buai-central);
+  width: calc(var(--buai-high) - var(--buai-central));
   background-image: repeating-linear-gradient(
     45deg,
     var(--hazard) 0,
@@ -225,16 +225,16 @@ samp {
 }
 
 /* The central mark runs past the bar on both sides, so it reads at a glance. */
-.buoa-rangebar__tick {
+.buai-rangebar__tick {
   position: absolute;
   inset-block: -6px;
-  left: var(--buoa-central);
+  left: var(--buai-central);
   width: 3px;
   margin-left: -1px;
   background: var(--accent);
 }
 
-.buoa-rangebar__scale {
+.buai-rangebar__scale {
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
@@ -248,14 +248,14 @@ samp {
  * A figure we do not have gets no bar. An empty trough still reads as a value
  * of nothing, which is the one impression this project must never give.
  */
-.buoa-readout--unknown + .buoa-rangebar,
-.buoa-rangebar--absent {
+.buai-readout--unknown + .buai-rangebar,
+.buai-rangebar--absent {
   display: none;
 }
 
 /* ------------------------------------------------------------- metastrip */
 
-.buoa-metastrip {
+.buai-metastrip {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
@@ -268,13 +268,13 @@ samp {
   padding-top: var(--space-2);
 }
 
-.buoa-metastrip__item::after {
+.buai-metastrip__item::after {
   content: '·';
   margin-left: var(--space-3);
   color: var(--hairline);
 }
 
-.buoa-metastrip__item:last-child::after {
+.buai-metastrip__item:last-child::after {
   content: '';
   margin: 0;
 }
@@ -282,7 +282,7 @@ samp {
 /* ------------------------------------------------------------------ tape */
 
 /* A strip of repeated text that says what the numbers are and are not. */
-.buoa-tape {
+.buai-tape {
   overflow: hidden;
   white-space: nowrap;
   border-block: var(--rule) solid var(--hairline);
@@ -297,14 +297,14 @@ samp {
 
 /* --------------------------------------------------------------- index */
 
-.buoa-index {
+.buai-index {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   letter-spacing: 0.14em;
   color: var(--muted);
 }
 
-.buoa-index__current {
+.buai-index__current {
   color: var(--accent);
 }
 
@@ -315,7 +315,7 @@ samp {
  * reveals on hover, on focus and on tap, and it is a button so a keyboard can
  * reach it.
  */
-.buoa-redacted {
+.buai-redacted {
   appearance: none;
   border: 0;
   padding: 0 0.25em;
@@ -326,23 +326,23 @@ samp {
   transition: color var(--tempo) var(--ease), background var(--tempo) var(--ease);
 }
 
-.buoa-redacted:hover,
-.buoa-redacted:focus-visible,
-.buoa-redacted[aria-expanded='true'] {
+.buai-redacted:hover,
+.buai-redacted:focus-visible,
+.buai-redacted[aria-expanded='true'] {
   color: var(--ink);
   background: var(--accent-tint);
 }
 
 /* --------------------------------------------------------------- hazard */
 
-.buoa-hazard {
+.buai-hazard {
   border: var(--rule) solid var(--hazard);
   padding: var(--space-4);
   background: var(--bg-raised);
   position: relative;
 }
 
-.buoa-hazard::before {
+.buai-hazard::before {
   content: '';
   position: absolute;
   inset-inline: 0;
@@ -357,7 +357,7 @@ samp {
   );
 }
 
-.buoa-hazard__label {
+.buai-hazard__label {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   letter-spacing: 0.14em;
@@ -369,7 +369,7 @@ samp {
 
 /* ------------------------------------------------------------ sourcechip */
 
-.buoa-source {
+.buai-source {
   display: inline;
 }
 
@@ -380,15 +380,15 @@ samp {
  * box. Without it the chip drops its own paragraph, which is how this was
  * found.
  */
-.buoa-source::details-content {
+.buai-source::details-content {
   display: none;
 }
 
-.buoa-source[open]::details-content {
+.buai-source[open]::details-content {
   display: block;
 }
 
-.buoa-source > summary {
+.buai-source > summary {
   display: inline;
   list-style: none;
   cursor: pointer;
@@ -398,11 +398,11 @@ samp {
   vertical-align: super;
 }
 
-.buoa-source > summary::-webkit-details-marker {
+.buai-source > summary::-webkit-details-marker {
   display: none;
 }
 
-.buoa-source__body {
+.buai-source__body {
   display: block;
   margin: var(--space-2) 0;
   padding: var(--space-3);
@@ -412,7 +412,7 @@ samp {
   max-width: var(--measure);
 }
 
-.buoa-source__meta {
+.buai-source__meta {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   color: var(--muted);
@@ -422,11 +422,11 @@ samp {
 
 /* ------------------------------------------------------------------ faq */
 
-.buoa-faq > details {
+.buai-faq > details {
   border-top: var(--rule) solid var(--hairline);
 }
 
-.buoa-faq > details > summary {
+.buai-faq > details > summary {
   cursor: pointer;
   padding: var(--space-4) 0;
   font-weight: 700;
@@ -436,43 +436,43 @@ samp {
   gap: var(--space-4);
 }
 
-.buoa-faq > details > summary::-webkit-details-marker {
+.buai-faq > details > summary::-webkit-details-marker {
   display: none;
 }
 
-.buoa-faq > details > summary::after {
+.buai-faq > details > summary::after {
   content: '+';
   font-family: var(--font-mono);
   color: var(--accent);
 }
 
-.buoa-faq > details[open] > summary::after {
+.buai-faq > details[open] > summary::after {
   content: '–';
 }
 
 /* ----------------------------------------------------------------- table */
 
-.buoa-scroll-x {
+.buai-scroll-x {
   overflow-x: auto;
   max-width: 100%;
 }
 
-.buoa-table {
+.buai-table {
   width: 100%;
   min-width: 30rem;
   border-collapse: collapse;
   font-size: var(--step--1);
 }
 
-.buoa-table th,
-.buoa-table td {
+.buai-table th,
+.buai-table td {
   text-align: left;
   padding: var(--space-3) var(--space-4) var(--space-3) 0;
   border-top: var(--rule) solid var(--hairline);
   vertical-align: top;
 }
 
-.buoa-table th {
+.buai-table th {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   font-weight: 500;
@@ -481,7 +481,7 @@ samp {
   color: var(--muted);
 }
 
-.buoa-table td.buoa-num {
+.buai-table td.buai-num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums slashed-zero;
   text-align: right;
@@ -493,7 +493,7 @@ samp {
 /*
  * A button is a mono uppercase verb with an object. Never "Get started".
  */
-.buoa-button {
+.buai-button {
   display: inline-block;
   font-family: var(--font-mono);
   font-size: var(--step--1);
@@ -509,18 +509,18 @@ samp {
   transition: background var(--tempo-fast) var(--ease);
 }
 
-.buoa-button:hover {
+.buai-button:hover {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
   color: var(--bg);
 }
 
-.buoa-button--quiet {
+.buai-button--quiet {
   background: transparent;
   color: var(--accent);
 }
 
-.buoa-button--quiet:hover {
+.buai-button--quiet:hover {
   background: var(--accent-tint);
   color: var(--accent-strong);
 }
@@ -528,7 +528,7 @@ samp {
 /* ------------------------------------------------------------- standby */
 
 /* The no-script fallback and the 404. */
-.buoa-standby {
+.buai-standby {
   border: var(--rule) solid var(--border-ui);
   padding: var(--space-6);
   font-family: var(--font-mono);
@@ -537,7 +537,7 @@ samp {
   background: var(--bg-sunken);
 }
 
-.buoa-standby__code {
+.buai-standby__code {
   display: block;
   font-size: var(--step-3);
   color: var(--muted);
@@ -548,7 +548,7 @@ samp {
 /* ------------------------------------------------------------ reviewgate */
 
 /* Every page carries this until a human has read the copy on it. */
-.buoa-reviewgate {
+.buai-reviewgate {
   border: var(--rule) solid var(--hazard);
   border-left-width: 4px;
   padding: var(--space-3) var(--space-4);
@@ -562,7 +562,7 @@ samp {
 
 /* -------------------------------------------------------------- nav, foot */
 
-.buoa-nav {
+.buai-nav {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -575,7 +575,7 @@ samp {
   letter-spacing: 0.1em;
 }
 
-.buoa-nav__brand {
+.buai-nav__brand {
   font-family: var(--font-display);
   font-size: var(--step-1);
   font-weight: 800;
@@ -591,32 +591,32 @@ samp {
  * theme toggle on three different rows in an order nobody would choose.
  */
 @media (max-width: 34rem) {
-  .buoa-nav {
+  .buai-nav {
     gap: var(--space-3) var(--space-4);
   }
 
-  .buoa-nav__brand {
+  .buai-nav__brand {
     flex: 1 0 100%;
     margin-right: 0;
     margin-bottom: var(--space-2);
   }
 
-  .buoa-themetoggle {
+  .buai-themetoggle {
     margin-left: auto;
   }
 }
 
-.buoa-nav a {
+.buai-nav a {
   text-decoration: none;
   color: var(--ink-2);
 }
 
-.buoa-nav a:hover,
-.buoa-nav a[aria-current='page'] {
+.buai-nav a:hover,
+.buai-nav a[aria-current='page'] {
   color: var(--accent);
 }
 
-.buoa-footer {
+.buai-footer {
   border-top: var(--rule) solid var(--hairline);
   padding: var(--space-6) 0;
   font-size: var(--step--1);
@@ -625,7 +625,7 @@ samp {
 
 /* ---------------------------------------------------------- themetoggle */
 
-.buoa-themetoggle {
+.buai-themetoggle {
   appearance: none;
   border: var(--rule) solid var(--border-ui);
   background: transparent;
@@ -638,7 +638,7 @@ samp {
   cursor: pointer;
 }
 
-.buoa-themetoggle:hover {
+.buai-themetoggle:hover {
   border-color: var(--accent);
   color: var(--accent);
 }

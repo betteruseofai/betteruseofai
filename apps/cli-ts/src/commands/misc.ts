@@ -196,7 +196,7 @@ export const doctor = async (context: Context, args: ParsedArgs): Promise<string
     ok: claudeThere,
     detail: claudeThere
       ? claudeDir
-      : `Nothing at ${claudeDir}. Set BUOA_CLAUDE_DIR if yours lives somewhere else.`,
+      : `Nothing at ${claudeDir}. Set BUAI_CLAUDE_DIR if yours lives somewhere else.`,
   });
   checks.push({
     name: 'Codex CLI rollouts',

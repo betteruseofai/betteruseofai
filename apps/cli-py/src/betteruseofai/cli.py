@@ -977,7 +977,7 @@ def cmd_doctor(context: Context, args: dict[str, Any]) -> str:
             "detail": (
                 claude_dir
                 if claude_there
-                else f"Nothing at {claude_dir}. Set BUOA_CLAUDE_DIR if yours lives somewhere else."
+                else f"Nothing at {claude_dir}. Set BUAI_CLAUDE_DIR if yours lives somewhere else."
             ),
         }
     )

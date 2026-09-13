@@ -11,7 +11,7 @@ concurrency:
 
 env:
   # Nothing in CI may reach a live provider site or API. See PLAN.md section 9.
-  BUOA_OFFLINE: '1'
+  BUAI_OFFLINE: '1'
 
 jobs:
   check:

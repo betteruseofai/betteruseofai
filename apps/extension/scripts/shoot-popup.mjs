@@ -152,7 +152,7 @@ for (const theme of ['light', 'dark']) {
   const page = await context.newPage();
   await page.addInitScript(STUB);
   await page.goto(`http://127.0.0.1:${port}/popup.html`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('.buoa-readout', { timeout: 5000 });
+  await page.waitForSelector('.buai-readout', { timeout: 5000 });
   await page.evaluate(() => document.fonts.ready);
 
   const name = `popup-${theme}.png`;
@@ -172,7 +172,7 @@ for (const theme of ['light']) {
   const page = await context.newPage();
   await page.addInitScript(stubFor(empty));
   await page.goto(`http://127.0.0.1:${port}/popup.html`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('.buoa-standby', { timeout: 5000 });
+  await page.waitForSelector('.buai-standby', { timeout: 5000 });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: join(shots, 'popup-first-run.png'), fullPage: true });
   written.push('popup-first-run.png');
@@ -184,8 +184,8 @@ for (const [page, selector, width] of [
   // Wait for something only the populated view renders. Both the loading and
   // the empty states carry the page's own class, so waiting on that captured
   // whichever happened to be on screen.
-  ['options', '.buoa-options__section', 900],
-  ['dashboard', '.buoa-dash__readouts', 1100],
+  ['options', '.buai-options__section', 900],
+  ['dashboard', '.buai-dash__readouts', 1100],
 ]) {
   for (const theme of ['light', 'dark']) {
     const context = await browser.newContext({

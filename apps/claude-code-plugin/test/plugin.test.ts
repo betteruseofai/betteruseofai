@@ -34,11 +34,11 @@ const call = (script: string, argv: string[], payload: unknown): string =>
   execFileSync(process.execPath, [script, ...argv], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env: { ...process.env, BUOA_STATE_DIR: stateDir },
+    env: { ...process.env, BUAI_STATE_DIR: stateDir },
   });
 
 beforeAll(() => {
-  stateDir = mkdtempSync(join(tmpdir(), 'buoa-plugin-'));
+  stateDir = mkdtempSync(join(tmpdir(), 'buai-plugin-'));
   if (!existsSync(bundle)) {
     execFileSync(process.execPath, [join(root, 'scripts', 'bundle.mjs')], { cwd: root });
   }

@@ -5,28 +5,28 @@ body {
   background: var(--bg);
 }
 
-.buoa-dash {
+.buai-dash {
   max-width: 60rem;
   margin: 0 auto;
   padding: var(--space-7) var(--gutter) var(--space-9);
 }
 
-.buoa-dash h1 {
+.buai-dash h1 {
   font-size: var(--step-4);
   margin-bottom: var(--space-6);
 }
 
-.buoa-dash h2 {
+.buai-dash h2 {
   font-size: var(--step-1);
   margin-bottom: var(--space-4);
 }
 
-.buoa-dash section {
+.buai-dash section {
   padding-block: var(--space-6);
   border-top: var(--rule) solid var(--hairline);
 }
 
-.buoa-dash__readouts {
+.buai-dash__readouts {
   display: grid;
   gap: var(--space-5);
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -35,7 +35,7 @@ body {
 
 /* One bar per day, drawn with divs. A chart library would be most of the
    extension's weight, for a shape three rectangles already show. */
-.buoa-dash__days {
+.buai-dash__days {
   display: flex;
   gap: var(--space-2);
   align-items: end;
@@ -43,14 +43,14 @@ body {
   padding-bottom: var(--space-2);
 }
 
-.buoa-dash__day {
+.buai-dash__day {
   display: grid;
   gap: var(--space-1);
   justify-items: center;
   min-width: 3.5rem;
 }
 
-.buoa-dash__bar-track {
+.buai-dash__bar-track {
   height: 8rem;
   width: 100%;
   display: flex;
@@ -58,7 +58,7 @@ body {
   border-bottom: var(--rule) solid var(--hairline);
 }
 
-.buoa-dash__bar {
+.buai-dash__bar {
   width: 100%;
   background: var(--accent-tint);
   border: var(--rule) solid var(--accent);
@@ -66,29 +66,29 @@ body {
   min-height: 2px;
 }
 
-.buoa-dash__daylabel,
-.buoa-dash__dayvalue {
+.buai-dash__daylabel,
+.buai-dash__dayvalue {
   font-family: var(--font-mono);
   font-size: var(--step--2);
   color: var(--muted);
   font-variant-numeric: tabular-nums slashed-zero;
 }
 
-.buoa-dash__equivalents {
+.buai-dash__equivalents {
   margin: 0;
   padding-left: var(--space-5);
   max-width: var(--measure);
 }
 
-.buoa-dash__equivalents li {
+.buai-dash__equivalents li {
   margin-bottom: var(--space-2);
 }
 
-.buoa-dash .buoa-metastrip {
+.buai-dash .buai-metastrip {
   margin-top: var(--space-7);
 }
 
 /* One grid item per readout. The figure and its bar belong together. */
-.buoa-dash__readouts > .buoa-readout-group {
+.buai-dash__readouts > .buai-readout-group {
   display: block;
 }

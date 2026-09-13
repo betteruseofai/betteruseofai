@@ -26,7 +26,7 @@ export interface HintContent {
   answer?: string;
 }
 
-export const HINT_TAG = 'buoa-hint';
+export const HINT_TAG = 'buai-hint';
 
 /** How long a dismissed rule stays quiet. */
 export const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -119,7 +119,7 @@ const STYLE = `
   }
 `;
 
-export class BuoaHint extends HTMLElement {
+export class BuaiHint extends HTMLElement {
   static observedAttributes = ['explanation', 'rule', 'saving', 'answer'];
 
   private root: ShadowRoot;
@@ -139,7 +139,7 @@ export class BuoaHint extends HTMLElement {
 
   private dismiss(): void {
     this.dispatchEvent(
-      new CustomEvent('buoa:dismiss', {
+      new CustomEvent('buai:dismiss', {
         bubbles: true,
         composed: true,
         detail: { ruleId: this.getAttribute('rule') ?? '', until: Date.now() + COOLDOWN_MS },
@@ -208,7 +208,7 @@ export class BuoaHint extends HTMLElement {
 /** Registers the element. Safe to call more than once. */
 export const register = (): void => {
   if (typeof customElements === 'undefined') return;
-  if (!customElements.get(HINT_TAG)) customElements.define(HINT_TAG, BuoaHint);
+  if (!customElements.get(HINT_TAG)) customElements.define(HINT_TAG, BuaiHint);
 };
 
 /**
@@ -233,12 +233,12 @@ export const showHint = (
   hint.setAttribute('rule', content.ruleId);
   if (content.saving) hint.setAttribute('saving', content.saving);
   if (content.answer) hint.setAttribute('answer', content.answer);
-  hint.setAttribute('data-buoa-hint', 'true');
+  hint.setAttribute('data-buai-hint', 'true');
 
   anchor.parentElement?.insertBefore(hint, anchor);
   return hint;
 };
 
 export const removeHint = (document: Document): void => {
-  for (const existing of document.querySelectorAll('[data-buoa-hint]')) existing.remove();
+  for (const existing of document.querySelectorAll('[data-buai-hint]')) existing.remove();
 };

@@ -133,8 +133,8 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
       <h2 class="band__title">Three ways in</h2>
     </div>
 
-    <div class="buoa-scroll-x">
-      <table class="buoa-table">
+    <div class="buai-scroll-x">
+      <table class="buai-table">
         <thead>
           <tr>
             <th scope="col">Where</th>
@@ -277,29 +277,29 @@ const perDay = (value: { low: number; central: number; high: number } | null) =>
     const paintOne = (slot: string, bounds: Bounds, atLeast: boolean): void => {
       const box = root.querySelector(`[data-slot="${slot}"]`);
       if (!box) return;
-      const figure = box.querySelector('.buoa-readout__figure');
-      const unit = figure?.querySelector('.buoa-readout__unit')?.outerHTML ?? '';
-      const boundsText = box.querySelector('.buoa-readout__bounds');
-      const readout = box.querySelector('.buoa-readout');
-      const bar = box.querySelector<HTMLElement>('.buoa-rangebar');
-      const scale = box.querySelectorAll('.buoa-rangebar__scale span');
+      const figure = box.querySelector('.buai-readout__figure');
+      const unit = figure?.querySelector('.buai-readout__unit')?.outerHTML ?? '';
+      const boundsText = box.querySelector('.buai-readout__bounds');
+      const readout = box.querySelector('.buai-readout');
+      const bar = box.querySelector<HTMLElement>('.buai-rangebar');
+      const scale = box.querySelectorAll('.buai-rangebar__scale span');
 
       if (!bounds) {
-        readout?.classList.add('buoa-readout--unknown');
+        readout?.classList.add('buai-readout--unknown');
         if (figure) figure.textContent = 'unknown';
         if (boundsText) boundsText.textContent = 'we have no figure for this combination';
         return;
       }
 
-      readout?.classList.remove('buoa-readout--unknown');
+      readout?.classList.remove('buai-readout--unknown');
       if (figure) figure.innerHTML = `${atLeast ? '&ge; ' : ''}${show(bounds.central)}${unit}`;
       if (boundsText) boundsText.textContent = `[ ${show(bounds.low)} to ${show(bounds.high)} ]`;
 
       if (bar && bounds.high > 0) {
         const pc = (value: number): string => `${Math.min(100, (value / bounds.high) * 100).toFixed(1)}%`;
-        bar.style.setProperty('--buoa-low', pc(bounds.low));
-        bar.style.setProperty('--buoa-central', pc(bounds.central));
-        bar.style.setProperty('--buoa-high', '100%');
+        bar.style.setProperty('--buai-low', pc(bounds.low));
+        bar.style.setProperty('--buai-central', pc(bounds.central));
+        bar.style.setProperty('--buai-high', '100%');
       }
       const texts = [bounds.low, bounds.central, bounds.high].map(show);
       scale.forEach((node, i) => {

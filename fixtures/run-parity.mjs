@@ -43,10 +43,10 @@ const substitute = (argv) =>
 const runNode = (argv) =>
   execFileSync(process.execPath, [join(repo, 'apps', 'cli-ts', 'dist', 'cli.js'), ...argv], {
     encoding: 'utf8',
-    env: { ...process.env, BUOA_CLAUDE_DIR: CLAUDE_DIR, CODEX_HOME: CODEX_DIR },
+    env: { ...process.env, BUAI_CLAUDE_DIR: CLAUDE_DIR, CODEX_HOME: CODEX_DIR },
   });
 
-const python = process.env['BUOA_PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
+const python = process.env['BUAI_PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
 
 const runPython = (argv) =>
   execFileSync(python, ['-m', 'betteruseofai.cli', ...argv], {
@@ -56,7 +56,7 @@ const runPython = (argv) =>
       ...process.env,
       PYTHONPATH: join(repo, 'apps', 'cli-py', 'src'),
       PYTHONIOENCODING: 'utf-8',
-      BUOA_CLAUDE_DIR: CLAUDE_DIR,
+      BUAI_CLAUDE_DIR: CLAUDE_DIR,
       CODEX_HOME: CODEX_DIR,
     },
   });

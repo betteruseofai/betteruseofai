@@ -12,7 +12,7 @@ import type { InterceptorConfig } from '../lib/interceptor.js';
 export default defineUnlistedScript(() => {
   let uninstall: (() => void) | null = null;
 
-  window.addEventListener('buoa:configure', (event) => {
+  window.addEventListener('buai:configure', (event) => {
     const config = (event as CustomEvent).detail as InterceptorConfig;
     if (!config || typeof config.nonce !== 'string' || !Array.isArray(config.patterns)) return;
     // Configured twice means the page navigated within the app. Put the

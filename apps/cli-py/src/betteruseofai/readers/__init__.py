@@ -68,7 +68,7 @@ _NOT_A_REGION = {"not_available", "unknown", ""}
 
 
 def default_claude_dir() -> str:
-    override = os.environ.get("BUOA_CLAUDE_DIR")
+    override = os.environ.get("BUAI_CLAUDE_DIR")
     if override:
         return override
     base = os.environ.get("CLAUDE_CONFIG_DIR") or str(Path.home() / ".claude")

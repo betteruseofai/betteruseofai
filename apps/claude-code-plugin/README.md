@@ -8,7 +8,7 @@ model would probably do. Everything is worked out on your machine. Nothing is se
 ## Installing
 
 ```
-/plugin marketplace add gordianknot-legacy/better
+/plugin marketplace add betteruseofai/betteruseofai
 /plugin install betteruseofai
 /betteruseofai:setup
 ```

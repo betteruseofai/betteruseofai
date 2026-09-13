@@ -67,7 +67,7 @@ export default defineContentScript({
     // page-world script has no list of its own to go stale.
     await injectScript('/interceptor.js', { keepInDom: false });
     window.dispatchEvent(
-      new CustomEvent('buoa:configure', {
+      new CustomEvent('buai:configure', {
         detail: {
           nonce,
           patterns: capturePatternsFor(adapter.id),
@@ -105,7 +105,7 @@ export default defineContentScript({
       cooldowns = (stored['hintCooldowns'] as Record<string, number>) ?? {};
     });
 
-    document.addEventListener('buoa:dismiss', (event) => {
+    document.addEventListener('buai:dismiss', (event) => {
       const detail = (event as CustomEvent).detail as { ruleId: string; until: number };
       cooldowns = { ...cooldowns, [detail.ruleId]: detail.until };
       void browser.storage.local.set({ hintCooldowns: cooldowns });

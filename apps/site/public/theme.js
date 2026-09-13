@@ -9,7 +9,7 @@
  * Two lines of work. Read one key, set one attribute.
  */
 try {
-  var saved = localStorage.getItem('buoa-theme');
+  var saved = localStorage.getItem('buai-theme');
   if (saved === 'dark' || saved === 'light') {
     document.documentElement.dataset.theme = saved;
   }

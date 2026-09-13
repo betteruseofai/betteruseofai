@@ -37,7 +37,7 @@ export interface InterceptedExchange {
   at: string;
 }
 
-export const EVENT_NAME = 'buoa:exchange';
+export const EVENT_NAME = 'buai:exchange';
 
 /** Written as a standalone function so it can be injected as a string. */
 export const installInterceptor = (config: InterceptorConfig): (() => void) => {
@@ -139,9 +139,9 @@ export const installInterceptor = (config: InterceptorConfig): (() => void) => {
 
   const OriginalXHR = window.XMLHttpRequest;
   class WrappedXHR extends OriginalXHR {
-    private buoaUrl = '';
-    private buoaMethod = '';
-    private buoaBody = '';
+    private buaiUrl = '';
+    private buaiMethod = '';
+    private buaiBody = '';
 
     override open(
       method: string,
@@ -150,20 +150,20 @@ export const installInterceptor = (config: InterceptorConfig): (() => void) => {
       username?: string | null,
       password?: string | null,
     ): void {
-      this.buoaMethod = method;
-      this.buoaUrl = typeof url === 'string' ? url : url.href;
+      this.buaiMethod = method;
+      this.buaiUrl = typeof url === 'string' ? url : url.href;
       super.open(method, url, async, username, password);
     }
 
     override send(body?: Document | XMLHttpRequestBodyInit | null): void {
-      if (typeof body === 'string') this.buoaBody = body;
-      if (wanted(this.buoaUrl, this.buoaMethod)) {
+      if (typeof body === 'string') this.buaiBody = body;
+      if (wanted(this.buaiUrl, this.buaiMethod)) {
         this.addEventListener('load', () => {
           try {
             publish({
-              url: this.buoaUrl,
-              method: this.buoaMethod,
-              requestBody: this.buoaBody,
+              url: this.buaiUrl,
+              method: this.buaiMethod,
+              requestBody: this.buaiBody,
               responseBody: typeof this.responseText === 'string' ? this.responseText : '',
               requestHeaders: {},
               at: new Date().toISOString(),

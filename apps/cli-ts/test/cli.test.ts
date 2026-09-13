@@ -21,7 +21,7 @@ const codexCli = (extra: string[]) =>
   run([...extra, '--now', NOW, '--no-color', '--source', 'codex', '--dir', join(logs, 'codex')]);
 
 beforeAll(() => {
-  process.env['BUOA_STATE_DIR'] = mkdtempSync(join(tmpdir(), 'buoa-cli-'));
+  process.env['BUAI_STATE_DIR'] = mkdtempSync(join(tmpdir(), 'buai-cli-'));
 });
 
 describe('parsing arguments', () => {

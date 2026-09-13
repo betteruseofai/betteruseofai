@@ -51,7 +51,7 @@ for (const theme of ['light', 'dark']) {
 
   await page.addInitScript((value) => {
     try {
-      localStorage.setItem('buoa-theme', value);
+      localStorage.setItem('buai-theme', value);
     } catch {
       /* storage blocked; the frame still renders in light */
     }

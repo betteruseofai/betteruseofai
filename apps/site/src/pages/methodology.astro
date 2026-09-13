@@ -130,8 +130,8 @@ const pending = dataset.regions.filter(
           <p>Every row we hold, worst to best evidence reading upward:</p>
         </div>
 
-        <div class="buoa-scroll-x" style="margin-top: var(--space-5)">
-          <table class="buoa-table">
+        <div class="buai-scroll-x" style="margin-top: var(--space-5)">
+          <table class="buai-table">
             <thead>
               <tr>
                 <th scope="col">Row</th>
@@ -159,9 +159,9 @@ const pending = dataset.regions.filter(
                     </th>
                     <td>{methodWords[row.methodology] ?? row.methodology}</td>
                     <td>{boundaryWords[row.boundary] ?? row.boundary}</td>
-                    <td class="buoa-num">{row.qualityScore} of 5</td>
-                    <td class="buoa-num">{num(row.pue)}</td>
-                    <td class="buoa-num">{num(row.waterOnsiteLPerKwh)}</td>
+                    <td class="buai-num">{row.qualityScore} of 5</td>
+                    <td class="buai-num">{num(row.pue)}</td>
+                    <td class="buai-num">{num(row.waterOnsiteLPerKwh)}</td>
                   </tr>
                 ))
               }
@@ -212,8 +212,8 @@ const pending = dataset.regions.filter(
           </p>
         </div>
 
-        <div class="buoa-scroll-x" style="margin-top: var(--space-5)">
-          <table class="buoa-table">
+        <div class="buai-scroll-x" style="margin-top: var(--space-5)">
+          <table class="buai-table">
             <thead>
               <tr>
                 <th scope="col">Region</th>
@@ -228,9 +228,9 @@ const pending = dataset.regions.filter(
                 regions.map((region, i) => (
                   <tr>
                     <th scope="row">{region.name}</th>
-                    <td class="buoa-num">{num(region.gridGco2PerKwh)}</td>
-                    <td class="buoa-num">{num(region.waterOffsiteLPerKwh)}</td>
-                    <td class="buoa-num">{region.year}</td>
+                    <td class="buai-num">{num(region.gridGco2PerKwh)}</td>
+                    <td class="buai-num">{num(region.waterOffsiteLPerKwh)}</td>
+                    <td class="buai-num">{region.year}</td>
                     <td>
                       <SourceChip
                         n={`r${i + 1}`}

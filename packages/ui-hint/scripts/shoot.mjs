@@ -70,7 +70,7 @@ for (const theme of ['light', 'dark']) {
     });
   });
 
-  await page.waitForSelector('buoa-hint');
+  await page.waitForSelector('buai-hint');
   const name = `hint-${theme}.png`;
   await page.screenshot({ path: join(shots, name) });
   written.push(name);
@@ -87,7 +87,7 @@ for (const theme of ['light', 'dark']) {
       answer: '6912',
     });
   });
-  await page.waitForSelector('buoa-hint');
+  await page.waitForSelector('buai-hint');
   const answerName = `hint-answer-${theme}.png`;
   await page.screenshot({ path: join(shots, answerName) });
   written.push(answerName);

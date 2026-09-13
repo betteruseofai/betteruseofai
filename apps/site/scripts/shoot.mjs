@@ -64,7 +64,7 @@ for (const [sizeName, viewport] of SIZES) {
     // it and the page never paints the wrong theme first.
     await page.addInitScript((value) => {
       try {
-        localStorage.setItem('buoa-theme', value);
+        localStorage.setItem('buai-theme', value);
       } catch {
         // A context with storage blocked still screenshots, in light.
       }
