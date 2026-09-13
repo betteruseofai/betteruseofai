@@ -126,6 +126,28 @@ const STYLE = `
   }
 `;
 
+let sheet: CSSStyleSheet | null | undefined;
+
+/** Attaches the shared constructed sheet. Returns false where the browser has none. */
+const adoptSheet = (root: ShadowRoot): boolean => {
+  if (sheet === undefined) {
+    try {
+      const candidate = new CSSStyleSheet();
+      if (typeof candidate.replaceSync !== 'function' || !('adoptedStyleSheets' in root)) {
+        sheet = null;
+      } else {
+        candidate.replaceSync(STYLE);
+        sheet = candidate;
+      }
+    } catch {
+      sheet = null;
+    }
+  }
+  if (!sheet) return false;
+  root.adoptedStyleSheets = [sheet];
+  return true;
+};
+
 export class BuaiHint extends HTMLElement {
   static observedAttributes = ['explanation', 'rule', 'saving', 'answer'];
 
@@ -163,8 +185,14 @@ export class BuaiHint extends HTMLElement {
 
     this.root.replaceChildren();
 
-    const style = document.createElement('style');
-    style.textContent = STYLE;
+    /*
+     * The styles go in as a constructed stylesheet where the browser has them.
+     * A <style> element inserted into a host page is subject to that page's
+     * style-src, even inside a shadow root, and a strict host would silently
+     * leave the hint unstyled. Adopted sheets are not governed by the page's
+     * policy. The element form stays as the fallback for anything older.
+     */
+    const adopted = adoptSheet(this.root);
 
     const wrapper = document.createElement('div');
     wrapper.className = 'hint';
@@ -208,7 +236,13 @@ export class BuaiHint extends HTMLElement {
     button.addEventListener('click', () => this.dismiss());
 
     wrapper.append(body, button);
-    this.root.append(style, wrapper);
+    if (adopted) {
+      this.root.append(wrapper);
+    } else {
+      const style = document.createElement('style');
+      style.textContent = STYLE;
+      this.root.append(style, wrapper);
+    }
   }
 }
 

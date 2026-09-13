@@ -7,6 +7,7 @@ import type { ExtensionMessage } from '../adapters/types.js';
 import { setRanksLoader } from '@betteruseofai/tokenizers';
 
 import { priceTurn, reprice } from '../lib/pipeline.js';
+import { computeSaving } from '../lib/saving.js';
 import {
   countEvents,
   DEFAULT_SETTINGS,
@@ -126,6 +127,16 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
         byDay: aggregate(pairs, 'day'),
         byModel: aggregate(pairs, 'model'),
         bySurface: aggregate(pairs, 'surface'),
+        // The saving against the largest model in each family, for the
+        // dashboard's rings. Same rows, same region, same boundary.
+        saving:
+          events.length > 0
+            ? computeSaving(events, dataset, {
+                ...(current.regionCode ? { regionCode: current.regionCode } : {}),
+                waterScope: current.waterScope,
+                carbonBasis: current.carbonBasis,
+              })
+            : null,
         health: Object.fromEntries(health),
         count: events.length,
       });

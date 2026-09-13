@@ -43,6 +43,8 @@ export interface Settings {
   /** Days to keep events for. Zero means keep everything. */
   retentionDays: number;
   localUiEnabled: boolean;
+  /** The first run asks where you are, once. This remembers that it asked. */
+  regionAsked: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -54,6 +56,7 @@ export const DEFAULT_SETTINGS: Settings = {
   mutedRules: [],
   retentionDays: 180,
   localUiEnabled: false,
+  regionAsked: false,
 };
 
 interface Schema extends DBSchema {

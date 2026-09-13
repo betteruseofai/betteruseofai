@@ -63,6 +63,15 @@ const ALLOWED: Array<{ file: RegExp; call: RegExp; most: number; why: string }> 
   },
 ];
 
+/**
+ * The code, without its comments. The worker's own header explains this test
+ * by naming the calls it looks for, and a dependency's documentation links to
+ * MDN; neither is a code path. Block comments go, and so do lines that are
+ * only a comment. A URL inside a string on a line of code stays.
+ */
+const codeOnly = (source: string): string =>
+  source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
 const jsFiles = (dir: string, prefix = ''): string[] => {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((name) => {
@@ -83,7 +92,7 @@ describe('the built extension', () => {
     const unexplained: string[] = [];
 
     for (const file of jsFiles(built)) {
-      const source = readFileSync(join(built, file), 'utf8');
+      const source = codeOnly(readFileSync(join(built, file), 'utf8'));
       for (const call of CALLS) {
         call.lastIndex = 0;
         const hits = source.match(call)?.length ?? 0;
@@ -146,7 +155,7 @@ describe('the built extension', () => {
     ]);
 
     for (const file of jsFiles(built)) {
-      const source = readFileSync(join(built, file), 'utf8');
+      const source = codeOnly(readFileSync(join(built, file), 'utf8'));
       for (const found of source.match(addresses) ?? []) {
         if (!expected.has(found.toLowerCase())) remote.push(`${file}: ${found}`);
       }

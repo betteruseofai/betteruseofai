@@ -88,6 +88,58 @@ body {
   margin-top: var(--space-7);
 }
 
+/* The saving as rings, beside its figure. */
+.buai-dash__saving-row {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (max-width: 40rem) {
+  .buai-dash__saving-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.buai-dash__rings {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+
+.buai-dash__ring {
+  fill: none;
+  stroke: var(--hairline);
+  stroke-width: 1;
+}
+
+.buai-dash__ring--grew {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.buai-dash__ring--core {
+  fill: var(--accent-tint);
+  stroke: var(--accent);
+}
+
+.buai-dash__saving-note {
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+.buai-dash__quantity {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: var(--space-2);
+}
+
 /* One grid item per readout. The figure and its bar belong together. */
 .buai-dash__readouts > .buai-readout-group {
   display: block;

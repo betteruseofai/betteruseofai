@@ -15,6 +15,65 @@ body {
 }
 
 /*
+ * Energy leads. It is the measured quantity; water and carbon are worked out
+ * from it and sit side by side beneath at the usual size. One figure a glance
+ * lands on, two it can read next.
+ */
+.buai-readout-group--lead .buai-readout__figure {
+  font-size: var(--step-5);
+  font-size: clamp(2.6rem, 2rem + 3vw, 3.4rem);
+}
+
+.buai-popup__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.buai-popup__pair .buai-readout__figure {
+  font-size: var(--step-2);
+}
+
+/* The one question a first run asks. */
+.buai-popup__firstrun {
+  border: var(--rule) solid var(--accent);
+  padding: var(--space-3);
+  margin-top: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.buai-popup__firstrun-why {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.buai-popup__firstrun-field select {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-raised);
+  color: var(--ink);
+  border: var(--rule) solid var(--border-ui);
+  border-radius: var(--radius);
+}
+
+/* Present to a screen reader, absent to the eye. */
+.buai-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
  * The brand and the tape stack. Side by side at 360 px the brand wrapped onto
  * two lines and broke across "OF / AI", which is worse than the extra row.
  */

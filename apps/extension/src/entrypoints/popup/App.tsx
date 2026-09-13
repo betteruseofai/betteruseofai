@@ -2,15 +2,22 @@ import { equivalents } from '@betteruseofai/core';
 import type { Aggregate, Dataset } from '@betteruseofai/core';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Hazard, MetaStrip, Readout } from '../../ui/Readout.js';
+import { Hazard, MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
 
 /**
  * The popup: 360 pixels of what this browser has cost.
  *
- * Three readouts, one meta strip, and whatever caveats apply. It shows what it
- * knows and says plainly what it does not, which on a first run is everything.
+ * Energy leads, because it is the measured quantity and the other two are
+ * worked out from it; water and carbon follow at the usual size. Then the meta
+ * strip, and whatever caveats apply. It shows what it knows and says plainly
+ * what it does not, which on a first run is everything.
+ *
+ * The first run asks one question, where you are, because region moves the
+ * carbon figure by a factor of about thirty and the world average is wrong for
+ * nearly everyone. It asks once, offers the average as an answer, and never
+ * asks again.
  */
 
 interface Summary {
@@ -43,6 +50,13 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
     return () => browser.runtime.onMessage.removeListener(onChange);
   }, []);
 
+  const change = (patch: Partial<Settings>): void => {
+    void browser.runtime
+      .sendMessage({ type: 'settings:set', patch })
+      .then(() => load())
+      .catch(() => undefined);
+  };
+
   if (failed) {
     return (
       <main class="buai-popup">
@@ -65,11 +79,19 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   const total = summary.total;
   const flags = total?.flags ?? [];
 
-  /* A first run has nothing to show, and saying so beats three zeroes. */
+  /*
+   * A first run has nothing to show, and saying so beats three zeroes. It is
+   * also the one moment to ask where the reader is, before any carbon figure
+   * has been shown against the wrong grid.
+   */
   if (!total || total.count === 0) {
+    const asked = summary.settings.regionAsked === true || summary.settings.regionCode !== null;
     return (
       <main class="buai-popup">
         <Header datasetVersion={summary.datasetVersion} />
+        {!asked ? (
+          <FirstRun dataset={dataset} onChoose={(code) => change({ regionCode: code, regionAsked: true })} />
+        ) : null}
         <div class="buai-standby">
           <span class="buai-standby__code">nothing yet</span>
           Send a message on claude.ai, chatgpt.com or gemini.google.com and it will appear here.
@@ -98,14 +120,16 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
     <main class="buai-popup">
       <Header datasetVersion={summary.datasetVersion} />
 
-      <Readout label="Energy" value={total.energyWh} unit="Wh" flags={flags} />
-      <Readout label="Water" value={total.waterMl} unit="mL" flags={flags} />
-      <Readout label="Carbon" value={total.carbonG} unit="g" flags={flags} />
+      <Readout label="Energy" value={total.energyWh} unit="Wh" flags={flags} lead />
+      <div class="buai-popup__pair">
+        <Readout label="Water" value={total.waterMl} unit="mL" flags={flags} />
+        <Readout label="Carbon" value={total.carbonG} unit="g" flags={flags} />
+      </div>
 
       {energyEquivalent ? (
         <p class="buai-popup__equivalent">
           About {energyEquivalent.count.toFixed(1)} {energyEquivalent.label}
-          {energyEquivalent.stale ? ', from a figure now seventeen years old' : ''}.
+          {energyEquivalent.stale ? `, ${staleNote(energyEquivalent.source)}` : ''}.
         </p>
       ) : null}
 
@@ -169,6 +193,45 @@ const Header = ({ datasetVersion }: { datasetVersion: string }) => (
     <span class="buai-popup__hidden">{datasetVersion}</span>
   </header>
 );
+
+/**
+ * The one question a first run asks. A select grouped by continent, one
+ * button that says "the world average will do", and nothing else. Whatever
+ * is chosen, the question is marked asked and does not come back; the options
+ * page has the same control for later.
+ */
+const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: string | null) => void }) => {
+  const continents = [...new Set(dataset.regions.map((one) => one.continent ?? 'Global'))].sort();
+  return (
+    <section class="buai-popup__firstrun" data-first-run>
+      <p class="buai-readout__label">One question before the first count</p>
+      <p class="buai-popup__firstrun-why">
+        Carbon depends on the grid your electricity comes from, and grids differ by a factor of
+        about thirty. Where are you?
+      </p>
+      <label class="buai-popup__firstrun-field">
+        <span class="buai-visually-hidden">Region</span>
+        <select onChange={(event) => onChoose((event.currentTarget as HTMLSelectElement).value || null)}>
+          <option value="">Pick a region</option>
+          {continents.map((continent) => (
+            <optgroup label={continent} key={continent}>
+              {dataset.regions
+                .filter((one) => (one.continent ?? 'Global') === continent)
+                .map((one) => (
+                  <option value={one.code} key={one.code}>
+                    {one.name}
+                  </option>
+                ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+      <button class="buai-button buai-button--quiet" type="button" onClick={() => onChoose(null)}>
+        Use the world average
+      </button>
+    </section>
+  );
+};
 
 /**
  * Opens one of the extension's own pages.

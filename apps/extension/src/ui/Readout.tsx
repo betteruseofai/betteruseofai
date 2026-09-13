@@ -19,9 +19,14 @@ export interface ReadoutProps {
   value: Range | null | undefined;
   unit: string;
   flags?: EstimateFlag[];
+  /**
+   * The one figure a glance lands on. In the popup that is energy, because it
+   * is the measured quantity and water and carbon are worked out from it.
+   */
+  lead?: boolean;
 }
 
-export const Readout = ({ label, value, unit, flags = [] }: ReadoutProps) => {
+export const Readout = ({ label, value, unit, flags = [], lead = false }: ReadoutProps) => {
   // A figure we do not have is a word, never a nought, and it gets no bar.
   /*
    * One element, always. These sit in a grid on the dashboard, and returning a
@@ -30,7 +35,7 @@ export const Readout = ({ label, value, unit, flags = [] }: ReadoutProps) => {
    */
   if (value === null || value === undefined) {
     return (
-      <div class="buai-readout-group">
+      <div class={lead ? 'buai-readout-group buai-readout-group--lead' : 'buai-readout-group'}>
         <div class="buai-readout buai-readout--unknown">
           <span class="buai-readout__label">{label}</span>
           <span class="buai-readout__figure">unknown</span>
@@ -45,7 +50,7 @@ export const Readout = ({ label, value, unit, flags = [] }: ReadoutProps) => {
   const lowerBound = flags.includes('thinking-unknown');
 
   return (
-    <div class="buai-readout-group">
+    <div class={lead ? 'buai-readout-group buai-readout-group--lead' : 'buai-readout-group'}>
       <div class="buai-readout">
         <span class="buai-readout__label">{label}</span>
         <span class="buai-readout__figure">
@@ -110,3 +115,21 @@ export const Hazard = ({ label, children }: { label: string; children: preact.Co
 
 export const formatFor = (value: Range | null, unit: string, flags: EstimateFlag[]): string =>
   formatRange(value, { unit, flags });
+
+const WORDS = [
+  'nought', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen',
+  'nineteen', 'twenty',
+];
+
+/**
+ * The note after a stale comparison, with its age worked out from the source
+ * date. It was the string "seventeen years old" once, in two files, and would
+ * have been wrong from the first of January.
+ */
+export const staleNote = (source: { date?: string } | undefined, now = new Date()): string => {
+  const year = Number.parseInt((source?.date ?? '').slice(0, 4), 10);
+  if (!Number.isFinite(year)) return 'from a figure marked stale';
+  const age = now.getUTCFullYear() - year;
+  return `from a figure now ${WORDS[age] ?? String(age)} years old`;
+};

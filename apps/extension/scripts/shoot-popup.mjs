@@ -78,9 +78,26 @@ const summary = {
     mutedRules: [],
     retentionDays: 180,
     localUiEnabled: false,
+    regionAsked: true,
   },
   datasetVersion: '0.1.0',
   count: 214,
+  saving: {
+    baseline: 'the largest model in each family',
+    energyWh: { low: 210, central: 1120, high: 6400 },
+    waterMl: { low: 900, central: 3600, high: 28000 },
+    carbonG: { low: 26, central: 140, high: 790 },
+    byDay: [
+      { day: '2026-09-05', energyWh: { low: 40, central: 190, high: 1100 } },
+      { day: '2026-09-06', energyWh: null },
+      { day: '2026-09-07', energyWh: { low: 60, central: 330, high: 1900 } },
+      { day: '2026-09-08', energyWh: { low: 20, central: 110, high: 600 } },
+      { day: '2026-09-09', energyWh: { low: 70, central: 380, high: 2100 } },
+      { day: '2026-09-10', energyWh: { low: 10, central: 60, high: 400 } },
+      { day: '2026-09-11', energyWh: { low: 10, central: 50, high: 300 } },
+    ],
+    skipped: 9,
+  },
   total: {
     key: 'all',
     bucket: 'all',
@@ -118,8 +135,16 @@ const summary = {
   health: { 'gemini-web': { state: 'degraded', version: 1, at: '2026-09-11T18:00:00.000Z' } },
 };
 
-/** The same shape with nothing in it, for the first run. */
-const empty = { ...summary, count: 0, total: null, byModel: [], health: {} };
+/** The same shape with nothing in it, for the first run, before the region question. */
+const empty = {
+  ...summary,
+  settings: { ...summary.settings, regionCode: null, regionAsked: false },
+  count: 0,
+  total: null,
+  byModel: [],
+  saving: null,
+  health: {},
+};
 
 const stubFor = (payload) => `
   const summary = ${JSON.stringify(payload)};
@@ -172,7 +197,7 @@ for (const theme of ['light']) {
   const page = await context.newPage();
   await page.addInitScript(stubFor(empty));
   await page.goto(`http://127.0.0.1:${port}/popup.html`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('.buai-standby', { timeout: 5000 });
+  await page.waitForSelector('[data-first-run]', { timeout: 5000 });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: join(shots, 'popup-first-run.png'), fullPage: true });
   written.push('popup-first-run.png');

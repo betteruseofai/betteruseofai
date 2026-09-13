@@ -128,6 +128,69 @@ describe('the extension in a browser', () => {
     await page.close();
   }, 30000);
 
+  it('asks where you are on the first run, once', async () => {
+    if (skipIfUnavailable() || !context) return;
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/popup.html`);
+    await page.waitForSelector('.buai-popup', { timeout: 10000 });
+    // The options test above may already have chosen a region in this
+    // profile, in which case the question has been answered and must not
+    // appear. Either way, after an answer it stays away.
+    const asked = await page.locator('[data-first-run]').count();
+    if (asked > 0) {
+      await page.click('[data-first-run] button');
+      await page.waitForTimeout(500);
+      await page.reload();
+      await page.waitForSelector('.buai-popup', { timeout: 10000 });
+    }
+    expect(await page.locator('[data-first-run]').count()).toBe(0);
+    await page.close();
+  }, 30000);
+
+  it('styles the hint through an adopted sheet, which a strict host policy cannot block', async () => {
+    if (skipIfUnavailable() || !context) return;
+    // A page with the strictest style policy a host could set. A <style>
+    // element inserted into it, shadow root or not, is refused. An adopted
+    // constructed sheet is not governed by the page's policy, and that is the
+    // mechanism the hint now relies on. This probes the browser directly.
+    const page = await context.newPage();
+    await page.route('https://strict.example/', (route) =>
+      route.fulfill({
+        status: 200,
+        headers: {
+          'content-type': 'text/html',
+          'content-security-policy': "default-src 'none'; style-src 'self'",
+        },
+        body: '<!doctype html><html><body><div id="host"></div></body></html>',
+      }),
+    );
+    await page.goto('https://strict.example/');
+    const result = await page.evaluate(() => {
+      const host = document.getElementById('host') as HTMLElement;
+      const root = host.attachShadow({ mode: 'open' });
+      const viaElement = document.createElement('div');
+      viaElement.className = 'a';
+      const style = document.createElement('style');
+      style.textContent = '.a { padding-left: 7px; }';
+      root.append(style, viaElement);
+      const blocked = getComputedStyle(viaElement).paddingLeft;
+
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync('.b { padding-left: 9px; }');
+      const viaSheet = document.createElement('div');
+      viaSheet.className = 'b';
+      root.adoptedStyleSheets = [sheet];
+      root.append(viaSheet);
+      const adopted = getComputedStyle(viaSheet).paddingLeft;
+      return { blocked, adopted };
+    });
+    // The adopted sheet applies whatever the host says.
+    expect(result.adopted).toBe('9px');
+    // eslint-disable-next-line no-console
+    console.log(`  inline <style> under a strict host policy: ${result.blocked === '7px' ? 'applied' : 'blocked'}`);
+    await page.close();
+  }, 30000);
+
   it('makes no request of its own while it sits there', async () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
