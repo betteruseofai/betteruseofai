@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "0.1.0",
-  "datasetSha256": "124be1eb97152a5742c68228035f029ab560357ed9f160b835ded1786b9c6187",
+  "datasetVersion": "0.2.0",
+  "datasetSha256": "4742d664fff7a777a090e004b96487ff94674cb7119ba942974e270a2d357d89",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -101,9 +101,9 @@
         "high": "938.689"
       },
       "carbonG": {
-        "low": "0.155059",
-        "central": "1.6899",
-        "high": "23.963"
+        "low": "0.319716",
+        "central": "2.96277",
+        "high": "38.9357"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-opus",
@@ -128,7 +128,7 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2505.09598",
-          "https://ember-energy.org/data/yearly-electricity-data/"
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     },
@@ -145,9 +145,9 @@
         "high": "342.354"
       },
       "carbonG": {
-        "low": "0.350718",
-        "central": "1.65673",
-        "high": "8.73968"
+        "low": "0.723148",
+        "central": "2.90462",
+        "high": "14.2005"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-opus",
@@ -170,7 +170,7 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2505.09598",
-          "https://ember-energy.org/data/yearly-electricity-data/"
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     },
@@ -335,8 +335,8 @@
           "scaled-direct-figure"
         ],
         "sourceUrls": [
-          "https://ember-energy.org/data/yearly-electricity-data/",
-          "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai"
+          "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai",
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     },
@@ -464,9 +464,9 @@
         "high": "177.945"
       },
       "carbonG": {
-        "low": "3.06802",
-        "central": "6.82635",
-        "high": "15.3401"
+        "low": "3.34108",
+        "central": "7.03345",
+        "high": "14.8247"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4o",
@@ -483,7 +483,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://ember-energy.org/data/yearly-electricity-data/"
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     },
@@ -500,9 +500,9 @@
         "high": "4.05601"
       },
       "carbonG": {
-        "low": "0.0699312",
-        "central": "0.155597",
-        "high": "0.349656"
+        "low": "0.076155",
+        "central": "0.160317",
+        "high": "0.337907"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4.1-nano",
@@ -521,7 +521,7 @@
         "sourceUrls": [
           "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://ember-energy.org/data/yearly-electricity-data/"
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     },

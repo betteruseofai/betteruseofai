@@ -58,7 +58,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         <h2>Where you are</h2>
         <p>
           Carbon depends on the grid the electricity came from, and grids differ by a factor of
-          about thirty. We use the world average until you say otherwise.
+          about twenty. We use the world average until you say otherwise.
         </p>
         <label class="buai-options__field">
           <span class="buai-readout__label">Region</span>

@@ -122,6 +122,16 @@ against. The decisions taken on it, on 2026-09-13:
     commit builds. `docs/DEPLOY.md` is the launch checklist. Entry 25 is superseded on the two
     missing workflows.
 
+42. **Sixteen region grid intensities are now read from Ember, not recalled.** Dataset 0.2.0. The
+    world average and fifteen countries come from the Ember yearly CSV, central figure 2025 and a
+    range from the last three years, provenance `fetched`. Several recalled figures were far off:
+    the United Kingdom 124 against 217, Canada 120 against 191, Sweden 24 against 35. Grids differ
+    by a factor of about twenty, not thirty, and the popup and options copy now say so. Two eGRID
+    subregions stay pending; the owner declined the EPA download in this session.
+
 ## Still open
+
+- The two eGRID subregion rows, the WRI off-site water factors and the tokenizer ratios, in
+  `packages/dataset/CHANGELOG.md`.
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.

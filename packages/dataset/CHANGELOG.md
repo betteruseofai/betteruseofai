@@ -1,5 +1,29 @@
 # @betteruseofai/dataset
 
+## 0.2.0
+
+Data only, so a minor bump.
+
+- **Regions.** Sixteen grid intensities that had been written from memory of the Ember yearly dataset
+  are now read from it: the world average and fifteen countries. Each row's central figure is the
+  latest full year, 2025, its range is the spread of the last three years, and its provenance says
+  `fetched` with the date. The source URL is the CSV itself rather than the page, which refuses
+  automated requests. Several figures moved a long way from what was recalled: the United Kingdom
+  from 124 to 217 gCO2/kWh, Canada from 120 to 191, Sweden from 24 to 35. The recalled figures had
+  mixed up generation-based and consumption-based intensities for some grids; Ember's are the
+  former, power sector CO2 per kWh generated, and the notes on each row say so.
+- With Sweden at 35 and India at 710, grids now differ by a factor of about twenty, not thirty. The
+  copy that said thirty has been corrected.
+
+Known gaps, in the order they should be closed:
+
+1. The eGRID subregion values for California and Virginia are still marked as recalled and need
+   reading out of the EPA spreadsheet.
+2. Off-site water needs the per-region factors from the World Resources Institute appendix; every
+   region still carries the same range built around the United States figure.
+3. Tokenizer ratios for Anthropic and Google need measuring against the providers' counting endpoints.
+4. Every proxy row should be replaced by a measurement the moment one is published.
+
 ## 0.1.0
 
 First set of rows. Not yet published to npm.

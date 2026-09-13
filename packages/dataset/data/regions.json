@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "defaultRegion": "WORLD",
   "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
   "regions": [
@@ -8,15 +8,23 @@
       "name": "World average",
       "kind": "world",
       "continent": "Global",
-      "gridGco2PerKwh": { "low": 400, "central": 445, "high": 500 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 435.6,
+        "central": 458.5,
+        "high": 483.2
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
       "waterSource": {
@@ -28,18 +36,26 @@
         "doi": "10.48550/arXiv.2304.03271"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Written from memory of the Ember yearly figure for 2024. Refresh from the CSV before launch."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 483.2, 2024: 471.5, 2025: 458.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "US",
       "name": "United States",
       "kind": "country",
       "continent": "North America",
-      "gridGco2PerKwh": { "low": 330, "central": 349.7, "high": 375 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "gridGco2PerKwh": {
+        "low": 330,
+        "central": 349.7,
+        "high": 375
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
       "year": 2023,
       "source": {
         "title": "eGRID2023 summary tables",
@@ -68,8 +84,16 @@
       "name": "India",
       "kind": "country",
       "continent": "Asia",
-      "gridGco2PerKwh": { "low": 680, "central": 710, "high": 745 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "gridGco2PerKwh": {
+        "low": 680,
+        "central": 710,
+        "high": 745
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
       "year": 2025,
       "source": {
         "title": "CO2 Baseline Database for the Indian Power Sector, version 21.0",
@@ -97,286 +121,466 @@
       "name": "United Kingdom",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 105, "central": 124, "high": 145 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 216.5,
+        "central": 217.4,
+        "high": 235.6
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 235.6, 2024: 216.5, 2025: 217.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "FR",
       "name": "France",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 35, "central": 44, "high": 60 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 40.5,
+        "central": 41.5,
+        "high": 53.3
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 53.3, 2024: 40.5, 2025: 41.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "DE",
       "name": "Germany",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 300, "central": 344, "high": 390 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 313.1,
+        "central": 329.6,
+        "high": 363.6
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 363.6, 2024: 337.1, 2025: 329.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "IE",
       "name": "Ireland",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 235, "central": 272, "high": 310 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 243.1,
+        "central": 255.9,
+        "high": 282.5
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Worth carrying because a large share of European cloud inference lands here."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 282.5, 2024: 270.9, 2025: 255.9), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "NL",
       "name": "Netherlands",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 220, "central": 256, "high": 295 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 250.7,
+        "central": 253.6,
+        "high": 268.2
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 268.2, 2024: 250.7, 2025: 253.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "SE",
       "name": "Sweden",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 18, "central": 24, "high": 40 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 34.9,
+        "central": 35.4,
+        "high": 38.4
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 38.4, 2024: 34.9, 2025: 35.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "ES",
       "name": "Spain",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 110, "central": 130, "high": 155 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 146.2,
+        "central": 153.6,
+        "high": 169.7
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 169.7, 2024: 146.2, 2025: 153.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "PL",
       "name": "Poland",
       "kind": "country",
       "continent": "Europe",
-      "gridGco2PerKwh": { "low": 560, "central": 620, "high": 680 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 561.3,
+        "central": 590.8,
+        "high": 650.9
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 650.9, 2024: 608.4, 2025: 590.8), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "CA",
       "name": "Canada",
       "kind": "country",
       "continent": "North America",
-      "gridGco2PerKwh": { "low": 100, "central": 120, "high": 145 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 174.4,
+        "central": 190.7,
+        "high": 200.2
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 174.4, 2024: 185.4, 2025: 190.7), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "BR",
       "name": "Brazil",
       "kind": "country",
       "continent": "South America",
-      "gridGco2PerKwh": { "low": 90, "central": 110, "high": 140 },
-      "waterOffsiteLPerKwh": { "low": 2.0, "central": 6.0, "high": 15.0 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 96.3,
+        "central": 110.0,
+        "high": 115.5
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 2.0,
+        "central": 6.0,
+        "high": 15.0
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Low carbon, high water. A grid dominated by hydro loses a great deal of water to reservoir evaporation, so the off-site range here is deliberately higher than the default."
-      }
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 96.3, 2024: 106.1, 2025: 110.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "JP",
       "name": "Japan",
       "kind": "country",
       "continent": "Asia",
-      "gridGco2PerKwh": { "low": 420, "central": 460, "high": 500 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 453.5,
+        "central": 477.4,
+        "high": 492.6
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 492.6, 2024: 483.6, 2025: 477.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "SG",
       "name": "Singapore",
       "kind": "country",
       "continent": "Asia",
-      "gridGco2PerKwh": { "low": 450, "central": 490, "high": 530 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 472.2,
+        "central": 497.1,
+        "high": 500.9
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 500.9, 2024: 498.7, 2025: 497.1), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "CN",
       "name": "China",
       "kind": "country",
       "continent": "Asia",
-      "gridGco2PerKwh": { "low": 490, "central": 530, "high": 580 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 499.9,
+        "central": 526.2,
+        "high": 583.2
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 583.2, 2024: 556.3, 2025: 526.2), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "AU",
       "name": "Australia",
       "kind": "country",
       "continent": "Oceania",
-      "gridGco2PerKwh": { "low": 480, "central": 524, "high": 570 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 498.4,
+        "central": 524.6,
+        "high": 556.9
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 556.9, 2024: 554.0, 2025: 524.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "ZA",
       "name": "South Africa",
       "kind": "country",
       "continent": "Africa",
-      "gridGco2PerKwh": { "low": 650, "central": 700, "high": 760 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
-      "year": 2024,
+      "gridGco2PerKwh": {
+        "low": 664.0,
+        "central": 699.0,
+        "high": 717.7
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
+      "year": 2025,
       "source": {
-        "title": "Yearly Electricity Data",
-        "url": "https://ember-energy.org/data/yearly-electricity-data/",
+        "title": "Yearly Electricity Data, full release, long format",
+        "url": "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         "publisher": "Ember",
-        "date": "2025",
-        "retrieved": "2026-09-10",
+        "date": "2026",
+        "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       },
-      "provenance": { "method": "recalled-pending-refetch", "recorded": "2026-09-10" }
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 714.4, 2024: 717.7, 2025: 699.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
     },
     {
       "code": "US-CAMX",
       "name": "California, WECC (eGRID CAMX)",
       "kind": "subregion",
       "continent": "North America",
-      "gridGco2PerKwh": { "low": 190, "central": 210, "high": 235 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "gridGco2PerKwh": {
+        "low": 190,
+        "central": 210,
+        "high": 235
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
       "year": 2023,
       "source": {
         "title": "eGRID2023 subregion tables",
@@ -397,8 +601,16 @@
       "name": "Virginia and the Carolinas, SERC (eGRID SRVC)",
       "kind": "subregion",
       "continent": "North America",
-      "gridGco2PerKwh": { "low": 260, "central": 290, "high": 325 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "gridGco2PerKwh": {
+        "low": 260,
+        "central": 290,
+        "high": 325
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
       "year": 2023,
       "source": {
         "title": "eGRID2023 subregion tables",
@@ -419,8 +631,16 @@
       "name": "Google data centre fleet",
       "kind": "provider-fleet",
       "continent": "Global",
-      "gridGco2PerKwh": { "low": 345, "central": 345, "high": 345 },
-      "waterOffsiteLPerKwh": { "low": 1.0, "central": 3.1, "high": 5.5 },
+      "gridGco2PerKwh": {
+        "low": 345,
+        "central": 345,
+        "high": 345
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.0,
+        "central": 3.1,
+        "high": 5.5
+      },
       "year": 2024,
       "source": {
         "title": "Measuring the environmental impact of AI inference",

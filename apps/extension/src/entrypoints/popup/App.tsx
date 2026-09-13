@@ -15,7 +15,7 @@ import { browser } from 'wxt/browser';
  * what it does not, which on a first run is everything.
  *
  * The first run asks one question, where you are, because region moves the
- * carbon figure by a factor of about thirty and the world average is wrong for
+ * carbon figure by a factor of about twenty and the world average is wrong for
  * nearly everyone. It asks once, offers the average as an answer, and never
  * asks again.
  */
@@ -207,7 +207,7 @@ const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: st
       <p class="buai-readout__label">One question before the first count</p>
       <p class="buai-popup__firstrun-why">
         Carbon depends on the grid your electricity comes from, and grids differ by a factor of
-        about thirty. Where are you?
+        about twenty. Where are you?
       </p>
       <label class="buai-popup__firstrun-field">
         <span class="buai-visually-hidden">Region</span>
