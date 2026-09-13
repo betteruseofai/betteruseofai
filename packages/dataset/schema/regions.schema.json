@@ -51,6 +51,10 @@
         "year": { "type": "integer", "minimum": 2000, "maximum": 2100 },
         "source": { "$ref": "common.schema.json#/$defs/source" },
         "waterSource": { "$ref": "common.schema.json#/$defs/source" },
+        "rangeSource": {
+          "$ref": "common.schema.json#/$defs/source",
+          "description": "Where the low and high of gridGco2PerKwh came from, when it is not the same place as the central figure."
+        },
         "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
         "notes": { "type": "string" }
       }

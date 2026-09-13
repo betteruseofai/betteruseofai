@@ -152,10 +152,15 @@ against. The decisions taken on it, on 2026-09-13:
     bundle rebuilt in the same pull request. gridcarbon.dev shut down on 2026-09-13 and left a
     snapshot on Zenodo, which was unreachable in this session; its hourly ranges are still to do.
 
-## Still open
+48. **Hourly ranges from the gridcarbon snapshot.** Dataset 1.0.0. Zenodo answered on the second
+    day. Eleven region rows carry the real 2025 hourly spread, the 10th and 90th percentiles as a fraction
+    of the year's mean applied to our central figure, because the snapshot's levels rest on lifecycle
+    factors and ours on direct combustion. A region row may now carry `rangeSource`, an additive
+    schema field and therefore the major bump the dataset's own rule asks for. The Netherlands and
+    Sweden showed the two bases disagreeing in level by a factor of about two, which is why the
+    level was never used.
 
-- The gridcarbon hourly ranges from the Zenodo snapshot (doi 10.5281/zenodo.22299989), once Zenodo
-  answers.
+## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 
 - The tokenizer ratios, which need the providers' counting endpoints and so an API key, in

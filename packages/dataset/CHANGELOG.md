@@ -1,5 +1,31 @@
 # @betteruseofai/dataset
 
+## 1.0.0
+
+A schema change, so a major bump: a region row may now carry `rangeSource`, a citation for where
+its range came from, beside `source` for the central figure and `waterSource` for the water factor.
+The method page shows all three.
+
+- **Regions, the hourly range.** Eleven rows had bands of a fixed few per cent around the central
+  figure. They now carry the real hourly spread of 2025 from the gridcarbon snapshot on Zenodo
+  (doi 10.5281/zenodo.22299989, CC BY 4.0, 1.46 million hourly values for 45 zones from ENTSO-E,
+  EIA-930 and NESO): the 10th and 90th percentiles of the year, taken as a fraction of the year's
+  mean and applied to our central figure, so the shape is real and the basis stays ours. The
+  snapshot's own levels rest on lifecycle emission factors where Ember's are direct combustion, and
+  they are not used. Great Britain, France, Germany, Ireland, the Netherlands, Sweden (four bidding
+  zones pooled), Spain, Poland, the United States and California, and Great Britain twice, once per
+  source. The spread is wide: a tenth of the
+  hours in Sweden sit at about a third of the year's mean and a tenth at more than double it.
+  gridcarbon.dev shut its live service on 2026-09-13; the snapshot is the citable copy and will not
+  refresh.
+
+Known gaps, in the order they should be closed:
+
+1. Tokenizer ratios for Anthropic and Google need measuring against the providers' counting endpoints.
+2. National water factors for Singapore and South Africa, from a source that covers them.
+3. Hourly ranges for the regions the snapshot does not cover, from a source that does.
+4. Every proxy row should be replaced by a measurement the moment one is published.
+
 ## 0.5.0
 
 Data only, refreshed by the weekly snapshot.

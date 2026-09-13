@@ -139,6 +139,8 @@ describe('the built extension', () => {
       // The NESO Carbon Intensity API the Great Britain row cites. Read by the
       // weekly dataset refresh on the build machine, never by the extension.
       'https://api.carbonintensity.org.uk',
+      // The DOI of the gridcarbon snapshot the hourly ranges cite. Printed only.
+      'https://doi.org',
       'https://huggingface.co',
       'https://joss.theoj.org',
       'https://mistral.ai',

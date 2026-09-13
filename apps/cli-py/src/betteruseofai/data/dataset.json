@@ -1,6 +1,6 @@
 {
-  "version": "0.5.0",
-  "sha256": "fd70ab08e521a8091b3b16671618b891c69ba47e2868095234a664b88198e7e6",
+  "version": "1.0.0",
+  "sha256": "e290e8bcf18a4f08e19a3398023b5b3a025d2e4aa5afbe3473a20d7dfc911d01",
   "models": [
     {
       "id": "claude-opus-5",
@@ -2179,9 +2179,9 @@
       "kind": "country",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 330,
+        "low": 298.3,
         "central": 349.7,
-        "high": 375
+        "high": 396.2
       },
       "waterOffsiteLPerKwh": {
         "low": 2.2,
@@ -2209,7 +2209,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "CO2e output emission rate from the U.S. total line of Table 1, 770.884 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.83 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14."
+      "notes": "CO2e output emission rate from the U.S. total line of Table 1, 770.884 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.83 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone US (8760 intervals), taken as a fraction of that year's mean (0.853 and 1.133) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 352.7 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "IN",
@@ -2255,9 +2263,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 216.5,
+        "low": 97.6,
         "central": 217.4,
-        "high": 235.6
+        "high": 355.2
       },
       "waterOffsiteLPerKwh": {
         "low": 1.65,
@@ -2277,12 +2285,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 235.6, 2024: 216.5, 2025: 217.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.62 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 235.6, 2024: 216.5, 2025: 217.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.62 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone GB (17520 intervals), taken as a fraction of that year's mean (0.449 and 1.634) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 129.2 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2293,9 +2309,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 94,
+        "low": 55.7,
         "central": 124,
-        "high": 145
+        "high": 202.6
       },
       "waterOffsiteLPerKwh": {
         "low": 1.65,
@@ -2323,7 +2339,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-13. Off-site water is the WRI factor for Great Britain, as on the Ember row."
+      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-13. Off-site water is the WRI factor for Great Britain, as on the Ember row. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone GB (17520 intervals), taken as a fraction of that year's mean (0.449 and 1.634) and applied to the central figure above. The snapshot republishes NESO's own operational figure for Great Britain, so its level and this row's agree. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "FR",
@@ -2331,9 +2355,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 40.5,
+        "low": 27.3,
         "central": 41.5,
-        "high": 53.3
+        "high": 65.6
       },
       "waterOffsiteLPerKwh": {
         "low": 2.57,
@@ -2353,12 +2377,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 53.3, 2024: 40.5, 2025: 41.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.97 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 53.3, 2024: 40.5, 2025: 41.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.97 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone FR (8756 intervals), taken as a fraction of that year's mean (0.659 and 1.58) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 35.1 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2369,9 +2401,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 313.1,
+        "low": 147.7,
         "central": 329.6,
-        "high": 363.6
+        "high": 517.1
       },
       "waterOffsiteLPerKwh": {
         "low": 1.35,
@@ -2391,12 +2423,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 363.6, 2024: 337.1, 2025: 329.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.51 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 363.6, 2024: 337.1, 2025: 329.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.51 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone DE (8760 intervals), taken as a fraction of that year's mean (0.448 and 1.569) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 316.8 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2407,9 +2447,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 243.1,
+        "low": 102.4,
         "central": 255.9,
-        "high": 282.5
+        "high": 422.7
       },
       "waterOffsiteLPerKwh": {
         "low": 1.04,
@@ -2429,12 +2469,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 282.5, 2024: 270.9, 2025: 255.9), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.39 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 282.5, 2024: 270.9, 2025: 255.9), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.39 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone IE (8556 intervals), taken as a fraction of that year's mean (0.4 and 1.652) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 278.0 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2445,9 +2493,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 250.7,
+        "low": 178.5,
         "central": 253.6,
-        "high": 268.2
+        "high": 315
       },
       "waterOffsiteLPerKwh": {
         "low": 2.41,
@@ -2467,12 +2515,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 268.2, 2024: 250.7, 2025: 253.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 268.2, 2024: 250.7, 2025: 253.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone NL (8733 intervals), taken as a fraction of that year's mean (0.704 and 1.242) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 478.5 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2483,9 +2539,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 34.9,
+        "low": 12.5,
         "central": 35.4,
-        "high": 38.4
+        "high": 80.3
       },
       "waterOffsiteLPerKwh": {
         "low": 4.21,
@@ -2505,12 +2561,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 38.4, 2024: 34.9, 2025: 35.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.59 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 38.4, 2024: 34.9, 2025: 35.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.59 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone SE-1, SE-2, SE-3 and SE-4 pooled with equal weight, since no load data was available to weight them (35040 intervals), taken as a fraction of that year's mean (0.353 and 2.269) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 60.9 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2521,9 +2585,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 146.2,
+        "low": 97.5,
         "central": 153.6,
-        "high": 169.7
+        "high": 229.5
       },
       "waterOffsiteLPerKwh": {
         "low": 4.35,
@@ -2543,12 +2607,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 169.7, 2024: 146.2, 2025: 153.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.64 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 169.7, 2024: 146.2, 2025: 153.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.64 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone ES (8725 intervals), taken as a fraction of that year's mean (0.635 and 1.494) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 136.2 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2559,9 +2631,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 561.3,
+        "low": 413.6,
         "central": 590.8,
-        "high": 650.9
+        "high": 728.5
       },
       "waterOffsiteLPerKwh": {
         "low": 1.75,
@@ -2581,12 +2653,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 650.9, 2024: 608.4, 2025: 590.8), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.66 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 650.9, 2024: 608.4, 2025: 590.8), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.66 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone PL (8760 intervals), taken as a fraction of that year's mean (0.7 and 1.233) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 545.5 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -2863,9 +2943,9 @@
       "kind": "subregion",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 184,
+        "low": 129.5,
         "central": 195,
-        "high": 209.1
+        "high": 273.2
       },
       "waterOffsiteLPerKwh": {
         "low": 3.63,
@@ -2885,12 +2965,20 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "CO2e output emission rate from the CAMX line of Table 1, 429.983 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.37 US gal/kWh from Appendix 1 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "notes": "CO2e output emission rate from the CAMX line of Table 1, 429.983 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.37 US gal/kWh from Appendix 1 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone US-CAISO (8688 intervals), taken as a fraction of that year's mean (0.664 and 1.401) and applied to the central figure above. The snapshot's own levels use lifecycle emission factors, so they are not used directly; only the shape of the year is taken. Its 2025 mean for this zone was 230.6 gCO2eq/kWh. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
         "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
         "publisher": "World Resources Institute and WSP",
         "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "rangeSource": {
+        "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
+        "url": "https://doi.org/10.5281/zenodo.22299989",
+        "publisher": "gupeng, via Zenodo",
+        "date": "2026-09-04",
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
@@ -3279,7 +3367,7 @@
     }
   ],
   "calibration": {
-    "version": "0.5.0",
+    "version": "1.0.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

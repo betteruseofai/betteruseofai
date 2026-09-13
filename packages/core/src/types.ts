@@ -149,6 +149,8 @@ export interface Region {
   year: number;
   source: Source;
   waterSource?: Source;
+  /** Where the range of gridGco2PerKwh came from, when not the same place as the central figure. */
+  rangeSource?: Source;
   provenance?: Provenance;
   notes?: string;
 }

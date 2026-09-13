@@ -224,7 +224,7 @@ const pending = dataset.regions.filter(
             <thead>
               <tr>
                 <th scope="col">Region</th>
-                <th scope="col">gCO2e per kWh</th>
+                <th scope="col">gCO2e per kWh, and where its range is from</th>
                 <th scope="col">Off-site water, L/kWh, and its source</th>
                 <th scope="col">Year</th>
                 <th scope="col">Source</th>
@@ -235,7 +235,19 @@ const pending = dataset.regions.filter(
                 regions.map((region, i) => (
                   <tr>
                     <th scope="row">{region.name}</th>
-                    <td class="buai-num">{num(region.gridGco2PerKwh)}</td>
+                    <td class="buai-num">
+                      {num(region.gridGco2PerKwh)}
+                      {region.rangeSource ? (
+                        <SourceChip
+                          n={`h${i + 1}`}
+                          title={region.rangeSource.title}
+                          publisher={region.rangeSource.publisher}
+                          date={region.rangeSource.date}
+                          retrieved={region.rangeSource.retrieved}
+                          url={region.rangeSource.url}
+                        />
+                      ) : null}
+                    </td>
                     <td class="buai-num">
                       {num(region.waterOffsiteLPerKwh)}
                       {region.waterSource ? (

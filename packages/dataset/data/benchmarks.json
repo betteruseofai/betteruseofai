@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "1.0.0",
   "notes": "Published measurements of inference energy, water and carbon. They disagree by an order of magnitude, mostly because they draw the system boundary in different places, so every row records its boundary, its methodology and a quality score, and nothing here is averaged across sources. Rows transcribed from the researched appendix in PLAN.md on 2026-09-10 and not yet re-fetched from the source files carry a provenance of source-appendix.",
   "benchmarks": [
     {
@@ -963,9 +963,9 @@
       "parametric": {
         "model": "ecologits",
         "coefficients": {
-          "alphaKwhPerTokenPerB": 0.00000117,
+          "alphaKwhPerTokenPerB": 1.17e-06,
           "betaPerB": -0.0112,
-          "gammaKwhPerToken": 0.0000405
+          "gammaKwhPerToken": 4.05e-05
         },
         "serverBaseW": {
           "low": 1000,
@@ -1021,9 +1021,9 @@
       "parametric": {
         "model": "ecologits",
         "coefficients": {
-          "alphaKwhPerTokenPerB": 0.00000117,
+          "alphaKwhPerTokenPerB": 1.17e-06,
           "betaPerB": -0.0112,
-          "gammaKwhPerToken": 0.0000405
+          "gammaKwhPerToken": 4.05e-05
         },
         "serverBaseW": {
           "low": 10,
