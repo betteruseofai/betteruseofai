@@ -164,3 +164,17 @@ describe('the stylesheet', () => {
     expect(dark).toBeGreaterThan(base);
   });
 });
+
+describe('the palette', () => {
+  it('is the one in tokens.json, regenerated and compared', async () => {
+    // The hint carries its own colours because a shadow root cannot see the
+    // page's custom properties. They are copied from the shared tokens at
+    // build time, and this fails when the committed copy is behind.
+    const { readFileSync } = await import('node:fs');
+    const { dirname, join } = await import('node:path');
+    const { fileURLToPath } = await import('node:url');
+    const { render } = await import('../scripts/palette.mjs');
+    const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+    expect(readFileSync(join(root, 'src', 'palette.ts'), 'utf8')).toBe(render());
+  });
+});

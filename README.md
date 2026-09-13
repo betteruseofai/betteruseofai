@@ -40,11 +40,13 @@ higher on water for a single reply.
 
 So every figure we show is a range, tagged with the methodology and boundary it came from, and one
 click from its source. Where we don't know something we say so. An unknown model shows as unknown,
-never as zero.
+never as zero. The whole method, step by step, is at
+[betteruseofai.org/methodology](https://betteruseofai.org/methodology).
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE).
+MIT for the code. See [LICENSE](LICENSE). The three typefaces are under the SIL Open Font License;
+[FONTS.md](FONTS.md) has the notice.
 
 ## Prior art
 

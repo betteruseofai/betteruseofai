@@ -4,15 +4,23 @@
   "description": "The composer hint, as a framework-free custom element.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": ["./dist/register.js"],
-  "files": ["dist"],
+  "sideEffects": [
+    "./dist/register.js"
+  ],
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/palette.mjs && tsc -p tsconfig.build.json",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "palette": "node scripts/palette.mjs"
   },
   "devDependencies": {
     "happy-dom": "^15.11.7"

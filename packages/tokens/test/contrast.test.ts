@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
+import { load, render } from '../scripts/build-tokens.mjs';
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const repo = join(root, '..', '..');
 const css = readFileSync(join(root, 'tokens.css'), 'utf8');
 const componentsCss = readFileSync(join(root, 'components.css'), 'utf8');
 const tokens = JSON.parse(readFileSync(join(root, 'tokens.json'), 'utf8'));
@@ -45,14 +48,26 @@ const readBlock = (selector: string): Record<string, string> => {
 const light = readBlock(':root {');
 const dark = readBlock(":root[data-theme='dark']");
 
-describe('the stylesheet and the json say the same thing', () => {
-  it.each(Object.keys(tokens.colour.light))('light %s matches', (name) => {
-    expect(light[name]).toBe(tokens.colour.light[name]);
+describe('the stylesheet is what the json says', () => {
+  it('regenerates byte for byte from tokens.json', () => {
+    // The JSON is the source. A hand edit to the CSS shows up here, and the
+    // fix is to edit the JSON and run the build.
+    expect(css).toBe(render(load()));
   });
 
-  it.each(Object.keys(tokens.colour.dark))('dark %s matches', (name) => {
-    expect(dark[name]).toBe(tokens.colour.dark[name]);
-  });
+  it.each(Object.keys(tokens.colour.light).filter((name) => !name.startsWith('$')))(
+    'light %s matches',
+    (name) => {
+      expect(light[name]).toBe(tokens.colour.light[name]);
+    },
+  );
+
+  it.each(Object.keys(tokens.colour.dark).filter((name) => !name.startsWith('$')))(
+    'dark %s matches',
+    (name) => {
+      expect(dark[name]).toBe(tokens.colour.dark[name]);
+    },
+  );
 
   it('the dark override under prefers-color-scheme repeats the same values', () => {
     const media = readBlock(":root:not([data-theme='light'])");
@@ -63,14 +78,17 @@ describe('the stylesheet and the json say the same thing', () => {
 });
 
 /**
- * The ratios below are the ones recorded in the plan. They are asserted rather
- * than written in a comment, so a colour cannot drift without the build saying so.
+ * The ratios below are the ones recorded in the plan, with one change made in
+ * the design audit of 2026-09-12: muted moved from #5b665f to #5a655e so that
+ * it clears 4.5 on the accent tint, where it meets selected table rows. They
+ * are asserted rather than written in a comment, so a colour cannot drift
+ * without the build saying so.
  */
 describe('contrast against the ground', () => {
   const cases: Array<[string, string, number]> = [
     ['ink on bg', 'ink', 14.2],
     ['ink-2 on bg', 'ink-2', 12.7],
-    ['muted on bg', 'muted', 5.07],
+    ['muted on bg', 'muted', 5.15],
     ['accent on bg', 'accent', 5.59],
     ['accent-strong on bg', 'accent-strong', 6.88],
     ['hazard on bg', 'hazard', 5.27],
@@ -110,7 +128,7 @@ describe('contrast against the ground', () => {
   });
 
   /*
-   * And the ones that would fail. Muted comes out at 3.70 over a filled cell
+   * And the ones that would fail. Muted comes out at 3.76 over a filled cell
    * in the light theme and accent at 4.08, so neither may be placed over the
    * field. This test exists to say that out loud: if a future change makes
    * them pass, the restriction can be lifted deliberately rather than by
@@ -125,12 +143,14 @@ describe('contrast against the ground', () => {
     for (const token of ['border-ui']) {
       expect(contrast(light[token] as string, light['bg'] as string)).toBeGreaterThanOrEqual(3);
       expect(contrast(dark[token] as string, dark['bg'] as string)).toBeGreaterThanOrEqual(3);
+      // Borders sit on panels as well as on the ground.
+      expect(contrast(light[token] as string, light['bg-sunken'] as string)).toBeGreaterThanOrEqual(3);
     }
   });
 
   it('text still reads on a raised or sunken panel, not only on the ground', () => {
     for (const surface of ['bg-raised', 'bg-sunken']) {
-      for (const token of ['ink', 'ink-2', 'muted']) {
+      for (const token of ['ink', 'ink-2', 'muted', 'accent', 'hazard', 'danger']) {
         expect(
           contrast(light[token] as string, light[surface] as string),
           `light ${token} on ${surface}`,
@@ -148,9 +168,20 @@ describe('contrast against the ground', () => {
     expect(contrast(dark['bg'] as string, dark['accent'] as string)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('the tint is a fill, not a text colour, and ink still reads on it', () => {
-    expect(contrast(light['ink'] as string, light['accent-tint'] as string)).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(dark['ink'] as string, dark['accent-tint'] as string)).toBeGreaterThanOrEqual(4.5);
+  /*
+   * The tint is the fill of a selected row and of the lower band of a range
+   * bar, so labels in muted and figures in ink both land on it. The audit
+   * found muted at 4.49 here, which is why it moved.
+   */
+  it('the tint is a fill, and every text colour that meets it still reads', () => {
+    for (const theme of [light, dark]) {
+      for (const token of ['ink', 'ink-2', 'muted', 'accent', 'hazard', 'danger']) {
+        expect(
+          contrast(theme[token] as string, theme['accent-tint'] as string),
+          `${token} on accent-tint`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   });
 });
 
@@ -163,10 +194,25 @@ describe('the rules that keep it from looking generated', () => {
     }
   });
 
-  it('the only gradients are the hazard hatching', () => {
+  /*
+   * No colour gradients. What the rule allows is written in tokens.json under
+   * "gradients", by file and by count, with the reason beside each: hatching,
+   * the ruled paper grid, and the scrim and mask that keep the landing headline
+   * legible over its backdrop. Anything else is a wash, and a wash is the first
+   * thing a generated page reaches for.
+   */
+  it('has exactly the gradients the tokens allow, and no others', () => {
+    for (const allowed of tokens.gradients.allowed as Array<{ file: string; count: number }>) {
+      const path = allowed.file.startsWith('apps/') ? join(repo, allowed.file) : join(root, allowed.file);
+      const source = readFileSync(path, 'utf8');
+      const found = source.match(/(repeating-)?(linear|radial|conic)-gradient\(/g) ?? [];
+      expect(found.length, `${allowed.file} has ${found.length} gradients`).toBe(allowed.count);
+    }
+  });
+
+  it('the hatching is hatching: every gradient in components.css repeats', () => {
     const gradients = componentsCss.match(/(linear|radial|conic)-gradient/g) ?? [];
     const hatching = componentsCss.match(/repeating-linear-gradient/g) ?? [];
-    // The paper grid rule is the third, and it is a rule rather than a wash.
     expect(gradients.length).toBe(hatching.length);
   });
 
@@ -215,5 +261,15 @@ describe('the rules that keep it from looking generated', () => {
     expect(Number.parseInt(light['tempo-slow'] as string, 10)).toBeLessThanOrEqual(320);
     expect(css).toContain('prefers-reduced-motion');
     expect(componentsCss).toContain('prefers-reduced-motion');
+  });
+});
+
+describe('the terminal block', () => {
+  it('keeps figures and caveats on colours a red-green reader can tell apart', () => {
+    const { codes, roles } = tokens.terminal;
+    expect(codes[roles.figure]).toBe(32);
+    expect(codes[roles.caveat]).toBe(33);
+    // 31 is red. It is not in the table, and it must not be.
+    expect(Object.values(codes)).not.toContain(31);
   });
 });

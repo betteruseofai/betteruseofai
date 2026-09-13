@@ -8,7 +8,7 @@
  * performance regression nobody notices until launch.
  */
 
-import { copyFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -50,6 +50,22 @@ for (const [family, variants] of WANTED) {
     total += size;
     copied.push([name, size]);
   }
+}
+
+/*
+ * The licence travels with the fonts. All three faces are under the SIL Open
+ * Font License 1.1, which permits bundling and serving them but asks that the
+ * licence text accompany any redistribution. The npm package and the site
+ * both redistribute them, so each family's LICENSE lands beside its files
+ * and FONTS.md at the repository root says the same in prose.
+ */
+for (const [family] of WANTED) {
+  const licence = join(root, 'node_modules', '@fontsource', family, 'LICENSE');
+  if (!existsSync(licence)) {
+    console.error(`missing licence file for ${family}`);
+    process.exit(1);
+  }
+  copyFileSync(licence, join(out, `${family}-LICENSE.txt`));
 }
 
 for (const [name, size] of copied) {

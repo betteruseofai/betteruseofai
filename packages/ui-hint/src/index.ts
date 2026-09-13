@@ -4,7 +4,9 @@
  *
  * Framework free, in a shadow root, with its own styles. It has to live inside
  * somebody else's page without inheriting their CSS or leaking into it, and
- * without pulling a framework into a content script.
+ * without pulling a framework into a content script. The colours come from
+ * the shared tokens through src/palette.ts, which scripts/palette.mjs writes,
+ * so the hint cannot drift from the popup sitting a few pixels away.
  *
  * Three things it will never do, because a nudge that does any of them gets
  * the whole feature switched off, and then nothing is measured at all:
@@ -14,6 +16,8 @@
  *   2. Change the model. It says what it thinks and the person decides.
  *   3. Come back after being dismissed, until the cooldown has passed.
  */
+
+import { FONT, PALETTE } from './palette.js';
 
 export interface HintContent {
   /** The sentence, which always names the rule that produced it. */
@@ -31,11 +35,14 @@ export const HINT_TAG = 'buai-hint';
 /** How long a dismissed rule stays quiet. */
 export const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
+const L = PALETTE.light;
+const D = PALETTE.dark;
+
 const STYLE = `
   :host {
     all: initial;
     display: block;
-    font-family: 'Schibsted Grotesk', system-ui, sans-serif;
+    font-family: ${FONT.body};
     color-scheme: light dark;
   }
   .hint {
@@ -44,37 +51,37 @@ const STYLE = `
     align-items: start;
     padding: 10px 12px;
     margin: 8px 0;
-    background: #f6f5f2;
-    color: #14201a;
-    border: 1px solid #cfcbc4;
-    border-left: 3px solid #0f6b3a;
+    background: ${L['bg-raised']};
+    color: ${L.ink};
+    border: 1px solid ${L.hairline};
+    border-left: 3px solid ${L.accent};
     border-radius: 0;
     font-size: 13px;
     line-height: 1.45;
   }
   .body { flex: 1 1 auto; }
   .rule {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: ${FONT.mono};
     font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #5b665f;
+    color: ${L.muted};
     display: block;
     margin-bottom: 3px;
   }
   .answer {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: ${FONT.mono};
     font-variant-numeric: tabular-nums slashed-zero;
     display: inline-block;
     margin-top: 6px;
     padding: 3px 8px;
-    background: #e4e1dc;
-    border: 1px solid #cfcbc4;
+    background: ${L['bg-sunken']};
+    border: 1px solid ${L.hairline};
   }
   .saving {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: ${FONT.mono};
     font-size: 11px;
-    color: #5b665f;
+    color: ${L.muted};
     display: block;
     margin-top: 4px;
   }
@@ -84,15 +91,15 @@ const STYLE = `
     border: 0;
     background: none;
     cursor: pointer;
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: ${FONT.mono};
     font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #5b665f;
+    color: ${L.muted};
     padding: 2px 4px;
   }
-  button:hover { color: #14201a; }
-  button:focus-visible { outline: 2px solid #0f6b3a; outline-offset: 2px; }
+  button:hover { color: ${L.ink}; }
+  button:focus-visible { outline: 2px solid ${L.accent}; outline-offset: 2px; }
   @media (prefers-reduced-motion: no-preference) {
     .hint { animation: in 200ms cubic-bezier(0.2, 0, 0.1, 1); }
     @keyframes in { from { opacity: 0; transform: translateY(4px); } }
@@ -105,17 +112,17 @@ const STYLE = `
    */
   @media (prefers-color-scheme: dark) {
     .hint {
-      background: #1a1d1a;
-      color: #e6e3dc;
-      border-color: #2a2f2b;
-      border-left-color: #3ddc84;
+      background: ${D['bg-raised']};
+      color: ${D.ink};
+      border-color: ${D.hairline};
+      border-left-color: ${D.accent};
     }
-    .rule { color: #9aa39d; }
-    .answer { background: #0c0e0c; border-color: #2a2f2b; color: #e6e3dc; }
-    .saving { color: #9aa39d; }
-    button { color: #9aa39d; }
-    button:hover { color: #e6e3dc; }
-    button:focus-visible { outline-color: #3ddc84; }
+    .rule { color: ${D.muted}; }
+    .answer { background: ${D['bg-sunken']}; border-color: ${D.hairline}; color: ${D.ink}; }
+    .saving { color: ${D.muted}; }
+    button { color: ${D.muted}; }
+    button:hover { color: ${D.ink}; }
+    button:focus-visible { outline-color: ${D.accent}; }
   }
 `;
 
