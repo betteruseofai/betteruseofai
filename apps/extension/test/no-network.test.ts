@@ -134,6 +134,8 @@ describe('the built extension', () => {
       // Ember's yearly CSV, which the region rows cite, is served from a
       // Google Cloud bucket. A source address, printed and never requested.
       'https://storage.googleapis.com',
+      // The WRI guidance PDF the water factors cite. Printed, never requested.
+      'https://files.wri.org',
       'https://huggingface.co',
       'https://joss.theoj.org',
       'https://mistral.ai',

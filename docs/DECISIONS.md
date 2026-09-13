@@ -133,8 +133,16 @@ against. The decisions taken on it, on 2026-09-13:
     195.0 and Virginia and the Carolinas 270.5 gCO2e/kWh, both lower than recalled; the national
     row verified against the same sheet. No region row is recalled from memory any more.
 
+44. **Off-site water per region, from WRI.** Dataset 0.4.0. Every region carried one water range
+    built around a United States figure; each now carries its own consumption factor from the World
+    Resources Institute guidance, cited in the row's `waterSource` beside the grid citation, with a
+    0.7 to 1.5 band and a note saying why. Singapore, South Africa and the Google fleet take the
+    global average with a half-to-double band, stated as the assumption it is. The method page shows
+    the water citation beside the figure.
+
 ## Still open
 
-- The WRI off-site water factors and the tokenizer ratios, in `packages/dataset/CHANGELOG.md`.
+- The tokenizer ratios, which need the providers' counting endpoints and so an API key, in
+  `packages/dataset/CHANGELOG.md`.
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.

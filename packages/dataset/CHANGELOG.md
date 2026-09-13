@@ -1,5 +1,29 @@
 # @betteruseofai/dataset
 
+## 0.4.0
+
+Data only, so a minor bump.
+
+- **Regions, off-site water.** Every region had carried the same water range, built around one
+  United States figure. Each now carries its own, from the World Resources Institute's guidance on
+  water embedded in purchased electricity: the national consumption factors in its Appendix 2, the
+  two eGRID subregions from Appendix 1, and the generation-weighted global average from its Table 4,
+  read from the paper on 2026-09-13 and converted at 3.785 litres per US gallon. The factors are
+  water consumed at generation, which is the quantity this project means by off-site water. The
+  spread is wide: Ireland 1.48 L/kWh, Brazil 18.58. Each row cites the guidance in `waterSource`,
+  beside the grid citation in `source`, and its note says where the number came from and why the
+  range is 0.7 to 1.5 times it. Singapore and South Africa are not among the paper's 47 countries
+  and take the global average with a half-to-double band; so does the Google fleet row, as the
+  assumption it is.
+- The United States factor, 3.14 L/kWh, sits beside the 3.1 from Li and colleagues that the
+  appendix had transcribed, which is the cross-check the change rests on.
+
+Known gaps, in the order they should be closed:
+
+1. Tokenizer ratios for Anthropic and Google need measuring against the providers' counting endpoints.
+2. National water factors for Singapore and South Africa, from a source that covers them.
+3. Every proxy row should be replaced by a measurement the moment one is published.
+
 ## 0.3.0
 
 Data only, so a minor bump.

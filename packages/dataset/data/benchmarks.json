@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "notes": "Published measurements of inference energy, water and carbon. They disagree by an order of magnitude, mostly because they draw the system boundary in different places, so every row records its boundary, its methodology and a quality score, and nothing here is averaged across sources. Rows transcribed from the researched appendix in PLAN.md on 2026-09-10 and not yet re-fetched from the source files carry a provenance of source-appendix.",
   "benchmarks": [
     {

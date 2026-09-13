@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "defaultRegion": "WORLD",
   "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
   "regions": [
@@ -14,9 +14,9 @@
         "high": 483.2
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 3.37,
+        "central": 4.81,
+        "high": 7.21
       },
       "year": 2025,
       "source": {
@@ -28,18 +28,18 @@
         "licence": "CC BY 4.0"
       },
       "waterSource": {
-        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
-        "url": "https://arxiv.org/abs/2304.03271",
-        "publisher": "Li, Yang, Islam and Ren",
-        "date": "2025",
-        "retrieved": "2026-09-10",
-        "doi": "10.48550/arXiv.2304.03271"
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
       },
       "provenance": {
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 483.2, 2024: 471.5, 2025: 458.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 483.2, 2024: 471.5, 2025: 458.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.27 US gal/kWh from Table 4, the generation-weighted global average of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14."
     },
     {
       "code": "US",
@@ -52,9 +52,9 @@
         "high": 375.0
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.2,
+        "central": 3.14,
+        "high": 4.71
       },
       "year": 2023,
       "source": {
@@ -66,18 +66,18 @@
         "licence": "public domain"
       },
       "waterSource": {
-        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
-        "url": "https://arxiv.org/abs/2304.03271",
-        "publisher": "Li, Yang, Islam and Ren",
-        "date": "2025",
-        "retrieved": "2026-09-10",
-        "doi": "10.48550/arXiv.2304.03271"
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
       },
       "provenance": {
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "CO2e output emission rate from the U.S. total line of Table 1, 770.884 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13."
+      "notes": "CO2e output emission rate from the U.S. total line of Table 1, 770.884 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.83 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14."
     },
     {
       "code": "IN",
@@ -90,9 +90,9 @@
         "high": 745
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.41,
+        "central": 3.44,
+        "high": 5.16
       },
       "year": 2025,
       "source": {
@@ -103,18 +103,19 @@
         "retrieved": "2026-09-10"
       },
       "waterSource": {
-        "title": "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models",
-        "url": "https://arxiv.org/abs/2304.03271",
-        "publisher": "Li, Yang, Islam and Ren",
-        "date": "2025",
-        "retrieved": "2026-09-10",
-        "doi": "10.48550/arXiv.2304.03271"
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
       },
       "provenance": {
         "method": "source-appendix",
         "recorded": "2026-09-10",
         "note": "0.710 tCO2 per MWh weighted average."
-      }
+      },
+      "notes": "Off-site water is the water consumed generating the electricity: 0.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14."
     },
     {
       "code": "GB",
@@ -127,9 +128,9 @@
         "high": 235.6
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.65,
+        "central": 2.35,
+        "high": 3.53
       },
       "year": 2025,
       "source": {
@@ -144,7 +145,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 235.6, 2024: 216.5, 2025: 217.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 235.6, 2024: 216.5, 2025: 217.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.62 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "FR",
@@ -157,8 +166,8 @@
         "high": 53.3
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
+        "low": 2.57,
+        "central": 3.67,
         "high": 5.5
       },
       "year": 2025,
@@ -174,7 +183,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 53.3, 2024: 40.5, 2025: 41.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 53.3, 2024: 40.5, 2025: 41.5), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.97 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "DE",
@@ -187,9 +204,9 @@
         "high": 363.6
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.35,
+        "central": 1.93,
+        "high": 2.9
       },
       "year": 2025,
       "source": {
@@ -204,7 +221,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 363.6, 2024: 337.1, 2025: 329.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 363.6, 2024: 337.1, 2025: 329.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.51 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "IE",
@@ -217,9 +242,9 @@
         "high": 282.5
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.04,
+        "central": 1.48,
+        "high": 2.22
       },
       "year": 2025,
       "source": {
@@ -234,7 +259,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 282.5, 2024: 270.9, 2025: 255.9), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 282.5, 2024: 270.9, 2025: 255.9), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.39 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "NL",
@@ -247,9 +280,9 @@
         "high": 268.2
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.41,
+        "central": 3.44,
+        "high": 5.16
       },
       "year": 2025,
       "source": {
@@ -264,7 +297,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 268.2, 2024: 250.7, 2025: 253.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 268.2, 2024: 250.7, 2025: 253.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "SE",
@@ -277,9 +318,9 @@
         "high": 38.4
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 4.21,
+        "central": 6.02,
+        "high": 9.03
       },
       "year": 2025,
       "source": {
@@ -294,7 +335,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 38.4, 2024: 34.9, 2025: 35.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 38.4, 2024: 34.9, 2025: 35.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.59 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "ES",
@@ -307,9 +356,9 @@
         "high": 169.7
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 4.35,
+        "central": 6.21,
+        "high": 9.31
       },
       "year": 2025,
       "source": {
@@ -324,7 +373,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 169.7, 2024: 146.2, 2025: 153.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 169.7, 2024: 146.2, 2025: 153.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.64 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "PL",
@@ -337,9 +394,9 @@
         "high": 650.9
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.75,
+        "central": 2.5,
+        "high": 3.75
       },
       "year": 2025,
       "source": {
@@ -354,7 +411,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 650.9, 2024: 608.4, 2025: 590.8), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 650.9, 2024: 608.4, 2025: 590.8), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.66 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "CA",
@@ -367,9 +432,9 @@
         "high": 200.2
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 5.73,
+        "central": 8.18,
+        "high": 12.27
       },
       "year": 2025,
       "source": {
@@ -384,7 +449,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 174.4, 2024: 185.4, 2025: 190.7), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 174.4, 2024: 185.4, 2025: 190.7), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 2.16 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "BR",
@@ -397,9 +470,9 @@
         "high": 115.5
       },
       "waterOffsiteLPerKwh": {
-        "low": 2.0,
-        "central": 6.0,
-        "high": 15.0
+        "low": 13.01,
+        "central": 18.58,
+        "high": 27.87
       },
       "year": 2025,
       "source": {
@@ -414,7 +487,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 96.3, 2024: 106.1, 2025: 110.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 96.3, 2024: 106.1, 2025: 110.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 4.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "JP",
@@ -427,9 +508,9 @@
         "high": 492.6
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.62,
+        "central": 2.31,
+        "high": 3.46
       },
       "year": 2025,
       "source": {
@@ -444,7 +525,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 492.6, 2024: 483.6, 2025: 477.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 492.6, 2024: 483.6, 2025: 477.4), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 0.61 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "SG",
@@ -457,9 +546,9 @@
         "high": 500.9
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.4,
+        "central": 4.81,
+        "high": 9.62
       },
       "year": 2025,
       "source": {
@@ -474,7 +563,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 500.9, 2024: 498.7, 2025: 497.1), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 500.9, 2024: 498.7, 2025: 497.1), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water: the WRI guidance lists no factor for this country, so the generation-weighted global average of 1.27 US gal/kWh is used, with a range of half to double to say how little that is worth. A national factor would replace it.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "CN",
@@ -487,9 +584,9 @@
         "high": 583.2
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 4.21,
+        "central": 6.02,
+        "high": 9.03
       },
       "year": 2025,
       "source": {
@@ -504,7 +601,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 583.2, 2024: 556.3, 2025: 526.2), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 583.2, 2024: 556.3, 2025: 526.2), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.59 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "AU",
@@ -517,9 +622,9 @@
         "high": 556.9
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 3.31,
+        "central": 4.73,
+        "high": 7.1
       },
       "year": 2025,
       "source": {
@@ -534,7 +639,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 556.9, 2024: 554.0, 2025: 524.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 556.9, 2024: 554.0, 2025: 524.6), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.25 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "ZA",
@@ -547,9 +660,9 @@
         "high": 717.7
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.4,
+        "central": 4.81,
+        "high": 9.62
       },
       "year": 2025,
       "source": {
@@ -564,7 +677,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 714.4, 2024: 717.7, 2025: 699.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13."
+      "notes": "Power sector CO2 intensity, gCO2/kWh, from the Ember yearly release. Central is the latest full year; the range is the spread of the last three (2023: 714.4, 2024: 717.7, 2025: 699.0), widened where the latest year sits on an edge. Read from the CSV on 2026-09-13. Off-site water: the WRI guidance lists no factor for this country, so the generation-weighted global average of 1.27 US gal/kWh is used, with a range of half to double to say how little that is worth. A national factor would replace it.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "US-CAMX",
@@ -577,9 +698,9 @@
         "high": 209.1
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 3.63,
+        "central": 5.19,
+        "high": 7.79
       },
       "year": 2023,
       "source": {
@@ -594,7 +715,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "CO2e output emission rate from the CAMX line of Table 1, 429.983 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13."
+      "notes": "CO2e output emission rate from the CAMX line of Table 1, 429.983 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Off-site water is the water consumed generating the electricity: 1.37 US gal/kWh from Appendix 1 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "US-SRVC",
@@ -607,9 +736,9 @@
         "high": 290.1
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 1.67,
+        "central": 2.38,
+        "high": 3.57
       },
       "year": 2023,
       "source": {
@@ -624,7 +753,15 @@
         "method": "fetched",
         "recorded": "2026-09-13"
       },
-      "notes": "CO2e output emission rate from the SRVC line of Table 1, 596.326 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Northern Virginia carries more data centre load than anywhere else on earth, which is why this subregion is here."
+      "notes": "CO2e output emission rate from the SRVC line of Table 1, 596.326 lb/MWh, converted at 0.45359237 g/kWh per lb/MWh. The range mirrors the national row's band, about six per cent under and seven over, which covers a typical year's movement between eGRID releases. Read from the spreadsheet on 2026-09-13. Northern Virginia carries more data centre load than anywhere else on earth, which is why this subregion is here. Off-site water is the water consumed generating the electricity: 0.63 US gal/kWh from Appendix 1 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14.",
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      }
     },
     {
       "code": "GOOGLE-FLEET",
@@ -637,9 +774,9 @@
         "high": 345
       },
       "waterOffsiteLPerKwh": {
-        "low": 1.0,
-        "central": 3.1,
-        "high": 5.5
+        "low": 2.4,
+        "central": 4.81,
+        "high": 9.62
       },
       "year": 2024,
       "source": {
@@ -653,7 +790,16 @@
         "method": "source-appendix",
         "recorded": "2026-09-10",
         "note": "Google's own location-based fleet average. Their market-based figure of 94 lives on the benchmark row instead, because it is a claim about procurement rather than about a grid."
-      }
+      },
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "notes": "Off-site water: a provider fleet spans many grids, so the generation-weighted global average of 1.27 US gal/kWh from the WRI guidance is used, half to double. This is an assumption, not a figure Google has published."
     }
   ]
 }

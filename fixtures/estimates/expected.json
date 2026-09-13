@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "0.3.0",
-  "datasetSha256": "87667f2c9a7d32376f35193dea834e5b2eb4c3af5d3fa588a1742920c72cb940",
+  "datasetVersion": "0.4.0",
+  "datasetSha256": "3e0eab99d9d7be80cb3004776be33b34f669a49ff41fac487e11f45af093fea8",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -56,9 +56,9 @@
         "high": "2.166"
       },
       "waterMl": {
-        "low": "0.63897",
-        "central": "3.55224",
-        "high": "12.3029"
+        "low": "1.28877",
+        "central": "3.59556",
+        "high": "10.5917"
       },
       "carbonG": {
         "low": "0.178695",
@@ -82,8 +82,8 @@
         "qualityScore": 3,
         "flags": [],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
@@ -96,9 +96,9 @@
         "high": "165.262"
       },
       "waterMl": {
-        "low": "1.74256",
-        "central": "44.7005",
-        "high": "938.689"
+        "low": "2.70245",
+        "central": "34.4793",
+        "high": "613.122"
       },
       "carbonG": {
         "low": "0.319716",
@@ -128,6 +128,7 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
@@ -140,9 +141,9 @@
         "high": "60.2736"
       },
       "waterMl": {
-        "low": "3.94141",
-        "central": "43.8231",
-        "high": "342.354"
+        "low": "6.11252",
+        "central": "33.8026",
+        "high": "223.615"
       },
       "carbonG": {
         "low": "0.723148",
@@ -170,6 +171,7 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
@@ -182,9 +184,9 @@
         "high": "110.449"
       },
       "waterMl": {
-        "low": "1.52067",
-        "central": "33.4788",
-        "high": "627.353"
+        "low": "3.06712",
+        "central": "33.8871",
+        "high": "540.098"
       },
       "carbonG": {
         "low": "0.425273",
@@ -212,8 +214,8 @@
           "thinking-unknown"
         ],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
@@ -226,9 +228,9 @@
         "high": "2.40923"
       },
       "waterMl": {
-        "low": "0.07525",
-        "central": "1.05138",
-        "high": "16.0214"
+        "low": "0.12425",
+        "central": "1.47441",
+        "high": "25.9474"
       },
       "carbonG": {
         "low": "0.012075",
@@ -258,7 +260,8 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2508.15734",
-          "https://arxiv.org/abs/2508.15734"
+          "https://arxiv.org/abs/2508.15734",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
         ]
       }
     },
@@ -270,9 +273,9 @@
         "high": "2.40923"
       },
       "waterMl": {
-        "low": "0.07525",
-        "central": "1.05138",
-        "high": "16.0214"
+        "low": "0.12425",
+        "central": "1.47441",
+        "high": "25.9474"
       },
       "carbonG": {
         "low": "0.00329",
@@ -302,7 +305,8 @@
         ],
         "sourceUrls": [
           "https://arxiv.org/abs/2508.15734",
-          "https://arxiv.org/abs/2508.15734"
+          "https://arxiv.org/abs/2508.15734",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
         ]
       }
     },
@@ -335,6 +339,7 @@
           "scaled-direct-figure"
         ],
         "sourceUrls": [
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai",
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
@@ -370,8 +375,8 @@
         "qualityScore": 3,
         "flags": [],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
@@ -384,9 +389,9 @@
         "high": "2.7216"
       },
       "waterMl": {
-        "low": "0.88452",
-        "central": "4.62672",
-        "high": "15.7853"
+        "low": "1.701",
+        "central": "4.68115",
+        "high": "13.6352"
       },
       "carbonG": {
         "low": "0.224532",
@@ -406,8 +411,8 @@
         "qualityScore": 3,
         "flags": [],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
         ]
       }
@@ -420,9 +425,9 @@
         "high": "0.138588"
       },
       "waterMl": {
-        "low": "0.00863418",
-        "central": "0.0722376",
-        "high": "0.762236"
+        "low": "0.0208084",
+        "central": "0.0801605",
+        "high": "0.715116"
       },
       "carbonG": {
         "low": "0.00587124",
@@ -445,9 +450,9 @@
           "parametric-rate"
         ],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2608.28667",
-          "https://cea.nic.in/cdm-co2-baseline-database/"
+          "https://cea.nic.in/cdm-co2-baseline-database/",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
         ]
       }
     },
@@ -459,9 +464,9 @@
         "high": "30.6802"
       },
       "waterMl": {
-        "low": "9.97108",
-        "central": "52.1564",
-        "high": "177.945"
+        "low": "28.1491",
+        "central": "78.388",
+        "high": "230.409"
       },
       "carbonG": {
         "low": "3.34108",
@@ -481,8 +486,8 @@
         "qualityScore": 3,
         "flags": [],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
@@ -495,9 +500,9 @@
         "high": "0.699312"
       },
       "waterMl": {
-        "low": "0.227276",
-        "central": "1.18883",
-        "high": "4.05601"
+        "low": "0.641618",
+        "central": "1.78674",
+        "high": "5.25183"
       },
       "carbonG": {
         "low": "0.076155",
@@ -519,8 +524,8 @@
           "region-default"
         ],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
@@ -533,9 +538,9 @@
         "high": "27.3897"
       },
       "waterMl": {
-        "low": "8.90167",
-        "central": "46.5626",
-        "high": "158.861"
+        "low": "18.5566",
+        "central": "51.2188",
+        "high": "149.548"
       },
       "carbonG": {
         "low": "4.65626",
@@ -559,9 +564,9 @@
         "qualityScore": 3,
         "flags": [],
         "sourceUrls": [
-          "https://arxiv.org/abs/2304.03271",
           "https://arxiv.org/abs/2505.09598",
-          "https://cea.nic.in/cdm-co2-baseline-database/"
+          "https://cea.nic.in/cdm-co2-baseline-database/",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
         ]
       }
     }
