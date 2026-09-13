@@ -140,7 +140,23 @@ against. The decisions taken on it, on 2026-09-13:
     global average with a half-to-double band, stated as the assumption it is. The method page shows
     the water citation beside the figure.
 
+45. **Great Britain has two rows.** Dataset 0.5.0. Ember's United Kingdom row is generation-based
+    and NESO's Great Britain row is consumption-based, from the Carbon Intensity API's monthly
+    statistics over the trailing twelve months. In 2025 the two were 217 and 129, both official.
+    Two rows expose that; one would have hidden it. The method page says so.
+46. **Deprecation dates from Modelfax.** A model we list that Modelfax marks deprecated with a date
+    that has passed gets the date written, and the engine stops offering it as a downgrade target.
+    Future dates and models we do not know go in the weekly pull request body for a person.
+47. **The weekly workflow refreshes the dataset as well as the site snapshots.** One script, one
+    minor bump when anything moved, and the Python package, the golden fixtures and the plugin
+    bundle rebuilt in the same pull request. gridcarbon.dev shut down on 2026-09-13 and left a
+    snapshot on Zenodo, which was unreachable in this session; its hourly ranges are still to do.
+
 ## Still open
+
+- The gridcarbon hourly ranges from the Zenodo snapshot (doi 10.5281/zenodo.22299989), once Zenodo
+  answers.
+- The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 
 - The tokenizer ratios, which need the providers' counting endpoints and so an API key, in
   `packages/dataset/CHANGELOG.md`.

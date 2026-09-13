@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "notes": "Published measurements of inference energy, water and carbon. They disagree by an order of magnitude, mostly because they draw the system boundary in different places, so every row records its boundary, its methodology and a quality score, and nothing here is averaged across sources. Rows transcribed from the researched appendix in PLAN.md on 2026-09-10 and not yet re-fetched from the source files carry a provenance of source-appendix.",
   "benchmarks": [
     {
@@ -71,12 +71,12 @@
         "energyWh": {
           "low": 0.1,
           "central": 0.34,
-          "high": 3.0
+          "high": 3
         },
         "directWaterMl": {
           "low": 0.1,
           "central": 0.32,
-          "high": 3.0
+          "high": 3
         },
         "referenceInputTokens": {
           "low": 40,
@@ -91,7 +91,7 @@
         "tokenCountsPublished": false
       },
       "pue": {
-        "low": 1.0,
+        "low": 1,
         "central": 1.12,
         "high": 1.2
       },
@@ -144,9 +144,9 @@
         "tokenCountsPublished": false
       },
       "pue": {
-        "low": 1.0,
-        "central": 1.0,
-        "high": 1.0
+        "low": 1,
+        "central": 1,
+        "high": 1
       },
       "energyIncludesPue": true,
       "methodology": "provider-measured",
@@ -196,8 +196,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -266,8 +266,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -334,8 +334,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -403,8 +403,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -472,8 +472,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -541,8 +541,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -610,8 +610,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -678,8 +678,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -747,8 +747,8 @@
         ],
         "relativeUncertainty": {
           "low": 0.5,
-          "central": 1.0,
-          "high": 2.0
+          "central": 1,
+          "high": 2
         }
       },
       "pue": {
@@ -815,7 +815,7 @@
         ],
         "relativeUncertainty": {
           "low": 0.4,
-          "central": 1.0,
+          "central": 1,
           "high": 2.5
         }
       },
@@ -856,7 +856,7 @@
           "high": 0.6
         },
         "directWaterMl": {
-          "low": 0.0,
+          "low": 0,
           "central": 0.03,
           "high": 0.067
         },
@@ -922,7 +922,7 @@
         "tokenCountsPublished": false
       },
       "pue": {
-        "low": 1.0,
+        "low": 1,
         "central": 1.15,
         "high": 1.4
       },
@@ -963,9 +963,9 @@
       "parametric": {
         "model": "ecologits",
         "coefficients": {
-          "alphaKwhPerTokenPerB": 1.17e-06,
+          "alphaKwhPerTokenPerB": 0.00000117,
           "betaPerB": -0.0112,
-          "gammaKwhPerToken": 4.05e-05
+          "gammaKwhPerToken": 0.0000405
         },
         "serverBaseW": {
           "low": 1000,
@@ -1021,9 +1021,9 @@
       "parametric": {
         "model": "ecologits",
         "coefficients": {
-          "alphaKwhPerTokenPerB": 1.17e-06,
+          "alphaKwhPerTokenPerB": 0.00000117,
           "betaPerB": -0.0112,
-          "gammaKwhPerToken": 4.05e-05
+          "gammaKwhPerToken": 0.0000405
         },
         "serverBaseW": {
           "low": 10,
@@ -1033,15 +1033,15 @@
         "gpuCount": 1
       },
       "pue": {
-        "low": 1.0,
-        "central": 1.0,
-        "high": 1.0
+        "low": 1,
+        "central": 1,
+        "high": 1
       },
       "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
-        "low": 0.0,
-        "central": 0.0,
-        "high": 0.0
+        "low": 0,
+        "central": 0,
+        "high": 0
       },
       "methodology": "parametric-model",
       "boundary": "server",
@@ -1074,8 +1074,8 @@
       "shape": "proxy",
       "proxyOf": "jegham.claude-3.7-sonnet",
       "proxyFactor": {
-        "low": 1.0,
-        "central": 2.0,
+        "low": 1,
+        "central": 2,
         "high": 4.5
       },
       "pue": {
@@ -1120,7 +1120,7 @@
       "proxyFactor": {
         "low": 0.7,
         "central": 1.1,
-        "high": 2.0
+        "high": 2
       },
       "pue": {
         "low": 1.14,
@@ -1203,7 +1203,7 @@
       "proxyFactor": {
         "low": 0.3,
         "central": 0.8,
-        "high": 2.0
+        "high": 2
       },
       "pue": {
         "low": 1.12,
@@ -1245,7 +1245,7 @@
       "proxyOf": "jegham.gpt-4.1-nano",
       "proxyFactor": {
         "low": 1.2,
-        "central": 2.0,
+        "central": 2,
         "high": 3.5
       },
       "pue": {
@@ -1286,9 +1286,9 @@
       "shape": "proxy",
       "proxyOf": "google.gemini-apps.2025-median",
       "proxyFactor": {
-        "low": 2.0,
-        "central": 6.0,
-        "high": 20.0
+        "low": 2,
+        "central": 6,
+        "high": 20
       },
       "pue": {
         "low": 1.09,

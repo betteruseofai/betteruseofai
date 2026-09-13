@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
   "tokenizer": {
     "baseEncoding": "o200k_base",
@@ -12,7 +12,7 @@
       "code": {
         "low": 2.9,
         "central": 3.81,
-        "high": 5.0
+        "high": 5
       },
       "maths": {
         "low": 1.5,
@@ -20,7 +20,7 @@
         "high": 3.3
       },
       "non-latin": {
-        "low": 1.0,
+        "low": 1,
         "central": 2.49,
         "high": 5.5
       }
@@ -30,24 +30,24 @@
         "exact": true,
         "contentClasses": {
           "prose": {
-            "low": 1.0,
-            "central": 1.0,
-            "high": 1.0
+            "low": 1,
+            "central": 1,
+            "high": 1
           },
           "maths": {
-            "low": 1.0,
-            "central": 1.0,
-            "high": 1.0
+            "low": 1,
+            "central": 1,
+            "high": 1
           },
           "code": {
-            "low": 1.0,
-            "central": 1.0,
-            "high": 1.0
+            "low": 1,
+            "central": 1,
+            "high": 1
           },
           "non-latin": {
-            "low": 1.0,
-            "central": 1.0,
-            "high": 1.0
+            "low": 1,
+            "central": 1,
+            "high": 1
           }
         },
         "source": {
@@ -97,12 +97,12 @@
         "contentClasses": {
           "prose": {
             "low": 0.95,
-            "central": 1.0,
+            "central": 1,
             "high": 1.1
           },
           "maths": {
             "low": 0.95,
-            "central": 1.0,
+            "central": 1,
             "high": 1.12
           },
           "code": {
@@ -112,7 +112,7 @@
           },
           "non-latin": {
             "low": 0.9,
-            "central": 1.0,
+            "central": 1,
             "high": 1.15
           }
         },
@@ -129,75 +129,75 @@
     "charsPerTokenNotes": "Measured against the o200k encoder over a small set of samples per class, not guessed. The central values are the pooled chars-per-token; the bounds are the per-sample spread padded by about a fifth, because the sample is small. The first version of this file carried one global range of 3 to 5, which was 43 per cent out on English prose and did not even bracket the real count."
   },
   "cachedReadShareOfInput": {
-    "low": 0.0,
+    "low": 0,
     "central": 0.1,
     "high": 0.5
   },
   "cacheWriteShareOfInput": {
-    "low": 1.0,
-    "central": 1.0,
+    "low": 1,
+    "central": 1,
     "high": 1.25
   },
   "outputToInputEnergyWeight": {
-    "low": 4.0,
-    "central": 8.0,
-    "high": 15.0
+    "low": 4,
+    "central": 8,
+    "high": 15
   },
   "derivedRowWidening": {
     "low": 0.5,
-    "central": 1.0,
-    "high": 2.0
+    "central": 1,
+    "high": 2
   },
   "assumedTokenCountWidening": {
     "low": 0.7,
-    "central": 1.0,
+    "central": 1,
     "high": 1.5
   },
   "hiddenContextFactor": {
     "api": {
-      "low": 1.0,
-      "central": 1.0,
-      "high": 1.0
+      "low": 1,
+      "central": 1,
+      "high": 1
     },
     "claude-code": {
-      "low": 1.0,
-      "central": 1.0,
+      "low": 1,
+      "central": 1,
       "high": 1.05
     },
     "codex-cli": {
-      "low": 1.0,
-      "central": 1.0,
+      "low": 1,
+      "central": 1,
       "high": 1.05
     },
     "claude-web": {
-      "low": 1.0,
+      "low": 1,
       "central": 1.4,
       "high": 2.5
     },
     "chatgpt-web": {
-      "low": 1.0,
+      "low": 1,
       "central": 1.5,
-      "high": 3.0
+      "high": 3
     },
     "gemini-web": {
-      "low": 1.0,
+      "low": 1,
       "central": 1.4,
       "high": 2.5
     },
     "local-webui": {
-      "low": 1.0,
-      "central": 1.0,
+      "low": 1,
+      "central": 1,
       "high": 1.1
     }
   },
   "localPue": {
-    "low": 1.0,
-    "central": 1.0,
-    "high": 1.0
+    "low": 1,
+    "central": 1,
+    "high": 1
   },
   "parametricWidening": {
     "low": 0.4,
-    "central": 1.0,
-    "high": 5.0
+    "central": 1,
+    "high": 5
   }
 }

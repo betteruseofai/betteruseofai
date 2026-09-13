@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "defaultRegion": "WORLD",
   "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
   "regions": [
@@ -47,9 +47,9 @@
       "kind": "country",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 330.0,
+        "low": 330,
         "central": 349.7,
-        "high": 375.0
+        "high": 375
       },
       "waterOffsiteLPerKwh": {
         "low": 2.2,
@@ -119,7 +119,7 @@
     },
     {
       "code": "GB",
-      "name": "United Kingdom",
+      "name": "United Kingdom (Ember, as generated)",
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
@@ -154,6 +154,44 @@
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
+    },
+    {
+      "code": "GB-NESO",
+      "name": "Great Britain (NESO, as consumed)",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": {
+        "low": 94,
+        "central": 124,
+        "high": 145
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.65,
+        "central": 2.35,
+        "high": 3.53
+      },
+      "year": 2026,
+      "source": {
+        "title": "Carbon Intensity API, monthly statistics",
+        "url": "https://api.carbonintensity.org.uk/",
+        "publisher": "National Energy System Operator",
+        "date": "2026",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-13. Off-site water is the WRI factor for Great Britain, as on the Ember row."
     },
     {
       "code": "FR",
@@ -466,7 +504,7 @@
       "continent": "South America",
       "gridGco2PerKwh": {
         "low": 96.3,
-        "central": 110.0,
+        "central": 110,
         "high": 115.5
       },
       "waterOffsiteLPerKwh": {
@@ -655,8 +693,8 @@
       "kind": "country",
       "continent": "Africa",
       "gridGco2PerKwh": {
-        "low": 664.0,
-        "central": 699.0,
+        "low": 664,
+        "central": 699,
         "high": 717.7
       },
       "waterOffsiteLPerKwh": {
@@ -693,8 +731,8 @@
       "kind": "subregion",
       "continent": "North America",
       "gridGco2PerKwh": {
-        "low": 184.0,
-        "central": 195.0,
+        "low": 184,
+        "central": 195,
         "high": 209.1
       },
       "waterOffsiteLPerKwh": {

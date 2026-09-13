@@ -33,16 +33,38 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: refresh the three snapshots
+      - name: refresh the three site snapshots
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: pnpm exec tsx apps/site/scripts/snapshot.ts
+
+      # The dataset sources that can be re-read without a person: Great Britain
+      # as consumed from NESO, and deprecation dates from Modelfax. The report
+      # goes into the pull request body, including the models Modelfax knows
+      # and we do not, which a person has to decide about.
+      - name: refresh the dataset
+        env:
+          SNAPSHOT_REPORT: ${{ runner.temp }}/report.md
+        run: node packages/dataset/scripts/refresh.mjs --write
+
+      # A dataset change reaches four other places: the built bundle, the
+      # Python package, the golden fixtures and the plugin bundle. All are
+      # rebuilt here so the pull request is complete and CI passes on it.
+      - name: rebuild what inlines the dataset, if it moved
+        run: |
+          if git diff --quiet packages/dataset/data; then
+            echo "dataset unchanged"
+            exit 0
+          fi
+          pnpm turbo run build --filter=@betteruseofai/dataset --filter=@betteruseofai/core --filter=@betteruseofai/claude-code-plugin...
+          python apps/cli-py/scripts/sync-dataset.py
+          pnpm --filter @betteruseofai/core run fixtures
 
       - name: open a pull request if anything changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet apps/site/public/fallback; then
+          if git diff --quiet; then
             echo "nothing moved"
             exit 0
           fi
@@ -50,7 +72,14 @@ jobs:
           git config user.name "snapshots"
           git config user.email "snapshots@betteruseofai.org"
           git checkout -b "$branch"
-          git add apps/site/public/fallback
-          git commit -m "chore(site): refresh the fallback snapshots, $(date -u +%Y-%m-%d)"
+          git add -A
+          git commit -m "chore: weekly refresh of snapshots and dataset sources, $(date -u +%Y-%m-%d)"
           git push origin "$branch"
-          gh pr create --title "Refresh the fallback snapshots" --body "The weekly refresh of the committed snapshots the site falls back to when a build has no network: GitHub contributors, GitHub releases, and the contributors' Substack feeds. Opened by the snapshots workflow; a person merges it." --base main --head "$branch"
+          {
+            echo "The weekly refresh. Site snapshots: GitHub contributors and releases, and the contributors' Substack feeds. Dataset: Great Britain as consumed from NESO, and deprecation dates from Modelfax; a data change bumps the dataset a minor version and rebuilds the Python package, the golden fixtures and the plugin bundle. Opened by the snapshots workflow; a person merges it."
+            echo
+            echo "## What the refresh found"
+            echo
+            cat "${{ runner.temp }}/report.md" 2>/dev/null || echo "No report was written."
+          } > "${{ runner.temp }}/body.md"
+          gh pr create --title "Weekly refresh of snapshots and dataset sources" --body-file "${{ runner.temp }}/body.md" --base main --head "$branch"

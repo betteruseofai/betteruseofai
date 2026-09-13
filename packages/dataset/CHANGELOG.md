@@ -1,5 +1,12 @@
 # @betteruseofai/dataset
 
+## 0.5.0
+
+Data only, refreshed by the weekly snapshot.
+
+- Great Britain as consumed (NESO) added at 124 gCO2/kWh (months 94 to 145), twelve months to 2026-08.
+- deprecation dates written for gpt-5 deprecated 2026-06-11.
+
 ## 0.4.0
 
 Data only, so a minor bump.

@@ -136,6 +136,9 @@ describe('the built extension', () => {
       'https://storage.googleapis.com',
       // The WRI guidance PDF the water factors cite. Printed, never requested.
       'https://files.wri.org',
+      // The NESO Carbon Intensity API the Great Britain row cites. Read by the
+      // weekly dataset refresh on the build machine, never by the extension.
+      'https://api.carbonintensity.org.uk',
       'https://huggingface.co',
       'https://joss.theoj.org',
       'https://mistral.ai',

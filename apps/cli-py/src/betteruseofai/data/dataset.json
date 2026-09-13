@@ -1,6 +1,6 @@
 {
-  "version": "0.4.0",
-  "sha256": "3e0eab99d9d7be80cb3004776be33b34f669a49ff41fac487e11f45af093fea8",
+  "version": "0.5.0",
+  "sha256": "fd70ab08e521a8091b3b16671618b891c69ba47e2868095234a664b88198e7e6",
   "models": [
     {
       "id": "claude-opus-5",
@@ -303,7 +303,9 @@
       "provenance": {
         "method": "recalled-pending-refetch",
         "recorded": "2026-09-10"
-      }
+      },
+      "deprecated": "2026-06-11",
+      "notes": "Deprecated 2026-06-11, per Modelfax (github.com/bytebrujo/modelfax, CC BY 4.0), read 2026-09-13."
     },
     {
       "id": "o3",
@@ -2249,7 +2251,7 @@
     },
     {
       "code": "GB",
-      "name": "United Kingdom",
+      "name": "United Kingdom (Ember, as generated)",
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
@@ -2284,6 +2286,44 @@
         "retrieved": "2026-09-13",
         "licence": "CC BY 4.0"
       }
+    },
+    {
+      "code": "GB-NESO",
+      "name": "Great Britain (NESO, as consumed)",
+      "kind": "country",
+      "continent": "Europe",
+      "gridGco2PerKwh": {
+        "low": 94,
+        "central": 124,
+        "high": 145
+      },
+      "waterOffsiteLPerKwh": {
+        "low": 1.65,
+        "central": 2.35,
+        "high": 3.53
+      },
+      "year": 2026,
+      "source": {
+        "title": "Carbon Intensity API, monthly statistics",
+        "url": "https://api.carbonintensity.org.uk/",
+        "publisher": "National Energy System Operator",
+        "date": "2026",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "waterSource": {
+        "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
+        "url": "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+        "publisher": "World Resources Institute and WSP",
+        "date": "2020-01",
+        "retrieved": "2026-09-13",
+        "licence": "CC BY 4.0"
+      },
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-09-13"
+      },
+      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-13. Off-site water is the WRI factor for Great Britain, as on the Ember row."
     },
     {
       "code": "FR",
@@ -3239,7 +3279,7 @@
     }
   ],
   "calibration": {
-    "version": "0.4.0",
+    "version": "0.5.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",
