@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "Isomorphic engine that turns token counts into energy, water and carbon ranges with their sources.",
   "license": "MIT",
+  "homepage": "https://betteruseofai.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betteruseofai/betteruseofai.git",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/betteruseofai/betteruseofai/issues",
   "type": "module",
   "sideEffects": false,
   "files": [

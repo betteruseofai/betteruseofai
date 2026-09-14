@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "See the energy, water and carbon behind your own agent sessions. Everything is computed on your machine.",
   "license": "MIT",
+  "homepage": "https://betteruseofai.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betteruseofai/betteruseofai.git",
+    "directory": "apps/cli-ts"
+  },
+  "bugs": "https://github.com/betteruseofai/betteruseofai/issues",
   "type": "module",
   "bin": {
     "betteruseofai": "./dist/cli.js"

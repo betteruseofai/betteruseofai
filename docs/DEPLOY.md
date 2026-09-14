@@ -42,6 +42,35 @@ All three names were free on 2026-09-10.
 - [ ] Firefox Add-ons account.
 - [ ] Cloudflare account.
 
+Checked again on 2026-09-14: the organisation, the npm name and the PyPI name were all still free.
+`gh` cannot create an organisation, so that step is a browser step at github.com/organizations/new,
+free plan, with `gordianknot-legacy` as owner. Once it exists, the rest of the GitHub side runs from
+this checkout:
+
+```sh
+gh repo create betteruseofai/betteruseofai --public --source=. --remote=origin --push   --description "See the energy, water and carbon behind your own LLM use, computed on your machine."
+gh api -X PUT repos/betteruseofai/betteruseofai/environments/release   --input - <<'JSON'
+{ "reviewers": [ { "type": "User", "id": USER_ID } ] }
+JSON
+gh repo edit betteruseofai/betteruseofai --homepage https://betteruseofai.org   --enable-issues --enable-wiki=false --enable-projects=false --delete-branch-on-merge
+```
+
+`USER_ID` is the number from `gh api user --jq .id`. A git push that carries `.github/workflows`
+needs the `workflow` scope; the checkout pushes through Git Credential Manager, whose token has
+it, while the `gh` token itself does not (`gist`, `read:org`, `repo`). If a push is refused for
+that reason, run `gh auth refresh -s workflow` once.
+
+npm: the organisation is made at npmjs.com/org/create. Trusted publishing is preferred over a
+token. For each of the five packages, once it has been published a first time, Settings, Trusted
+Publishing, add `betteruseofai/betteruseofai` with workflow `release.yml` and environment
+`release`; the first publish of a new name cannot use trusted publishing, so the first release
+needs a granular automation token in the `NPM_TOKEN` secret, deleted afterwards. Every manifest
+already carries `repository` pointing at the organisation, which `--provenance` verifies.
+
+PyPI: at pypi.org/manage/account/publishing add a pending publisher for project `betteruseofai`,
+owner `betteruseofai`, repository `betteruseofai`, workflow `release.yml`, environment `release`.
+A pending publisher creates the project on the first upload, so no token is needed at any point.
+
 ## 3. Contributors' Substack addresses
 
 - [ ] Add each to `apps/site/src/data/substacks.json` as `{ "name": "...", "url": "https://....substack.com" }`.

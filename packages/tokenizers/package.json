@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "Local token counting. Exact for OpenAI, calibrated for the rest, and always labelled as an estimate.",
   "license": "MIT",
+  "homepage": "https://betteruseofai.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betteruseofai/betteruseofai.git",
+    "directory": "packages/tokenizers"
+  },
+  "bugs": "https://github.com/betteruseofai/betteruseofai/issues",
   "type": "module",
   "sideEffects": false,
   "files": ["dist"],

@@ -24,6 +24,10 @@ betteruseofai = "betteruseofai.cli:main"
 
 [project.urls]
 Homepage = "https://betteruseofai.org"
+Repository = "https://github.com/betteruseofai/betteruseofai"
+Issues = "https://github.com/betteruseofai/betteruseofai/issues"
+Changelog = "https://betteruseofai.org/changelog"
+Methodology = "https://betteruseofai.org/methodology"
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]
