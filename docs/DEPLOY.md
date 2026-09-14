@@ -10,19 +10,20 @@ Every page carries `status: draft` and a banner until a person has read it. That
 Anirudh. For each page, read it on the local build, change `status="draft"` to `status="published"`
 in its `.astro` file, and commit. There are eleven:
 
-- [ ] `/` landing
-- [ ] `/methodology`
-- [ ] `/calculator`
-- [ ] `/install`
-- [ ] `/about`, which also needs the affiliation line that is still `Redacted`
-- [ ] `/local-llms`
-- [ ] `/privacy`
-- [ ] `/changelog`
-- [ ] `/blog`, the Writing hub
-- [ ] `/design`, which stays `noindex` regardless
-- [ ] `/404`, already published
+- [x] `/` landing
+- [x] `/methodology`
+- [x] `/calculator`
+- [x] `/install`
+- [x] `/about`, read 2026-09-14; the affiliation line is still `Redacted` and needs its text
+- [x] `/local-llms`
+- [x] `/privacy`
+- [x] `/changelog`
+- [x] `/blog`, the Writing hub
+- [x] `/design`, which stays `noindex` regardless
+- [x] `/404`, already published
 
-Then set `REQUIRE_PUBLISHED=1` in the Cloudflare build environment, and the gate is closed.
+All eleven were read and flipped on 2026-09-14. Then set `REQUIRE_PUBLISHED=1` in the Cloudflare
+build environment, and the gate is closed.
 
 ## 2. Accounts and names
 
