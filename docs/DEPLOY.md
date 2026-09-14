@@ -50,12 +50,12 @@ this checkout:
 ```sh
 gh repo create betteruseofai/betteruseofai --public --source=. --remote=origin --push   --description "See the energy, water and carbon behind your own LLM use, computed on your machine."
 gh api -X PUT repos/betteruseofai/betteruseofai/environments/release   --input - <<'JSON'
-{ "reviewers": [ { "type": "User", "id": USER_ID } ] }
+{ "reviewers": [ { "type": "User", "id": 213015643 } ] }
 JSON
 gh repo edit betteruseofai/betteruseofai --homepage https://betteruseofai.org   --enable-issues --enable-wiki=false --enable-projects=false --delete-branch-on-merge
 ```
 
-`USER_ID` is the number from `gh api user --jq .id`. A git push that carries `.github/workflows`
+`213015643` is the id of `gordianknot-legacy`, from `gh api user --jq .id`. A git push that carries `.github/workflows`
 needs the `workflow` scope; the checkout pushes through Git Credential Manager, whose token has
 it, while the `gh` token itself does not (`gist`, `read:org`, `repo`). If a push is refused for
 that reason, run `gh auth refresh -s workflow` once.
