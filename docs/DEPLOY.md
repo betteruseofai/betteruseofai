@@ -29,11 +29,12 @@ build environment, and the gate is closed.
 
 All three names were free on 2026-09-10.
 
-- [ ] GitHub organisation `betteruseofai`, with `gordianknot-legacy` as owner. Transfer or push this
-      repository to `betteruseofai/betteruseofai`; every link in the site already points there.
-- [ ] In the repository settings, an environment named `release` with required reviewers, so the
-      publish jobs in `release.yml` wait for a person.
-- [ ] npm organisation `betteruseofai`. Either an automation token stored as the `NPM_TOKEN` secret,
+- [x] GitHub organisation `betteruseofai`, with `gordianknot-legacy` as owner. Created 2026-09-17,
+      free plan. The repository `betteruseofai/betteruseofai` exists, public, with the homepage set
+      and wiki and projects off; every link in the site already points there.
+- [x] In the repository settings, an environment named `release` with required reviewers, so the
+      publish jobs in `release.yml` wait for a person. Created 2026-09-17 via the API.
+- [x] npm organisation `betteruseofai`, created 2026-09-17. Still to do there: either an automation token stored as the `NPM_TOKEN` secret,
       or trusted publishing configured for each of the five packages against this repository and
       the `release.yml` workflow.
 - [ ] PyPI project `betteruseofai`, with trusted publishing configured for this repository, the
