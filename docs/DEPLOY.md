@@ -31,7 +31,8 @@ All three names were free on 2026-09-10.
 
 - [x] GitHub organisation `betteruseofai`, with `gordianknot-legacy` as owner. Created 2026-09-17,
       free plan. The repository `betteruseofai/betteruseofai` exists, public, with the homepage set
-      and wiki and projects off; every link in the site already points there.
+      and wiki and projects off, and `main` was pushed to it on 2026-09-17 once the `gh` token
+      had the `workflow` scope; every link in the site already points there.
 - [x] In the repository settings, an environment named `release` with required reviewers, so the
       publish jobs in `release.yml` wait for a person. Created 2026-09-17 via the API.
 - [x] npm organisation `betteruseofai`, created 2026-09-17. Still to do there: either an automation token stored as the `NPM_TOKEN` secret,
