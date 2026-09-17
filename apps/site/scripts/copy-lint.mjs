@@ -121,7 +121,7 @@ for (const file of files) {
   // A comparison written in words is a number too. "A few hundred times" on a
   // page with no chip was the one unsourced claim the audit found, and the
   // check above could not see it because it was not in a readout.
-  const multiplier = /(?:[a-z]+|\d+) times|factor of (?:about )?(?:[a-z]+|\d+)/i;
+  const multiplier = /\b(?:[a-z]+|\d+) times\b|\bfactor of (?:about )?(?:[a-z]+|\d+)\b/i;
   // The calculator shows its sources for whatever it is asked, so a link into
   // it with the comparison preset counts as a source for the comparison.
   const pointsAtCalculator = /href="\/calculator#/.test(body);
