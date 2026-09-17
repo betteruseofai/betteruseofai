@@ -17,6 +17,9 @@ jobs:
   check:
     name: check (${{ matrix.os }}, node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
+    # The whole job takes about two minutes. On the first run, one Windows job
+    # sat in typecheck for over half an hour, and the default limit is six hours.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
