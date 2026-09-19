@@ -35,9 +35,10 @@ All three names were free on 2026-09-10.
       had the `workflow` scope; every link in the site already points there.
 - [x] In the repository settings, an environment named `release` with required reviewers, so the
       publish jobs in `release.yml` wait for a person. Created 2026-09-17 via the API.
-- [x] npm organisation `betteruseofai`, created 2026-09-17. Still to do there: either an automation token stored as the `NPM_TOKEN` secret,
-      or trusted publishing configured for each of the five packages against this repository and
-      the `release.yml` workflow.
+- [x] npm organisation `betteruseofai`, created 2026-09-17. A granular automation token is stored
+      as the `NPM_TOKEN` secret since 2026-09-19, for the first publish only. After the first
+      release, set up trusted publishing for each of the five packages against this repository
+      and the `release.yml` workflow, then revoke the token and delete the secret.
 - [ ] PyPI project `betteruseofai`, with trusted publishing configured for this repository, the
       `release.yml` workflow and the `release` environment. No token is stored.
 - [ ] Chrome Web Store developer account. One-time fee.

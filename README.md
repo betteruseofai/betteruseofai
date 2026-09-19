@@ -5,8 +5,6 @@
 
 # Better Use of AI
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 Every prompt you send to a large language model draws electricity and water somewhere. Almost nobody
 using ChatGPT, Claude, Gemini or a coding agent can see how much. The default model is usually the
 most expensive one on offer, and most of the time it's overkill.

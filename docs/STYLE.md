@@ -1,8 +1,7 @@
 # Copy style
 
-> Status: draft. This page describes the rules. The voice they serve is in `VOICE.md`, written
-> against samples supplied on 2026-09-11. Every page stays `status: draft` until each one has been
-> read by Anirudh.
+> This page describes the rules. The voice they serve is in `VOICE.md`, written against samples
+> supplied on 2026-09-11. Every site page was read and moved to `status: published` on 2026-09-14.
 
 ## Voice
 

@@ -1,7 +1,5 @@
 # Contributing a benchmark row
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 The dataset in `packages/dataset` is the part of this project that matters most. Everything else is
 plumbing around it. This page is what a row needs before we'll take it.
 

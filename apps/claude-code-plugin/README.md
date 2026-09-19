@@ -1,7 +1,5 @@
 # Better Use of AI, for Claude Code
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 A live footprint on your status line, a session total every ten turns, and a nudge when a smaller
 model would probably do. Everything is worked out on your machine. Nothing is sent anywhere.
 

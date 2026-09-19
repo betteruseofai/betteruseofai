@@ -1,7 +1,5 @@
 # Recorded web fixtures
 
-> Status: draft.
-
 Request and response bodies for the four site adapters, written by hand from the documented shapes.
 No real conversation, no real account, no real session identifier. **CI never contacts claude.ai,
 chatgpt.com, gemini.google.com or anybody else**, and a test that did would be flaky and rude in

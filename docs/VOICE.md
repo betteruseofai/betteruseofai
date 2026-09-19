@@ -1,8 +1,7 @@
 # Voice
 
-> Status: draft. This is the voice model the site copy is written against. It comes from writing
-> samples supplied on 2026-09-11. Every page still needs reading by Anirudh before its `status`
-> moves past `draft`.
+> This is the voice model the site copy is written against. It comes from writing samples supplied
+> on 2026-09-11. Every site page was read against it and published on 2026-09-14.
 
 `STYLE.md` says what we must not write. This says what we're trying to sound like.
 

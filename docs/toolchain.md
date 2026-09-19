@@ -1,7 +1,5 @@
 # Toolchain
 
-> Status: draft.
-
 Pinned versions, so CI and this machine agree.
 
 | Tool | Version | How it got here |

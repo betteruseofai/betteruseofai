@@ -1,7 +1,5 @@
 # Security
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 ## What to report
 
 Anything that makes one of these claims untrue is a security issue here:

@@ -1,7 +1,5 @@
 # Better Use of AI, the browser extension
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 What your chat costs in energy, water and carbon, counted on your own machine. Works on claude.ai,
 chatgpt.com, gemini.google.com, and a model running on your own hardware.
 

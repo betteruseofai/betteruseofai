@@ -1,7 +1,5 @@
 # Log fixtures
 
-> Status: draft.
-
 Synthetic transcripts, written by hand to carry every trap the real formats contain. No real prompt
 text, no real session identifiers, nothing taken off anyone's machine. CI never reads a real home
 directory and never contacts a provider.

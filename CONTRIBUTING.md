@@ -1,7 +1,5 @@
 # Contributing
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 Thanks for looking. This is a small project with a strict brief, so it's worth reading this page before
 you open a pull request. How we treat each other here is in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md),
 and how to report a security problem is in [SECURITY.md](SECURITY.md).

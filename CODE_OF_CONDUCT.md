@@ -1,7 +1,5 @@
 # Code of conduct
 
-> Status: draft. This copy hasn't been through a voice review yet.
-
 This is a small project about being honest with numbers. The same standard applies to how people
 here treat each other. It is modelled on the
 [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/),
