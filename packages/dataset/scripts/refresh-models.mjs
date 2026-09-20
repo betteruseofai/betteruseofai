@@ -17,6 +17,7 @@
  * Run with --write to change models.json. Without it, it prints what it would do.
  */
 
+import { pathToFileURL } from 'node:url';
 import { fetchText, load, report, save, today } from './refresh-common.mjs';
 
 const RAW = 'https://raw.githubusercontent.com/bytebrujo/modelfax/main/data';
@@ -83,7 +84,7 @@ export const refreshModels = async ({ write }) => {
   return written.length > 0 ? lines[0].replace('Modelfax: ', '') : false;
 };
 
-if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const changed = await refreshModels({ write: process.argv.includes('--write') });
   if (!process.argv.includes('--write') && changed) console.log('(dry run; pass --write to change models.json)');
 }

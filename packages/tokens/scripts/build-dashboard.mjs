@@ -15,7 +15,7 @@
 
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
@@ -60,7 +60,10 @@ export const render = () => {
   return out;
 };
 
-const isMain = process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href;
+// Compared as URLs made by Node itself. Building the URL by hand from argv
+// only worked on Windows, where the path starts with a drive letter; on Linux
+// and macOS the leading slash doubled and the script silently did nothing.
+const isMain = process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMain) {
   const html = render();

@@ -17,6 +17,7 @@
  * Run with --write to change regions.json. Without it, it prints what it would do.
  */
 
+import { pathToFileURL } from 'node:url';
 import { fetchText, load, report, save, today } from './refresh-common.mjs';
 
 const API = 'https://api.carbonintensity.org.uk';
@@ -117,7 +118,7 @@ export const refreshNeso = async ({ write }) => {
   return line;
 };
 
-if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const changed = await refreshNeso({ write: process.argv.includes('--write') });
   if (!process.argv.includes('--write') && changed) console.log('(dry run; pass --write to change regions.json)');
 }
