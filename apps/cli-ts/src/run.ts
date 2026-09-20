@@ -1,4 +1,5 @@
 import { parseArgs } from './args.js';
+import { dashboard, prune } from './commands/dashboard.js';
 import { doctor, exportEvents, models } from './commands/misc.js';
 import { recommend } from './commands/recommend.js';
 import { session, sessions } from './commands/sessions.js';
@@ -68,6 +69,10 @@ export const run = async (argv: string[]): Promise<RunResult> => {
         return ok(await session(context, args));
       case 'export':
         return ok(await exportEvents(context, args));
+      case 'dashboard':
+        return ok(await dashboard(context, args));
+      case 'prune':
+        return ok(await prune(context, args));
       case 'models':
         return ok(models(context, args));
       case 'doctor':

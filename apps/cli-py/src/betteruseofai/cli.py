@@ -8,10 +8,13 @@ words.
 
 from __future__ import annotations
 
+import contextlib
+import copy
 import math
 import os
 import re
 import sys
+import webbrowser
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -27,17 +30,29 @@ from .engine import (
     select_benchmark,
 )
 from .estimate import Estimate, UsageEvent, estimate
+from .log import (
+    LOG_WARN_BYTES,
+    append_log,
+    default_log_dir,
+    default_out_dir,
+    log_size,
+    prune_log,
+    read_log,
+)
 from .readers import default_claude_dir, default_codex_dir, read_claude_code, read_codex
 from .recommender import create_recommender
+from .saving import saving as compute_saving
 
 VERSION = "0.0.0"
 
 VALUE_FLAGS = {
     "since", "until", "by", "region", "format", "source", "dir", "now",
     "water-scope", "carbon-basis", "limit", "interval", "model", "depth",
+    "log", "out", "before",
 }  # fmt: skip
 SWITCH_FLAGS = {
     "json", "no-color", "help", "version", "ascii", "cheap", "all", "verbose", "local", "brief",
+    "no-log", "with-projects", "no-open", "dry-run",
 }  # fmt: skip
 
 WATER_SCOPES = ("on-site", "on-site + off-site", "lifecycle")
@@ -56,6 +71,8 @@ COMMANDS
   sessions         Every session, with its total
   session <id>     The report for one session, including its heaviest turns
   export           Every turn as a row, for a spreadsheet
+  dashboard        Every session on this machine as one page, written to a file and opened
+  prune            Drop turns before a date from the event log and compact it
   models           Which models we know, what measures them, and how good that measure is
   recommend <text> Ask what a prompt needs, without sending it anywhere
   doctor           Check the things that go wrong, and say what to do about each
@@ -70,6 +87,13 @@ OPTIONS
   --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle
   --carbon-basis <basis>  location-based (the default) or provider-reported
   --format <format>       table, json or csv, depending on the command
+  --log <path>            Read and write the event log here instead of the usual place
+  --no-log                Leave the event log alone for this run
+  --out <path>            Where the dashboard writes its file; - for standard output
+  --with-projects         Put directory and branch names on the dashboard
+  --no-open               Write the dashboard without opening it
+  --before <when>         On prune, drop turns older than this: 365d, or an ISO date
+  --dry-run               On prune, say what would go and write nothing
   --json                  Same as --format json
   --now <iso>             Pretend it is this moment, so a fixture run is repeatable
   --ascii                 Avoid characters a plain terminal cannot draw
@@ -81,6 +105,14 @@ OPTIONS
   --local                 Say that you run models locally, so that can be suggested
   -h, --help              This text
   -v, --version           The version and the dataset it ships with
+
+THE EVENT LOG
+  Claude Code deletes its transcripts after a while, thirty days by default, and
+  a total that only reads transcripts forgets everything older. So every run of
+  this tool, and the plugin's Stop hook, appends the turns it reads to a log of
+  its own under ~/.claude/betteruseofai/log, one JSON line per turn, tokens and
+  model only. Nothing is priced until it is read back, so a dataset update
+  re-prices all of it. Nothing leaves the machine. "prune" trims it.
 
 A NOTE ON THE FIGURES
   Every figure is a range, because the published measurements of AI energy use
@@ -220,9 +252,29 @@ class Context:
         self.ascii = bool(flags.get("ascii"))
         self.dir = flags.get("dir")
 
+        # A run pointed at another directory with --dir is a fixture or somebody
+        # else's transcripts, and writing those into the real log would be wrong,
+        # so the log is off for it unless --log or BUAI_LOG_DIR says otherwise.
+        log_flag = flags.get("log")
+        log_on = not flags.get("no-log") and (
+            log_flag is not None or bool(os.environ.get("BUAI_LOG_DIR")) or flags.get("dir") is None
+        )
+        self.log_dir: str | None = (log_flag or default_log_dir()) if log_on else None
+        self.log_summary: dict[str, Any] = {
+            "enabled": log_on,
+            "fromLogOnly": 0,
+            "appended": 0,
+            "files": 0,
+            "bytes": 0,
+        }
+
     def iso_now(self) -> str:
         stamp = self.now.astimezone(timezone.utc)
         return stamp.strftime("%Y-%m-%dT%H:%M:%S.") + f"{stamp.microsecond // 1000:03d}Z"
+
+
+# The surface a --source name reads.
+_SURFACE_OF = {"claude-code": "claude-code", "codex": "codex-cli"}
 
 
 def load_events(context: Context) -> list[tuple[UsageEvent, Estimate]]:
@@ -237,6 +289,34 @@ def load_events(context: Context) -> list[tuple[UsageEvent, Estimate]]:
 
     for result in results:
         events.extend(result.events)
+
+    # The log joins in two directions. Whatever the transcripts hold that the
+    # log does not is appended, so the log fills as a side effect of looking.
+    # Whatever the log holds that no transcript does any more is read back, so
+    # a turn does not vanish on the day its transcript is deleted. A turn in
+    # both is taken from the transcript, which carries more detail.
+    if context.log_dir:
+        stored = read_log(context.log_dir)
+        known = {event.id for event in stored.events}
+        missing = [event for event in events if event.id not in known]
+        context.log_summary["appended"] = append_log(context.log_dir, missing, context.iso_now())
+
+        seen = {event.id for event in events}
+        surfaces = {_SURFACE_OF.get(source, source) for source in context.sources}
+        log_only = [
+            event
+            for event in stored.events
+            if event.id not in seen
+            and event.surface in surfaces
+            and (not context.since or event.timestamp >= context.since)
+            and (not context.until or event.timestamp <= context.until)
+        ]
+        context.log_summary["fromLogOnly"] = len(log_only)
+        files, size = log_size(context.log_dir)
+        context.log_summary["files"] = files
+        context.log_summary["bytes"] = size
+        events.extend(log_only)
+
     events.sort(key=lambda event: (event.timestamp, event.id))
 
     context.reader_results = results  # type: ignore[attr-defined]
@@ -464,9 +544,7 @@ def caveats(context: Context, totals: Aggregate) -> list[str]:
             )
         )
     if "thinking-unknown" in totals.flags:
-        lines.append(
-            "  Some turns hid their reasoning tokens, so the figures are a lower bound."
-        )
+        lines.append("  Some turns hid their reasoning tokens, so the figures are a lower bound.")
     if "proxy-row" in totals.flags:
         lines.append(
             "  Some models have never been measured, so their share is scaled from one that has."
@@ -1118,9 +1196,7 @@ def cmd_doctor(context: Context, args: dict[str, Any]) -> str:
             "name": "Turns found",
             "ok": len(pairs) > 0,
             "detail": (
-                f"{len(pairs)} in the window"
-                if pairs
-                else "none in the window; try --since 30d"
+                f"{len(pairs)} in the window" if pairs else "none in the window; try --since 30d"
             ),
         }
     )
@@ -1137,6 +1213,27 @@ def cmd_doctor(context: Context, args: dict[str, Any]) -> str:
                     "Adding them to the dataset would fix that."
                 )
             ),
+        }
+    )
+    log_summary = context.log_summary
+    mb = round(log_summary["bytes"] / (1024 * 1024))
+    if not log_summary["enabled"]:
+        log_detail = (
+            "off for this run, because --dir points elsewhere. Pass --log <path> to use one."
+        )
+    else:
+        files = log_summary["files"]
+        log_detail = (
+            f"{context.log_dir}: {files} {'file' if files == 1 else 'files'}, {mb} MB, "
+            f"{log_summary['fromLogOnly']} turns known only from here"
+        )
+        if log_summary["bytes"] > LOG_WARN_BYTES:
+            log_detail += '. Run "betteruseofai prune --before <date>" to trim it.'
+    checks.append(
+        {
+            "name": "Event log",
+            "ok": log_summary["enabled"] and log_summary["bytes"] <= LOG_WARN_BYTES,
+            "detail": log_detail,
         }
     )
     checks.append(
@@ -1242,12 +1339,391 @@ def cmd_recommend(context: Context, args: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- dashboard
+
+DATA_PLACEHOLDER = "__BUAI_DATA__"
+_TEMPLATE_PATH = Path(__file__).resolve().parent / "data" / "dashboard.html"
+
+
+def _template() -> str:
+    if not _TEMPLATE_PATH.exists():
+        raise ValueError(
+            "The dashboard template is missing from this install. "
+            "In the repository, run: python apps/cli-py/scripts/sync-dataset.py"
+        )
+    return _TEMPLATE_PATH.read_text(encoding="utf-8")
+
+
+def _figure(value: Range | None, unit: str, flags: list[str]) -> dict[str, str] | None:
+    """The pieces of a readout, worked out the way format_range does but kept apart."""
+    if value is None:
+        return None
+    lower_bound = "thinking-unknown" in flags
+    estimated = "tokens-estimated" in flags or "derived-rate" in flags
+    scaled, scaled_unit = scale_unit(value.central, unit)
+    divisor = value.central / scaled if scaled_unit != unit and scaled else 1.0
+    return {
+        "prefix": "≥ " if lower_bound else ("~" if estimated else ""),
+        "value": display_number(scaled),
+        "unit": scaled_unit,
+        "low": display_number(value.low / divisor),
+        "high": display_number(value.high / divisor),
+    }
+
+
+def _texts(energy: Range | None, water: Range | None, carbon: Range | None) -> dict[str, str]:
+    return {
+        "energy": short(energy, "Wh"),
+        "water": short(water, "mL"),
+        "carbon": short(carbon, "g"),
+    }
+
+
+def _bucket_out(one: Aggregate) -> dict[str, Any]:
+    return {
+        "key": one.key,
+        "count": one.count,
+        "energyWh": range_out(one.energy_wh),
+        "waterMl": range_out(one.water_ml),
+        "carbonG": range_out(one.carbon_g),
+        "unknownModelCount": one.unknown_model_count,
+        "text": _texts(one.energy_wh, one.water_ml, one.carbon_g),
+    }
+
+
+_SLASHES = re.compile(r"[\\/]+")
+
+
+def project_name(path: str | None) -> str:
+    """The last part of a working directory, whichever way its slashes lean."""
+    if not path:
+        return "unknown project"
+    parts = [part for part in _SLASHES.split(path) if part]
+    return parts[-1] if parts else "unknown project"
+
+
+def _model_name(key: str, context: Context) -> str:
+    if key == "unknown":
+        return "unknown"
+    model = get_model(key, context.dataset)
+    return model["displayName"] if model else key
+
+
+def _add_range(a: Range | None, b: Range | None) -> Range | None:
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return Range(a.low + b.low, a.central + b.central, a.high + b.high)
+
+
+def dashboard_payload(context: Context, args: dict[str, Any]) -> dict[str, Any]:
+    with_projects = bool(args["flags"].get("with-projects"))
+    pairs = load_events(context)
+    log = context.log_summary
+
+    totals_list = aggregate(pairs, "all")
+    totals = totals_list[0] if totals_list else None
+    models = sorted(aggregate(pairs, "model"), key=lambda one: (-one.count, one.key))
+    surfaces = sorted(aggregate(pairs, "surface"), key=lambda one: (-one.count, one.key))
+    sessions = sorted(
+        aggregate(pairs, "session"),
+        key=lambda one: (-(one.energy_wh.central if one.energy_wh else -1), one.key),
+    )[:10]
+
+    saved = (
+        compute_saving(
+            pairs,
+            context.dataset,
+            region_code=context.region_code,
+            water_scope=context.water_scope,
+            carbon_basis=context.carbon_basis,
+        )
+        if totals
+        else None
+    )
+
+    projects: list[dict[str, Any]] | None = None
+    if with_projects:
+        groups: dict[tuple[str, str | None], dict[str, Any]] = {}
+        for event, est in pairs:
+            raw_project = event.meta.get("project")
+            project = project_name(raw_project if isinstance(raw_project, str) else None)
+            raw_branch = event.meta.get("branch")
+            branch = raw_branch if isinstance(raw_branch, str) and raw_branch else None
+            group = groups.setdefault(
+                (project, branch),
+                {"project": project, "branch": branch, "count": 0, "energy": None},
+            )
+            group["count"] += 1
+            if est.energy_wh:
+                group["energy"] = _add_range(group["energy"], est.energy_wh)
+        projects = [
+            {
+                "project": group["project"],
+                "branch": group["branch"],
+                "count": group["count"],
+                "energyWh": range_out(group["energy"]),
+                "text": {"energy": short(group["energy"], "Wh")},
+            }
+            for group in sorted(
+                groups.values(),
+                key=lambda g: (-g["count"], g["project"], g["branch"] or ""),
+            )
+        ]
+
+    session_keys = {event.session_id or "no-session" for event, _ in pairs}
+    timestamps = sorted(event.timestamp for event, _ in pairs)
+    log_mb = round(log["bytes"] / (1024 * 1024))
+
+    quiet = copy.copy(context)
+    quiet.colour = False
+
+    def equivalents_out(value: float | None, quantity: str) -> list[dict[str, Any]]:
+        return [
+            {
+                "id": one["id"],
+                "count": canonical_number(one["count"]),
+                "text": f"{one['count']:.1f}",
+                "label": one["label"],
+                "stale": one["stale"],
+            }
+            for one in equivalents(value, quantity, context.dataset, 2)
+        ]
+
+    def top_model(one: Aggregate) -> str:
+        ranked = sorted(one.by_model.items(), key=lambda item: (-item[1], item[0]))
+        return _model_name(ranked[0][0], context) if ranked else "unknown"
+
+    return {
+        "command": "dashboard",
+        "window": {"since": context.since, "until": context.until},
+        "settings": {
+            "region": context.region_code or context.dataset["defaultRegion"],
+            "waterScope": context.water_scope,
+            "carbonBasis": context.carbon_basis,
+        },
+        "withProjects": with_projects,
+        "coverage": {
+            "turns": len(pairs),
+            "sessions": len(session_keys),
+            "from": timestamps[0] if timestamps else None,
+            "to": timestamps[-1] if timestamps else None,
+            "fromTranscripts": len(pairs) - log["fromLogOnly"],
+            "fromLogOnly": log["fromLogOnly"],
+            "appended": log["appended"],
+            "logEnabled": log["enabled"],
+            "logFiles": log["files"],
+            "logBytes": log["bytes"],
+            "logMb": log_mb,
+            "logWarn": log["bytes"] > LOG_WARN_BYTES,
+        },
+        "totals": (
+            {
+                "count": totals.count,
+                "energyWh": range_out(totals.energy_wh),
+                "waterMl": range_out(totals.water_ml),
+                "carbonG": range_out(totals.carbon_g),
+                "unknownModelCount": totals.unknown_model_count,
+                "noBenchmarkCount": totals.no_benchmark_count,
+                "flags": totals.flags,
+                "readout": {
+                    "energy": _figure(totals.energy_wh, "Wh", totals.flags),
+                    "water": _figure(totals.water_ml, "mL", totals.flags),
+                    "carbon": _figure(totals.carbon_g, "g", totals.flags),
+                },
+            }
+            if totals
+            else None
+        ),
+        "byWeek": [_bucket_out(one) for one in aggregate(pairs, "week")],
+        "byDay": [_bucket_out(one) for one in aggregate(pairs, "day")],
+        "byModel": [
+            {
+                **_bucket_out(one),
+                "name": _model_name(one.key, context),
+                "share": canonical_number(one.count / totals.count if totals else 0),
+            }
+            for one in models
+        ],
+        "bySurface": [_bucket_out(one) for one in surfaces],
+        "sessions": [
+            {**_bucket_out(one), "from": one.from_, "to": one.to, "topModel": top_model(one)}
+            for one in sessions
+        ],
+        "saving": (
+            {
+                "baseline": saved.baseline,
+                "energyWh": range_out(saved.energy_wh),
+                "waterMl": range_out(saved.water_ml),
+                "carbonG": range_out(saved.carbon_g),
+                "skipped": saved.skipped,
+                "byDay": [
+                    {"day": day.day, "energyWh": range_out(day.energy_wh)} for day in saved.by_day
+                ],
+                "readout": {"energy": _figure(saved.energy_wh, "Wh", [])},
+            }
+            if saved
+            else None
+        ),
+        "projects": projects,
+        "equivalents": {
+            "energy": equivalents_out(
+                totals.energy_wh.central if totals and totals.energy_wh else None, "energy"
+            ),
+            "water": equivalents_out(
+                totals.water_ml.central if totals and totals.water_ml else None, "water"
+            ),
+            "carbon": equivalents_out(
+                totals.carbon_g.central if totals and totals.carbon_g else None, "carbon"
+            ),
+        },
+        "caveats": [line.strip() for line in caveats(quiet, totals)] if totals else [],
+    }
+
+
+def render_dashboard(json_text: str) -> str:
+    """The template with the JSON inside it.
+
+    The only escape needed is the one that would end the script element.
+    """
+    return _template().replace(DATA_PLACEHOLDER, json_text.replace("</", "<\\/"), 1)
+
+
+def cmd_dashboard(context: Context, args: dict[str, Any]) -> str:
+    body = dashboard_payload(context, args)
+
+    if context.json:
+        return emit_json(context, body)
+
+    json_text = canonical_json(payload(context, body))
+    html = render_dashboard(json_text)
+
+    out_flag = args["flags"].get("out")
+    if out_flag == "-":
+        return html
+
+    default_out = (
+        Path(default_out_dir(context.log_dir)) / "dashboard.html"
+        if context.log_dir
+        else Path.cwd() / "dashboard.html"
+    )
+    out_path = Path(out_flag).expanduser() if out_flag else default_out
+    if not out_path.is_absolute():
+        out_path = Path.cwd() / out_path
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(html, encoding="utf-8", newline="\n")
+
+    if not args["flags"].get("no-open"):
+        # A browser that will not open is not a reason to fail: the path is
+        # printed anyway.
+        with contextlib.suppress(Exception):
+            webbrowser.open(out_path.as_uri())
+
+    lines = [f"Written to {out_path}"]
+    coverage = body["coverage"]
+    if coverage["turns"] == 0:
+        lines.append("No turns were found, so the page says so rather than showing noughts.")
+    else:
+        sessions = coverage["sessions"]
+        noun = "session" if sessions == 1 else "sessions"
+        lines.append(
+            f"{coverage['turns']} turns across {sessions} {noun}, "
+            f"{coverage['from'][:10]} to {coverage['to'][:10]}."
+        )
+        if coverage["fromLogOnly"] > 0:
+            lines.append(
+                paint(
+                    context,
+                    "dim",
+                    f"  {coverage['fromLogOnly']} of those are known only from the log; "
+                    "their transcripts have gone.",
+                )
+            )
+    if not body["withProjects"]:
+        lines.append(
+            paint(
+                context,
+                "dim",
+                "  Projects and branches are left out. Add --with-projects to include them.",
+            )
+        )
+    if coverage["logWarn"]:
+        lines.append(
+            paint(
+                context,
+                "yellow",
+                f"  The log has grown to {coverage['logMb']} MB. "
+                'Run "betteruseofai prune --before <date>" to trim it.',
+            )
+        )
+    return "\n".join(lines)
+
+
+def cmd_prune(context: Context, args: dict[str, Any]) -> str:
+    if not context.log_dir:
+        raise ValueError(
+            "There is no log for this run to prune. "
+            "Without --dir the log is on, or pass --log <path>."
+        )
+    before_flag = args["flags"].get("before")
+    if not before_flag:
+        raise ValueError("prune needs --before, for example --before 365d or --before 2026-01-01.")
+    before = resolve_since(before_flag, context.now) or before_flag
+    try:
+        datetime.fromisoformat(before.replace("Z", "+00:00"))
+    except ValueError as cause:
+        raise ValueError(f"--before is not a date I can read: {before_flag}") from cause
+    dry_run = bool(args["flags"].get("dry-run"))
+    result = prune_log(context.log_dir, before, dry_run)
+
+    if context.json:
+        return emit_json(
+            context,
+            {
+                "command": "prune",
+                "before": before,
+                "dryRun": dry_run,
+                "removed": result.removed,
+                "duplicates": result.duplicates,
+                "kept": result.kept,
+                "filesBefore": result.files_before,
+                "filesAfter": result.files_after,
+                "bytesBefore": result.bytes_before,
+                "bytesAfter": result.bytes_after,
+            },
+        )
+
+    def kb(size: int) -> str:
+        return f"{round(size / 1024)} kB"
+
+    verb = "Would remove" if dry_run else "Removed"
+    turns = "turn" if result.removed == 1 else "turns"
+    compacted = "would compact" if dry_run else "compacted"
+    superseded = "line" if result.duplicates == 1 else "lines"
+    remain = "turn remains" if result.kept == 1 else "turns remain"
+    files = "file" if result.files_after == 1 else "files"
+    lines = [
+        f"{verb} {result.removed} {turns} before {before[:10]} and "
+        f"{compacted} {result.duplicates} superseded {superseded}.",
+        f"{result.kept} {remain} in {result.files_after} {files}, "
+        f"{kb(result.bytes_after)}, was {kb(result.bytes_before)}.",
+    ]
+    if dry_run:
+        lines.append(
+            paint(context, "dim", "  Nothing was written. Run again without --dry-run to do it.")
+        )
+    return "\n".join(lines)
+
+
 COMMANDS = {
     "summary": cmd_summary,
     "recommend": cmd_recommend,
     "sessions": cmd_sessions,
     "session": cmd_session,
     "export": cmd_export,
+    "dashboard": cmd_dashboard,
+    "prune": cmd_prune,
     "models": cmd_models,
     "doctor": cmd_doctor,
 }

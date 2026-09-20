@@ -37,7 +37,7 @@ All three names were free on 2026-09-10.
       publish jobs in `release.yml` wait for a person. Created 2026-09-17 via the API.
 - [x] npm organisation `betteruseofai`, created 2026-09-17. A granular automation token is stored
       as the `NPM_TOKEN` secret since 2026-09-19, for the first publish only. After the first
-      release, set up trusted publishing for each of the five packages against this repository
+      release, set up trusted publishing for each of the six packages against this repository
       and the `release.yml` workflow, then revoke the token and delete the secret.
 - [ ] PyPI project `betteruseofai`, with trusted publishing configured for this repository, the
       `release.yml` workflow and the `release` environment. No token is stored.
@@ -64,7 +64,7 @@ it, while the `gh` token itself does not (`gist`, `read:org`, `repo`). If a push
 that reason, run `gh auth refresh -s workflow` once.
 
 npm: the organisation is made at npmjs.com/org/create. Trusted publishing is preferred over a
-token. For each of the five packages, once it has been published a first time, Settings, Trusted
+token. For each of the six packages, once it has been published a first time, Settings, Trusted
 Publishing, add `betteruseofai/betteruseofai` with workflow `release.yml` and environment
 `release`; the first publish of a new name cannot use trusted publishing, so the first release
 needs a granular automation token in the `NPM_TOKEN` secret, deleted afterwards. Every manifest

@@ -160,6 +160,19 @@ against. The decisions taken on it, on 2026-09-13:
     Sweden showed the two bases disagreeing in level by a factor of about two, which is why the
     level was never used.
 
+49. **An event log and a dashboard across sessions.** Decided with the owner on 2026-09-19. Claude
+    Code deletes transcripts after its retention period, so every total forgot the past; now every
+    run of either command line tool and the plugin's Stop hook append each turn to an append-only
+    log under the Claude configuration directory, one JSON line per turn, keys sorted, one file per
+    month, tokens and model only so a dataset update re-prices all of it. Last line for an id wins;
+    `prune --before` compacts and trims, and nothing prunes on its own. `dashboard` writes one HTML
+    file with its fonts and data inside from a template the tokens package assembles; both tools
+    fill the same template with the same canonical JSON, and the parity harness compares the file
+    byte for byte. Directory and branch names are opt in. Browser usage is not joined yet, since
+    the extension's storage cannot reach a file on disk without a hand or a server, and a server
+    was ruled out. No share card, by the owner's choice. The saving arithmetic moved from the
+    extension into core so both the dashboard and the extension draw the same rings.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 

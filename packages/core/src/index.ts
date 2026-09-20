@@ -16,6 +16,8 @@ export { estimate } from './estimate.js';
 export { aggregate } from './aggregate.js';
 export type { AggregateInput } from './aggregate.js';
 export { equivalents } from './equivalents.js';
+export { saving, SAVING_BASELINE } from './saving.js';
+export type { Saving, DaySaving, SavingInput, SavingOptions } from './saving.js';
 export type { EquivalentResult } from './equivalents.js';
 export {
   formatRange,

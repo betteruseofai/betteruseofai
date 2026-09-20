@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "description": "Design tokens, self-hosted fonts and component CSS shared by the website and the extension.",
   "license": "MIT",
+  "homepage": "https://betteruseofai.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betteruseofai/betteruseofai.git",
+    "directory": "packages/tokens"
+  },
+  "bugs": "https://github.com/betteruseofai/betteruseofai/issues",
   "type": "module",
   "sideEffects": [
     "*.css"
@@ -14,22 +21,25 @@
     "design",
     "logo/svg",
     "logo/png",
-    "logo/README.md"
+    "logo/README.md",
+    "dashboard/template.html"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
     "./fonts.css": "./fonts.css",
     "./components.css": "./components.css",
-    "./tokens.json": "./tokens.json"
+    "./tokens.json": "./tokens.json",
+    "./dashboard.html": "./dashboard/template.html"
   },
   "scripts": {
-    "build": "node scripts/build-tokens.mjs && node scripts/copy-fonts.mjs",
+    "build": "node scripts/build-tokens.mjs && node scripts/copy-fonts.mjs && node scripts/build-dashboard.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "shoot": "node scripts/shoot.mjs",
     "logo": "node logo/build.mjs && node logo/export.mjs",
     "logo:shoot": "node scripts/shoot-logo.mjs",
-    "tokens": "node scripts/build-tokens.mjs"
+    "tokens": "node scripts/build-tokens.mjs",
+    "dashboard": "node scripts/build-dashboard.mjs"
   },
   "devDependencies": {
     "@fontsource/big-shoulders": "^5.3.0",

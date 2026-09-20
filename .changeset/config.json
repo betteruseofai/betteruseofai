@@ -8,12 +8,16 @@
       "@betteruseofai/dataset",
       "@betteruseofai/tokenizers",
       "@betteruseofai/readers",
-      "betteruseofai"
+      "betteruseofai",
+      "@betteruseofai/tokens"
     ]
   ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@betteruseofai/extension", "@betteruseofai/site"]
+  "ignore": [
+    "@betteruseofai/extension",
+    "@betteruseofai/site"
+  ]
 }

@@ -18,6 +18,8 @@ COMMANDS
   sessions         Every session, with its total
   session <id>     The report for one session, including its heaviest turns
   export           Every turn as a row, for a spreadsheet
+  dashboard        Every session on this machine as one page, written to a file and opened
+  prune            Drop turns before a date from the event log and compact it
   models           Which models we know, what measures them, and how good that measure is
   recommend <text> Ask what a prompt needs, without sending it anywhere
   statusline       Read a status line payload on stdin and print one line
@@ -34,6 +36,13 @@ OPTIONS
   --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle
   --carbon-basis <basis>  location-based (the default) or provider-reported
   --format <format>       table, json or csv, depending on the command
+  --log <path>            Read and write the event log here instead of the usual place
+  --no-log                Leave the event log alone for this run
+  --out <path>            Where the dashboard writes its file; - for standard output
+  --with-projects         Put directory and branch names on the dashboard
+  --no-open               Write the dashboard without opening it
+  --before <when>         On prune, drop turns older than this: 365d, or an ISO date
+  --dry-run               On prune, say what would go and write nothing
   --json                  Same as --format json
   --now <iso>             Pretend it is this moment, so a fixture run is repeatable
   --ascii                 Avoid characters a plain terminal cannot draw
@@ -47,6 +56,14 @@ OPTIONS
   -h, --help              This text
   -v, --version           The version and the dataset it ships with
 
+THE EVENT LOG
+  Claude Code deletes its transcripts after a while, thirty days by default, and
+  a total that only reads transcripts forgets everything older. So every run of
+  this tool, and the plugin's Stop hook, appends the turns it reads to a log of
+  its own under ~/.claude/betteruseofai/log, one JSON line per turn, tokens and
+  model only. Nothing is priced until it is read back, so a dataset update
+  re-prices all of it. Nothing leaves the machine. "prune" trims it.
+
 A NOTE ON THE FIGURES
   Every figure is a range, because the published measurements of AI energy use
   disagree by an order of magnitude. Where we do not know something we say so: an
@@ -56,6 +73,28 @@ A NOTE ON THE FIGURES
 `;
 
 export const COMMAND_HELP: Record<string, string> = {
+  dashboard: `betteruseofai dashboard
+
+  Every session on this machine as one page: totals, every week and day, the
+  saving against the largest model in each family, which models, which tool,
+  the heaviest sessions, and what could not be priced. One file, with its
+  fonts and its data inside it, so it opens with nothing to fetch.
+
+  betteruseofai dashboard
+  betteruseofai dashboard --since 90d --region GB
+  betteruseofai dashboard --with-projects --out ~/Desktop/sessions.html
+  betteruseofai dashboard --json
+
+  Directory and branch names are left out unless --with-projects is given.
+`,
+  prune: `betteruseofai prune --before <when>
+
+  Drops every turn older than a moment from the event log and compacts what
+  remains, so each turn appears once. The log is never pruned on its own.
+
+  betteruseofai prune --before 365d
+  betteruseofai prune --before 2026-01-01 --dry-run
+`,
   summary: `betteruseofai summary
 
   What your sessions cost. Defaults to grouping by day.

@@ -22,6 +22,8 @@ const codexCli = (extra: string[]) =>
 
 beforeAll(() => {
   process.env['BUAI_STATE_DIR'] = mkdtempSync(join(tmpdir(), 'buai-cli-'));
+  // The log is on whenever this variable is set, and off the real one.
+  process.env['BUAI_LOG_DIR'] = mkdtempSync(join(tmpdir(), 'buai-log-'));
 });
 
 describe('parsing arguments', () => {
@@ -427,5 +429,162 @@ describe('colour', () => {
     const result = await cli(['summary']);
     expect(result.stdout).toMatch(/energy: about [\d.]+ /);
     expect(result.stdout).toMatch(/carbon: about [\d.]+ /);
+  });
+});
+
+describe('the event log', () => {
+  const line = (id: string, ts: string, output: number) => ({
+    id,
+    surface: 'claude-code',
+    hosting: 'cloud' as const,
+    modelRaw: 'claude-sonnet-5',
+    modelId: null,
+    tokens: { input: 10, output, cachedRead: 0, cachedWrite: 0, thinking: null, estimated: false, estimator: 'provider' },
+    timestamp: ts,
+    sessionId: 'log-test',
+    meta: { project: '/home/example/thing', branch: 'main' },
+  });
+
+  it('keeps the last line for an id, in timestamp order, and counts what it superseded', async () => {
+    const { appendLog, readLog } = await import('../src/log.js');
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-unit-'));
+    appendLog(dir, [line('b', '2026-07-02T10:00:00.000Z', 5), line('a', '2026-07-01T10:00:00.000Z', 1)], '2026-07-02T11:00:00.000Z');
+    appendLog(dir, [line('a', '2026-07-01T10:00:00.000Z', 2)], '2026-07-02T11:01:00.000Z');
+    const read = readLog(dir);
+    expect(read.events.map((one) => one.id)).toEqual(['a', 'b']);
+    expect(read.events[0]!.tokens.output).toBe(2);
+    expect(read.duplicates).toBe(1);
+    expect(read.events[0]!.meta).toMatchObject({ fromLog: true, project: '/home/example/thing', branch: 'main' });
+    // One file per month, and every line sorted and compact: the bytes the Python tool writes too.
+    expect(readFileSync(join(dir, '2026-07.jsonl'), 'utf8').split('\n')[0]).toBe(
+      '{"branch":"main","hosting":"cloud","id":"b","model":"claude-sonnet-5","project":"/home/example/thing","recorded":"2026-07-02T11:00:00.000Z","session":"log-test","surface":"claude-code","tokens":{"cachedRead":0,"cachedWrite":0,"input":10,"output":5,"thinking":null},"ts":"2026-07-02T10:00:00.000Z","v":1}',
+    );
+  });
+
+  it('writes no thinking key at all for a model that cannot think, and null for one that hid it', async () => {
+    const { appendLog, readLog } = await import('../src/log.js');
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-unit-'));
+    const cannot = { ...line('c', '2026-07-03T10:00:00.000Z', 1), tokens: { input: 1, output: 1, estimated: false, estimator: 'provider' } };
+    appendLog(dir, [cannot, line('d', '2026-07-03T10:01:00.000Z', 1)], '2026-07-03T11:00:00.000Z');
+    const [c, d] = readLog(dir).events;
+    expect('thinking' in c!.tokens).toBe(false);
+    expect(d!.tokens.thinking).toBeNull();
+  });
+
+  it('prunes before a moment and compacts, or only says what it would', async () => {
+    const { appendLog, pruneLog, readLog } = await import('../src/log.js');
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-unit-'));
+    appendLog(dir, [line('a', '2026-06-01T10:00:00.000Z', 1), line('b', '2026-07-01T10:00:00.000Z', 1)], '2026-07-01T11:00:00.000Z');
+    appendLog(dir, [line('b', '2026-07-01T10:00:00.000Z', 3)], '2026-07-01T11:01:00.000Z');
+    const dry = pruneLog(dir, '2026-07-01T00:00:00.000Z', true);
+    expect(dry).toMatchObject({ removed: 1, duplicates: 1, kept: 1, filesBefore: 2, filesAfter: 1 });
+    expect(readLog(dir).events).toHaveLength(2);
+    const wet = pruneLog(dir, '2026-07-01T00:00:00.000Z', false);
+    expect(wet.removed).toBe(1);
+    const after = readLog(dir);
+    expect(after.events.map((one) => one.id)).toEqual(['b']);
+    expect(after.duplicates).toBe(0);
+    expect(after.files).toBe(1);
+  });
+
+  it('fills from the transcripts on a read, and reads back what the transcripts no longer have', async () => {
+    const { appendLog } = await import('../src/log.js');
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-unit-'));
+    appendLog(dir, [line('gone', '2026-08-01T10:00:00.000Z', 7)], '2026-08-01T11:00:00.000Z');
+    const first = await cli(['dashboard', '--json', '--log', dir]);
+    expect(first.code).toBe(0);
+    const body = JSON.parse(first.stdout);
+    expect(body.coverage.fromLogOnly).toBe(1);
+    expect(body.coverage.appended).toBeGreaterThan(0);
+    expect(body.coverage.turns).toBe(body.coverage.fromTranscripts + 1);
+    // A second read appends nothing: the log already has it all.
+    const second = JSON.parse((await cli(['dashboard', '--json', '--log', dir])).stdout);
+    expect(second.coverage.appended).toBe(0);
+    expect(second.coverage.turns).toBe(body.coverage.turns);
+  });
+
+  it('is left alone with --no-log', async () => {
+    const result = await cli(['dashboard', '--json', '--no-log']);
+    const body = JSON.parse(result.stdout);
+    expect(body.coverage.logEnabled).toBe(false);
+    expect(body.coverage.fromLogOnly).toBe(0);
+  });
+
+  it('is written by the Stop hook', async () => {
+    // Through the built tool with a payload on standard input, the way Claude Code drives it.
+    const { execFileSync } = await import('node:child_process');
+    const { readLog } = await import('../src/log.js');
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-hook-'));
+    const transcript = join(logs, 'claude-code', 'projects', 'example-project', 'session-alpha.jsonl');
+    const out = execFileSync(
+      process.execPath,
+      [join(repoRoot, 'apps', 'cli-ts', 'dist', 'cli.js'), 'hook', 'Stop', '--now', NOW],
+      {
+        input: JSON.stringify({ session_id: 'hook-log', transcript_path: transcript }),
+        encoding: 'utf8',
+        env: { ...process.env, BUAI_LOG_DIR: dir, BUAI_STATE_DIR: mkdtempSync(join(tmpdir(), 'buai-hook-state-')) },
+      },
+    );
+    expect(() => JSON.parse(out)).not.toThrow();
+    const read = readLog(dir);
+    expect(read.events.length).toBeGreaterThan(0);
+    expect(read.events.every((one) => one.surface === 'claude-code')).toBe(true);
+    expect(read.events.some((one) => one.meta?.['project'] === '/home/example/project')).toBe(true);
+  });
+});
+
+describe('the dashboard', () => {
+  it('leaves projects and branches out unless asked', async () => {
+    const plain = JSON.parse((await cli(['dashboard', '--json', '--no-log'])).stdout);
+    expect(plain.withProjects).toBe(false);
+    expect(plain.projects).toBeNull();
+    const asked = JSON.parse((await cli(['dashboard', '--json', '--no-log', '--with-projects'])).stdout);
+    expect(asked.projects.length).toBeGreaterThan(0);
+    expect(asked.projects[0].project).toBe('project');
+  });
+
+  it('never turns an unknown into a nought', async () => {
+    const body = JSON.parse((await cli(['dashboard', '--json', '--no-log'])).stdout);
+    const unknown = body.byModel.find((one: { key: string }) => one.key === 'unknown');
+    expect(unknown).toBeDefined();
+    expect(unknown.energyWh).toBeNull();
+    expect(unknown.text.energy).toBe('unknown');
+    expect(body.coverage.turns).toBe(body.totals.count);
+  });
+
+  it('writes one file with the data inside it and nothing to fetch', async () => {
+    const result = await cli(['dashboard', '--out', '-', '--no-open', '--no-log']);
+    expect(result.code).toBe(0);
+    expect(result.stdout.startsWith('<!doctype html>')).toBe(true);
+    expect(result.stdout).toContain('<script id="buai-data" type="application/json">');
+    expect(result.stdout).not.toContain('__BUAI_DATA__');
+    expect(result.stdout).not.toMatch(/<script[^>]+src=/);
+    expect(result.stdout).not.toMatch(/<link[^>]+href=/);
+    // The JSON block is real JSON once the one escape is undone.
+    const block = /<script id="buai-data" type="application\/json">([\s\S]*?)<\/script>/.exec(result.stdout);
+    expect(block).not.toBeNull();
+    const parsed = JSON.parse(block![1]!.replace(/<\\\//g, '</'));
+    expect(parsed.command).toBe('dashboard');
+  });
+
+  it('escapes anything that could end the script element', async () => {
+    const { renderDashboard } = await import('../src/commands/dashboard.js');
+    const html = renderDashboard('{"text":"</script><script>alert(1)</script>"}');
+    expect(html).not.toContain('</script><script>alert');
+    expect(html).toContain('<\\/script><script>alert(1)<\\/script>');
+  });
+});
+
+describe('prune', () => {
+  it('needs a date and reports in JSON', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'buai-log-prune-'));
+    const missing = await cli(['prune', '--log', dir]);
+    expect(missing.code).toBe(1);
+    expect(missing.stderr).toContain('--before');
+    const result = await cli(['prune', '--json', '--log', dir, '--before', '30d']);
+    expect(result.code).toBe(0);
+    const body = JSON.parse(result.stdout);
+    expect(body.command).toBe('prune');
+    expect(body.before).toBe('2026-08-16T12:00:00.000Z');
   });
 });

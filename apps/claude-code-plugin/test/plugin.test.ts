@@ -29,16 +29,18 @@ const transcript = join(
 );
 
 let stateDir: string;
+let logDir: string;
 
 const call = (script: string, argv: string[], payload: unknown): string =>
   execFileSync(process.execPath, [script, ...argv], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env: { ...process.env, BUAI_STATE_DIR: stateDir },
+    env: { ...process.env, BUAI_STATE_DIR: stateDir, BUAI_LOG_DIR: logDir },
   });
 
 beforeAll(() => {
   stateDir = mkdtempSync(join(tmpdir(), 'buai-plugin-'));
+  logDir = mkdtempSync(join(tmpdir(), 'buai-plugin-log-'));
   if (!existsSync(bundle)) {
     execFileSync(process.execPath, [join(root, 'scripts', 'bundle.mjs')], { cwd: root });
   }

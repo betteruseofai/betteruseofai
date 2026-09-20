@@ -1,5 +1,5 @@
 {
-  "description": "Every case is run through both command line tools by fixtures/run-parity.mjs, and the bytes are compared. {CLAUDE_DIR}, {CODEX_DIR} and {NOW} are substituted, so no run reads a real home directory and no run depends on the day it happens on.",
+  "description": "Every case is run through both command line tools by fixtures/run-parity.mjs, and the bytes are compared. {CLAUDE_DIR}, {CODEX_DIR} and {NOW} are substituted, so no run reads a real home directory and no run depends on the day it happens on. Every case also runs against a fresh copy of fixtures/logs/buai-log through BUAI_LOG_DIR, one per tool, so the event log is read, appended to and compared as well.",
   "cases": [
     {
       "name": "summary-default",
@@ -378,6 +378,100 @@
         "--brief",
         "--no-color",
         "--ascii",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "dashboard-json",
+      "why": "The whole dashboard payload: every aggregate, the saving, the coverage of transcripts against the log, and every formatted figure the page shows.",
+      "argv": [
+        "dashboard",
+        "--json",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "dashboard-json-with-projects",
+      "why": "Projects and branches are opt in, and grouping by the last path segment has to agree across the two languages' slash handling.",
+      "argv": [
+        "dashboard",
+        "--json",
+        "--with-projects",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "dashboard-html",
+      "why": "The file itself, byte for byte: the same template from the tokens package with the same JSON inside it.",
+      "argv": [
+        "dashboard",
+        "--out",
+        "-",
+        "--no-open",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "dashboard-json-since",
+      "why": "A window that excludes the log-only turns from August, so the coverage has to say nothing rests on the log alone.",
+      "argv": [
+        "dashboard",
+        "--json",
+        "--since",
+        "2026-09-01T00:00:00.000Z",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "prune-json",
+      "why": "Pruning rewrites the log: one August turn goes, the superseded line for the other is compacted, and the byte counts have to match because both tools wrote the same bytes.",
+      "argv": [
+        "prune",
+        "--json",
+        "--before",
+        "2026-08-21",
+        "--now",
+        "{NOW}",
+        "--source",
+        "claude-code",
+        "--dir",
+        "{CLAUDE_DIR}"
+      ]
+    },
+    {
+      "name": "prune-json-dry-run",
+      "why": "A dry run reports the same counts and writes nothing.",
+      "argv": [
+        "prune",
+        "--json",
+        "--before",
+        "30d",
+        "--dry-run",
         "--now",
         "{NOW}",
         "--source",

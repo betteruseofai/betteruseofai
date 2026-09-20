@@ -33,6 +33,7 @@ interface AssistantLine {
   isApiErrorMessage?: boolean;
   isSidechain?: boolean;
   cwd?: string;
+  gitBranch?: string;
   message?: {
     id?: string;
     model?: string;
@@ -118,6 +119,7 @@ const toEvent = (line: AssistantLine, file: string): UsageEvent => {
       ...(toolCalls > 0 ? { serverToolCalls: toolCalls } : {}),
       ...(line.isSidechain ? { sidechain: true } : {}),
       ...(line.cwd ? { project: line.cwd } : {}),
+      ...(line.gitBranch ? { branch: line.gitBranch } : {}),
     },
   };
 };

@@ -1,9 +1,8 @@
 import { displayNumber, equivalents, scaleUnit } from '@betteruseofai/core';
-import type { Aggregate, Dataset, Range } from '@betteruseofai/core';
+import type { Aggregate, Dataset, Range, Saving } from '@betteruseofai/core';
 import { useEffect, useState } from 'preact/hooks';
 
 import { MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
-import type { Saving } from '../../lib/saving.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
 

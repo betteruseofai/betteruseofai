@@ -122,11 +122,11 @@ jobs:
       # Provenance ties the package to this workflow run. It needs the
       # NPM_TOKEN secret, or npm trusted publishing set up for the package,
       # both of which are steps in docs/DEPLOY.md.
-      - name: publish the five packages in the fixed group
+      - name: publish the six packages in the fixed group
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          for pkg in packages/dataset packages/core packages/tokenizers packages/readers apps/cli-ts; do
+          for pkg in packages/tokens packages/dataset packages/core packages/tokenizers packages/readers apps/cli-ts; do
             (cd "$pkg" && pnpm publish --access public --provenance --no-git-checks)
           done
 
@@ -155,7 +155,9 @@ jobs:
       - uses: astral-sh/setup-uv@v5
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo run build --filter=@betteruseofai/dataset
+      # The Python package carries the dataset and the dashboard template, so
+      # both the dataset and the tokens package are built before the copy.
+      - run: pnpm turbo run build --filter=@betteruseofai/dataset --filter=@betteruseofai/tokens
       - run: python apps/cli-py/scripts/sync-dataset.py
 
       - name: build the wheel and the source distribution

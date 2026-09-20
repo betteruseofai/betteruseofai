@@ -1,0 +1,250 @@
+/*
+ * Layout for the dashboard file the command line tools write. Everything else,
+ * the colours, the type, the readouts and the tables, comes from tokens.css and
+ * components.css, which the build inlines above this.
+ *
+ * The bars are divs and the rings are one SVG. There is no chart library
+ * because the shape of a week and the share of a model are things three
+ * rectangles already show, and because this file has to stand on its own
+ * with nothing to fetch.
+ */
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.buai-dash {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-7) var(--gutter) var(--space-9);
+}
+
+.buai-dash h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-5);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-5);
+  max-width: 14ch;
+}
+
+.buai-dash h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0 0 var(--space-4);
+}
+
+.buai-dash__lede {
+  max-width: var(--measure);
+  font-size: var(--step-1);
+  color: var(--ink-2);
+  margin: 0 0 var(--space-5);
+}
+
+.buai-dash__note {
+  max-width: var(--measure);
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  margin: var(--space-4) 0 0;
+}
+
+.buai-dash section {
+  padding-block: var(--space-6);
+  border-top: var(--rule) solid var(--hairline);
+}
+
+.buai-dash__readouts {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-bottom: var(--space-4);
+}
+
+.buai-dash__readouts > .buai-readout-group {
+  display: block;
+}
+
+/* One bar per period. */
+.buai-dash__bars {
+  display: flex;
+  gap: var(--space-2);
+  align-items: end;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.buai-dash__period {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: center;
+  min-width: 3.5rem;
+  flex: 1 0 3.5rem;
+}
+
+.buai-dash__bar-track {
+  height: 8rem;
+  width: 100%;
+  display: flex;
+  align-items: end;
+  border-bottom: var(--rule) solid var(--hairline);
+}
+
+.buai-dash__bar {
+  width: 100%;
+  background: var(--accent-tint);
+  border: var(--rule) solid var(--accent);
+  border-bottom: 0;
+  min-height: 2px;
+}
+
+.buai-dash__bar--unknown {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--muted);
+}
+
+.buai-dash__periodlabel,
+.buai-dash__periodvalue {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
+}
+
+/* A right-aligned number followed by a text cell needs air between them, or
+   the turn count reads as the first digit of the model's name. */
+.buai-dash .buai-table td.buai-num + td {
+  padding-left: var(--space-5);
+}
+
+/* A share of a whole, as a ten cell meter. */
+.buai-dash__meter {
+  display: inline-grid;
+  grid-template-columns: repeat(10, 0.5rem);
+  gap: 1px;
+  vertical-align: middle;
+  margin-right: var(--space-2);
+}
+
+.buai-dash__cell {
+  height: 0.75rem;
+  background: var(--bg-sunken);
+  border: var(--rule) solid var(--hairline);
+}
+
+.buai-dash__cell--on {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+}
+
+.buai-dash__equivalents {
+  margin: 0;
+  padding-left: var(--space-5);
+  max-width: var(--measure);
+}
+
+.buai-dash__equivalents li {
+  margin-bottom: var(--space-2);
+}
+
+.buai-dash__quantity {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: var(--space-2);
+}
+
+.buai-dash .buai-metastrip {
+  margin-top: var(--space-4);
+}
+
+.buai-dash__foot {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: var(--rule) solid var(--hairline);
+  font-size: var(--step--1);
+  color: var(--muted);
+  max-width: var(--measure);
+}
+
+/* The saving as rings, beside its figure. */
+.buai-dash__saving-row {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (max-width: 40rem) {
+  .buai-dash__saving-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.buai-dash__rings {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+
+.buai-dash__ring {
+  fill: none;
+  stroke: var(--hairline);
+  stroke-width: 1;
+}
+
+.buai-dash__ring--grew {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.buai-dash__ring--core {
+  fill: var(--accent-tint);
+  stroke: var(--accent);
+}
+
+.buai-dash__caveats {
+  margin: 0;
+  padding-left: var(--space-5);
+  max-width: var(--measure);
+  color: var(--hazard);
+}
+
+.buai-dash__caveats li {
+  margin-bottom: var(--space-2);
+}
+
+.buai-dash__muted {
+  color: var(--muted);
+}
+
+@media print {
+  .buai-dash {
+    padding: 0;
+  }
+}

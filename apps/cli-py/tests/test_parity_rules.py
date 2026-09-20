@@ -326,3 +326,109 @@ def test_units_step_up_when_the_number_stops_being_readable():
     assert scale_unit(500, "mL") == (500, "mL")
     assert format_range(Range(2745, 17264, 192342), "Wh") == "17.3 kWh [ 2.75 to 192 ]"
     assert format_range(Range(500, 5000, 50000), "Wh") == "5.00 kWh [ 0.500 to 50.0 ]"
+
+
+def test_the_log_keeps_the_last_line_for_an_id_and_writes_the_shared_bytes(tmp_path):
+    from betteruseofai.log import append_log, prune_log, read_log
+
+    def line(id_, ts, output):
+        return UsageEvent(
+            id=id_,
+            surface="claude-code",
+            hosting="cloud",
+            model_raw="claude-sonnet-5",
+            tokens=TokenCounts(input=10, output=output, thinking=None),
+            timestamp=ts,
+            session_id="log-test",
+            meta={"project": "/home/example/thing", "branch": "main"},
+        )
+
+    directory = str(tmp_path)
+    append_log(
+        directory,
+        [line("b", "2026-07-02T10:00:00.000Z", 5), line("a", "2026-07-01T10:00:00.000Z", 1)],
+        "2026-07-02T11:00:00.000Z",
+    )
+    append_log(directory, [line("a", "2026-07-01T10:00:00.000Z", 2)], "2026-07-02T11:01:00.000Z")
+
+    read = read_log(directory)
+    assert [event.id for event in read.events] == ["a", "b"]
+    assert read.events[0].tokens.output == 2
+    assert read.duplicates == 1
+    assert read.events[0].meta["fromLog"] is True
+    assert read.events[0].meta["branch"] == "main"
+
+    first = (tmp_path / "2026-07.jsonl").read_text(encoding="utf-8").split("\n")[0]
+    assert first == (
+        '{"branch":"main","hosting":"cloud","id":"b","model":"claude-sonnet-5",'
+        '"project":"/home/example/thing","recorded":"2026-07-02T11:00:00.000Z",'
+        '"session":"log-test","surface":"claude-code",'
+        '"tokens":{"cachedRead":0,"cachedWrite":0,"input":10,"output":5,"thinking":null},'
+        '"ts":"2026-07-02T10:00:00.000Z","v":1}'
+    )
+
+    dry = prune_log(directory, "2026-07-02T00:00:00.000Z", True)
+    assert (dry.removed, dry.duplicates, dry.kept) == (1, 1, 1)
+    assert len(read_log(directory).events) == 2
+    prune_log(directory, "2026-07-02T00:00:00.000Z", False)
+    after = read_log(directory)
+    assert [event.id for event in after.events] == ["b"]
+    assert after.duplicates == 0
+
+
+def test_a_model_that_cannot_think_gets_no_thinking_key(tmp_path):
+    from betteruseofai.log import append_log, read_log
+
+    cannot = UsageEvent(
+        id="c",
+        surface="claude-code",
+        hosting="cloud",
+        model_raw="claude-haiku-4-5-20251001",
+        tokens=TokenCounts(input=1, output=1),
+        timestamp="2026-07-03T10:00:00.000Z",
+    )
+    append_log(str(tmp_path), [cannot], "2026-07-03T11:00:00.000Z")
+    text = (tmp_path / "2026-07.jsonl").read_text(encoding="utf-8")
+    assert '"thinking"' not in text
+    assert read_log(str(tmp_path)).events[0].tokens.thinking == "absent"
+
+
+def test_the_dashboard_reads_the_log_back_and_leaves_projects_out_unless_asked(tmp_path):
+    from betteruseofai.log import append_log
+
+    gone = UsageEvent(
+        id="gone",
+        surface="claude-code",
+        hosting="cloud",
+        model_raw="claude-opus-5",
+        tokens=TokenCounts(input=100, output=700, thinking=200),
+        timestamp="2026-08-01T10:00:00.000Z",
+        session_id="gone-session",
+    )
+    append_log(str(tmp_path), [gone], "2026-08-01T11:00:00.000Z")
+
+    argv = ["dashboard", "--json", "--now", NOW, "--source", "claude-code", "--dir", CLAUDE_DIR]
+    stdout, stderr, code = run([*argv, "--log", str(tmp_path)])
+    assert code == 0, stderr
+    body = json.loads(stdout)
+    assert body["coverage"]["fromLogOnly"] == 1
+    assert body["coverage"]["turns"] == body["coverage"]["fromTranscripts"] + 1
+    assert body["projects"] is None
+    unknown = next(one for one in body["byModel"] if one["key"] == "unknown")
+    assert unknown["energyWh"] is None
+    assert unknown["text"]["energy"] == "unknown"
+
+    again = json.loads(run([*argv, "--log", str(tmp_path)])[0])
+    assert again["coverage"]["appended"] == 0
+
+    asked = json.loads(run([*argv, "--no-log", "--with-projects"])[0])
+    assert asked["projects"][0]["project"] == "project"
+    assert asked["coverage"]["logEnabled"] is False
+
+
+def test_the_dashboard_file_escapes_the_one_thing_that_could_end_its_script():
+    from betteruseofai.cli import render_dashboard
+
+    html = render_dashboard('{"text":"</script><script>alert(1)</script>"}')
+    assert "</script><script>alert" not in html
+    assert "<\/script><script>alert(1)<\/script>" in html

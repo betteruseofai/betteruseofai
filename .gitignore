@@ -39,6 +39,12 @@ Thumbs.db
 .env.*
 !.env.example
 
+# assembled at build time: the dashboard template (mostly font bytes) and the
+# module that carries it into the command line tool
+packages/tokens/dashboard/template.html
+apps/cli-ts/src/generated/
+apps/cli-py/src/betteruseofai/data/dashboard.html
+
 # generated at build time from the font packages; the screenshots next door are
 # committed on purpose, so there is no ignore for design/shots
 packages/tokens/fonts/

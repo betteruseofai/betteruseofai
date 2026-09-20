@@ -54,7 +54,7 @@ jobs:
             echo "dataset unchanged"
             exit 0
           fi
-          pnpm turbo run build --filter=@betteruseofai/dataset --filter=@betteruseofai/core --filter=@betteruseofai/claude-code-plugin...
+          pnpm turbo run build --filter=@betteruseofai/dataset --filter=@betteruseofai/tokens --filter=@betteruseofai/core --filter=@betteruseofai/claude-code-plugin...
           python apps/cli-py/scripts/sync-dataset.py
           pnpm --filter @betteruseofai/core run fixtures
 

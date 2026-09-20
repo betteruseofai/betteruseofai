@@ -41,6 +41,14 @@ import Hazard from '../components/Hazard.astro';
         extension.
       </p>
       <p>
+        The command line tools and the Claude Code plugin keep one file of their own, an event log
+        under your Claude configuration directory. It holds one line per turn, with the model name
+        and the token counts and nothing else. It exists because Claude Code deletes its transcripts
+        after a while, and without it every total would forget what happened before. The dashboard
+        the tools write is a single file on your disk, with its fonts and its data inside it, and
+        opening it fetches nothing. Both stay on your machine, and both can be deleted at any time.
+      </p>
+      <p>
         Prompt text is never stored. Where the extension needs to tell two exchanges apart it keeps
         a hash, not the words.
       </p>

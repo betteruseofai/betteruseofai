@@ -1,5 +1,5 @@
 import datasetBundle from '@betteruseofai/dataset';
-import { aggregate, createRecommender, displayNumber, scaleUnit } from '@betteruseofai/core';
+import { aggregate, createRecommender, displayNumber, scaleUnit, saving as computeSaving } from '@betteruseofai/core';
 import type { Dataset } from '@betteruseofai/core';
 
 import { adapterById } from '../adapters/index.js';
@@ -7,7 +7,6 @@ import type { ExtensionMessage } from '../adapters/types.js';
 import { setRanksLoader } from '@betteruseofai/tokenizers';
 
 import { priceTurn, reprice } from '../lib/pipeline.js';
-import { computeSaving } from '../lib/saving.js';
 import {
   countEvents,
   DEFAULT_SETTINGS,

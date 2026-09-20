@@ -30,6 +30,9 @@ export const VALUE_FLAGS = new Set([
   'interval',
   'model',
   'depth',
+  'log',
+  'out',
+  'before',
 ]);
 
 export const SWITCH_FLAGS = new Set([
@@ -43,6 +46,10 @@ export const SWITCH_FLAGS = new Set([
   'verbose',
   'local',
   'brief',
+  'no-log',
+  'with-projects',
+  'no-open',
+  'dry-run',
 ]);
 
 export const parseArgs = (argv: string[]): ParsedArgs => {

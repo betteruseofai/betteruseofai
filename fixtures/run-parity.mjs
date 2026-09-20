@@ -14,7 +14,8 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,6 +25,7 @@ const outDir = join(here, 'cli', 'output');
 
 const CLAUDE_DIR = join(here, 'logs', 'claude-code');
 const CODEX_DIR = join(here, 'logs', 'codex');
+const LOG_FIXTURE = join(here, 'logs', 'buai-log');
 const NOW = '2026-09-15T12:00:00.000Z';
 
 /**
@@ -40,15 +42,28 @@ const substitute = (argv) =>
       .replace('{NOW}', NOW),
   );
 
-const runNode = (argv) =>
+/**
+ * Each tool gets its own copy of the log fixture for each case. The log is
+ * written as well as read, and a case such as prune changes it, so the two
+ * tools must not share one and no case may see another's changes. Setting the
+ * variable also switches the log on for a run that names --dir, which would
+ * otherwise leave it alone.
+ */
+const freshLog = (tool) => {
+  const dir = mkdtempSync(join(tmpdir(), `buai-parity-${tool}-`));
+  for (const name of readdirSync(LOG_FIXTURE)) copyFileSync(join(LOG_FIXTURE, name), join(dir, name));
+  return dir;
+};
+
+const runNode = (argv, logDir) =>
   execFileSync(process.execPath, [join(repo, 'apps', 'cli-ts', 'dist', 'cli.js'), ...argv], {
     encoding: 'utf8',
-    env: { ...process.env, BUAI_CLAUDE_DIR: CLAUDE_DIR, CODEX_HOME: CODEX_DIR },
+    env: { ...process.env, BUAI_CLAUDE_DIR: CLAUDE_DIR, CODEX_HOME: CODEX_DIR, BUAI_LOG_DIR: logDir },
   });
 
 const python = process.env['BUAI_PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
 
-const runPython = (argv) =>
+const runPython = (argv, logDir) =>
   execFileSync(python, ['-m', 'betteruseofai.cli', ...argv], {
     encoding: 'utf8',
     cwd: join(repo, 'apps', 'cli-py', 'src'),
@@ -58,12 +73,22 @@ const runPython = (argv) =>
       PYTHONIOENCODING: 'utf-8',
       BUAI_CLAUDE_DIR: CLAUDE_DIR,
       CODEX_HOME: CODEX_DIR,
+      BUAI_LOG_DIR: logDir,
     },
   });
 
-/** Strips the two header fields the implementations are allowed to differ on. */
+/**
+ * Strips the two header fields the implementations are allowed to differ on.
+ * In the dashboard file they sit inside the JSON block, so a plain text case
+ * loses those two lines by pattern rather than by parsing.
+ */
 const normalise = (text, isJson) => {
-  if (!isJson) return text.replace(/\r\n/g, '\n');
+  if (!isJson) {
+    return text
+      .replace(/\r\n/g, '\n')
+      .replace(/^\s*"generatedAt": "[^"]*",?\n/gm, '')
+      .replace(/^\s*"generatedWith": "[^"]*",?\n/gm, '');
+  }
   const parsed = JSON.parse(text);
   if (parsed.header) {
     delete parsed.header.generatedWith;
@@ -84,7 +109,7 @@ for (const testCase of CASES) {
   let ts;
   let py;
   try {
-    ts = runNode(argv);
+    ts = runNode(argv, freshLog('ts'));
   } catch (cause) {
     console.error(`\n${testCase.name}: the typescript tool failed`);
     console.error(String(cause.stderr ?? cause.message).trim());
@@ -92,7 +117,7 @@ for (const testCase of CASES) {
     continue;
   }
   try {
-    py = runPython(argv);
+    py = runPython(argv, freshLog('py'));
   } catch (cause) {
     console.error(`\n${testCase.name}: the python tool failed`);
     console.error(String(cause.stderr ?? cause.message).trim());

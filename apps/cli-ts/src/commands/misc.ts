@@ -6,6 +6,7 @@ import type { ParsedArgs } from '../args.js';
 import type { Context } from '../context.js';
 import { loadEvents } from '../context.js';
 import { emitJson, paint, table } from '../output.js';
+import { LOG_WARN_BYTES } from '../log.js';
 
 /** The model table, and where its numbers come from. */
 export const models = (context: Context, args: ParsedArgs): string => {
@@ -219,7 +220,7 @@ export const doctor = async (context: Context, args: ParsedArgs): Promise<string
     detail: `${context.dataset.version}, ${context.dataset.benchmarks.length} benchmark rows, sha ${context.dataset.sha256.slice(0, 12)}`,
   });
 
-  const { pairs, readers } = await loadEvents(context, args);
+  const { pairs, readers, log: loadedLog } = await loadEvents(context, args);
   const warnings = readers.flatMap((result) => result.warnings);
   const unknown = pairs.filter((pair) => pair.estimate.basis.flags.includes('model-unknown'));
 
@@ -235,6 +236,15 @@ export const doctor = async (context: Context, args: ParsedArgs): Promise<string
       unknown.length === 0
         ? 'all of them'
         : `${unknown.length} turns used: ${[...new Set(unknown.map((p) => p.event.modelRaw))].join(', ')}. Adding them to the dataset would fix that.`,
+  });
+  const mb = Math.round(loadedLog.bytes / (1024 * 1024));
+  checks.push({
+    name: 'Event log',
+    ok: loadedLog.enabled && loadedLog.bytes <= LOG_WARN_BYTES,
+    detail: !loadedLog.enabled
+      ? 'off for this run, because --dir points elsewhere. Pass --log <path> to use one.'
+      : `${context.logDir}: ${loadedLog.files} ${loadedLog.files === 1 ? 'file' : 'files'}, ${mb} MB, ${loadedLog.fromLogOnly} turns known only from here` +
+        (loadedLog.bytes > LOG_WARN_BYTES ? '. Run "betteruseofai prune --before <date>" to trim it.' : ''),
   });
   checks.push({
     name: 'Lines we could not parse',

@@ -20,11 +20,12 @@ works: the hooks report the session total without any status line at all.
 | Piece | What it does |
 |---|---|
 | Status line | `4.10 kWh · 13.4 L · 1.82 kg · Claude Opus 5 100% · ctx 41%` |
-| `Stop` hook | Keeps the running total, and says it every ten turns |
+| `Stop` hook | Keeps the running total, says it every ten turns, and appends each turn to the event log |
 | `UserPromptSubmit` hook | Nudges when a smaller model would do, on a high bar |
 | `/betteruseofai:report` | What this session has cost, with its heaviest turns |
 | `/betteruseofai:footprint` | What the last week has cost |
 | `/betteruseofai:mute` | Turn off one nudge without turning off the rest |
+| `/betteruseofai:dashboard` | Every session on this machine as one page, written to a file and opened |
 
 ## The status line is cheap on purpose
 
@@ -44,6 +45,19 @@ was written on:
 
 Git Bash and PowerShell both start slower than Node, so the shell shims were deleted rather than
 kept as a fallback nobody would want.
+
+## The log outlives the transcripts
+
+Claude Code deletes its transcripts after a while, thirty days by default, and everything the tool
+shows is worked out from those files. So the `Stop` hook also appends each turn it reads to a log
+of its own at `~/.claude/betteruseofai/log`, one JSON line per turn, one file per month, holding
+the model and the token counts and nothing else. No prompt text, no figures. The figures are worked
+out when the log is read back, which means a dataset update re-prices the whole history rather than
+leaving old numbers behind.
+
+The log is append only and grows slowly, a few hundred bytes a turn. `betteruseofai prune --before
+365d` trims it; nothing trims it on its own. `betteruseofai doctor` says how big it is. It never
+leaves the machine.
 
 ## The nudge is quiet by default
 

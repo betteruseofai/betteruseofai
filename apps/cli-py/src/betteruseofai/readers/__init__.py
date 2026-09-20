@@ -104,6 +104,8 @@ def _claude_event(line: dict[str, Any], file: str) -> UsageEvent:
         meta["sidechain"] = True
     if line.get("cwd"):
         meta["project"] = line["cwd"]
+    if line.get("gitBranch"):
+        meta["branch"] = line["gitBranch"]
 
     return UsageEvent(
         id=f"{message.get('id', 'unknown')}:{line.get('requestId', 'no-request')}",

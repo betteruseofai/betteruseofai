@@ -43,3 +43,11 @@ negative.
 ### `codex/archived_sessions/rollout-old.jsonl`
 
 Archived rollouts are read too.
+
+### `buai-log/2026-08.jsonl`
+
+The event log, as both tools write it: three lines for two turns. The second turn appears twice,
+the later line with a different output count and no branch, and the reader has to keep the later
+one. The parity harness gives each tool a fresh copy of this directory through `BUAI_LOG_DIR` for
+every case, so the log is read and written on every run, and pruned where a case asks, with the
+results compared like everything else.

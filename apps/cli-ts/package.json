@@ -26,9 +26,9 @@
     "codex"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "build": "node scripts/embed-template.mjs && tsc -p tsconfig.build.json",
+    "test": "node scripts/embed-template.mjs && vitest run",
+    "typecheck": "node scripts/embed-template.mjs && tsc --noEmit",
     "dev": "tsx src/cli.ts"
   },
   "dependencies": {

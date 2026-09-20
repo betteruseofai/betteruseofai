@@ -18,6 +18,7 @@ import type { IncrementalState } from '@betteruseofai/readers';
 import { flagBool } from '../args.js';
 import type { ParsedArgs } from '../args.js';
 import type { Context } from '../context.js';
+import { appendLog, defaultLogDir } from '../log.js';
 
 /**
  * The Claude Code status line, and the hooks that feed it.
@@ -118,6 +119,19 @@ export const refreshSession = async (
   for (const event of added) events[event.id] = event;
 
   writeCache(sessionId, { state, events, updated: context.now.toISOString() });
+
+  /*
+   * The same turns go into the event log, which is what survives the
+   * transcript being deleted. Append only, so this costs one write and no
+   * read; a revision of a turn is a second line for the same id, and the
+   * reader keeps the last. A log that cannot be written must not take the
+   * status line down with it.
+   */
+  try {
+    appendLog(defaultLogDir(), added, context.now.toISOString());
+  } catch {
+    // Said above.
+  }
 
   const list = Object.values(events).sort((a, b) => (a.timestamp < b.timestamp ? -1 : 1));
   return {

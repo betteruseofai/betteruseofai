@@ -29,6 +29,8 @@ source = dataset_dir / "dist" / "dataset.json"
 target = here.parent / "src" / "betteruseofai" / "data" / "dataset.json"
 tokens_source = repo / "packages" / "tokens" / "tokens.json"
 tokens_target = here.parent / "src" / "betteruseofai" / "data" / "tokens.json"
+template_source = repo / "packages" / "tokens" / "dashboard" / "template.html"
+template_target = here.parent / "src" / "betteruseofai" / "data" / "dashboard.html"
 
 if not source.exists():
     sys.exit(f"No built dataset at {source}. Run: pnpm --filter @betteruseofai/dataset build")
@@ -58,3 +60,14 @@ print(f"dataset {bundle['version']} ({bundle['sha256'][:12]}) copied into the py
 # codes and meter glyphs both tools print come from one file.
 shutil.copyfile(tokens_source, tokens_target)
 print("tokens.json copied into the python package")
+
+# And the dashboard template, so both tools write the identical file from the
+# identical data. It is assembled by the tokens build, fonts and all.
+if not template_source.exists():
+    sys.exit(
+        f"No dashboard template at {template_source}. "
+        "Run: pnpm --filter @betteruseofai/tokens build"
+    )
+shutil.copyfile(template_source, template_target)
+size_kb = template_source.stat().st_size // 1024
+print(f"dashboard template ({size_kb} kB) copied into the python package")
