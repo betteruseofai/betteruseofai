@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "notes": "Deliberately incomplete. A model that is not here resolves to null and renders as unknown, which is the correct behaviour. Rows get added as readers and site adapters meet real strings in the wild. Ordinal is the rung on the family ladder, 0 being the largest model on offer in that family; a downgrade recommendation moves to ordinal + 1 within the same family, so a family with one rung produces no downgrade.",
   "models": [
     {

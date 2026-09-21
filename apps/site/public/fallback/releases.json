@@ -1,5 +1,5 @@
 {
-  "taken": "2026-09-11",
-  "note": "Used when the GitHub API cannot be reached at build time. Nothing is released yet, so this list is empty on purpose rather than missing.",
+  "taken": "2026-09-21",
+  "note": "Used when the GitHub API cannot be reached at build time. Empty until the first release.",
   "items": []
 }

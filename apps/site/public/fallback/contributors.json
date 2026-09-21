@@ -1,7 +1,11 @@
 {
-  "taken": "2026-09-11",
+  "taken": "2026-09-21",
   "note": "Used when the GitHub API cannot be reached at build time.",
   "items": [
-    { "login": "gordianknot-legacy", "commits": 0, "url": "https://github.com/gordianknot-legacy" }
+    {
+      "login": "gordianknot-legacy",
+      "commits": 54,
+      "url": "https://github.com/gordianknot-legacy"
+    }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "sha256": "e290e8bcf18a4f08e19a3398023b5b3a025d2e4aa5afbe3473a20d7dfc911d01",
+  "version": "1.1.0",
+  "sha256": "a79a4907e3c9c5e3c54c77aac73532065eb69324a1e7ccfc9086443e9c655e7a",
   "models": [
     {
       "id": "claude-opus-5",
@@ -2309,9 +2309,9 @@
       "kind": "country",
       "continent": "Europe",
       "gridGco2PerKwh": {
-        "low": 55.7,
+        "low": 94,
         "central": 124,
-        "high": 202.6
+        "high": 145
       },
       "waterOffsiteLPerKwh": {
         "low": 1.65,
@@ -2324,7 +2324,7 @@
         "url": "https://api.carbonintensity.org.uk/",
         "publisher": "National Energy System Operator",
         "date": "2026",
-        "retrieved": "2026-09-13",
+        "retrieved": "2026-09-21",
         "licence": "CC BY 4.0"
       },
       "waterSource": {
@@ -2337,9 +2337,9 @@
       },
       "provenance": {
         "method": "fetched",
-        "recorded": "2026-09-13"
+        "recorded": "2026-09-21"
       },
-      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-13. Off-site water is the WRI factor for Great Britain, as on the Ember row. The range is the real hourly spread of 2025: the 10th and 90th percentiles of hourly intensity in the gridcarbon snapshot for zone GB (17520 intervals), taken as a fraction of that year's mean (0.449 and 1.634) and applied to the central figure above. The snapshot republishes NESO's own operational figure for Great Britain, so its level and this row's agree. Attribution the data licence asks for: gridcarbon hourly carbon intensity, CC BY 4.0, derived from the ENTSO-E Transparency Platform, the U.S. Energy Information Administration (EIA-930) and the NESO Carbon Intensity API, none of which endorse it.",
+      "notes": "Carbon intensity of the electricity consumed in Great Britain, including imports, on NESO's own factors. Central is the mean of the twelve monthly averages from 2025-09 to 2026-08; the range is the lowest and highest month (112, 138, 126, 120, 145, 137, 117, 94, 122, 132, 121, 124). Ember's United Kingdom row counts power sector CO2 per kWh generated and comes out higher; the two are official figures for different things, and the dataset keeps both. Read from the API on 2026-09-21. Off-site water is the WRI factor for Great Britain, as on the Ember row.",
       "rangeSource": {
         "title": "gridcarbon, hourly grid carbon intensity for 45 zones (Europe, US, Great Britain), snapshot 2026-09-04",
         "url": "https://doi.org/10.5281/zenodo.22299989",
@@ -3367,7 +3367,7 @@
     }
   ],
   "calibration": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",
