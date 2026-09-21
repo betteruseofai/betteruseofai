@@ -51,7 +51,16 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         run: git diff --exit-code apps/claude-code-plugin/dist
 
-      - run: pnpm turbo run typecheck
+      # astro check is run once, on one runner. It checks the same source on
+      # every runner, and on Windows with Node 24 it finished and then never
+      # exited, twice, which stalled the whole job until the limit. Everything
+      # else typechecks everywhere.
+      - run: pnpm turbo run typecheck --filter=!@betteruseofai/site
+
+      - name: typecheck the site
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        timeout-minutes: 10
+        run: pnpm --filter @betteruseofai/site typecheck
 
       - run: pnpm turbo run test
 

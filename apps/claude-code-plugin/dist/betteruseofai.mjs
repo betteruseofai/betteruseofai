@@ -5447,4 +5447,4 @@ if (result2.stdout !== "") process.stdout.write(`${result2.stdout}
 `);
 if (result2.stderr !== "") process.stderr.write(`${result2.stderr}
 `);
-process.exit(result2.code);
+process.exitCode = result2.code;
