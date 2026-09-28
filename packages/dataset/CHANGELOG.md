@@ -1,5 +1,11 @@
 # @betteruseofai/dataset
 
+## 1.1.0
+
+Data only, refreshed by the weekly snapshot.
+
+- Great Britain as consumed (NESO) moved to 124 gCO2/kWh (months 94 to 145), twelve months to 2026-08.
+
 ## 1.0.0
 
 A schema change, so a major bump: a region row may now carry `rangeSource`, a citation for where
