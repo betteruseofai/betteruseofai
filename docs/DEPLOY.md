@@ -119,7 +119,11 @@ From `PLAN.md` section 8.7, still current.
 ## 6. Afterwards
 
 - [ ] The `snapshots` workflow runs every Monday and opens a pull request when the committed
-      snapshots moved. Merge it.
+      snapshots moved. Merge it. **It cannot open one yet.** The organisation setting has to allow
+      it first: github.com/organizations/betteruseofai/settings/actions, Workflow permissions,
+      tick "Allow GitHub Actions to create and approve pull requests", then the same tick in the
+      repository's Settings, Actions, General. The `gh` token cannot do this; it needs `admin:org`.
+      The 21 and 28 September runs built and pushed their branches and failed only at this step.
 - [ ] The `dataset links` workflow runs every Monday and fails loudly on a dead source URL. Fix the
       row.
 - [ ] The dataset debt in `packages/dataset/CHANGELOG.md`, in the order it is listed there: the

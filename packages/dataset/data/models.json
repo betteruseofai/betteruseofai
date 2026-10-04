@@ -1,7 +1,63 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "notes": "Deliberately incomplete. A model that is not here resolves to null and renders as unknown, which is the correct behaviour. Rows get added as readers and site adapters meet real strings in the wild. Ordinal is the rung on the family ladder, 0 being the largest model on offer in that family; a downgrade recommendation moves to ordinal + 1 within the same family, so a family with one rung produces no downgrade.",
   "models": [
+    {
+      "id": "claude-opus-5.5",
+      "aliases": [
+        "claude-opus-5-5",
+        "claude-opus-5.5",
+        "opus-5.5",
+        "opus 5.5",
+        "claude opus 5.5",
+        "claude-opus-5-5-latest"
+      ],
+      "provider": "anthropic",
+      "family": "claude-5.5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Opus 5.5",
+      "reasoning": true,
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-03",
+        "note": "Found by running the doctor command against real transcripts on the author's machine, which reported 6,412 turns on an unrecognised claude-opus-5-5 between 23 September and 3 October 2026. The display name is read from the identifier; no release note was consulted. Kept on its own ladder with Sonnet 5.5 because its position relative to the Claude 5 models is not confirmed, so the only downgrade it offers is to Sonnet 5.5."
+      }
+    },
+    {
+      "id": "claude-sonnet-5.5",
+      "aliases": [
+        "claude-sonnet-5-5",
+        "claude-sonnet-5.5",
+        "sonnet-5.5",
+        "sonnet 5.5",
+        "claude sonnet 5.5",
+        "claude-sonnet-5-5-latest"
+      ],
+      "provider": "anthropic",
+      "family": "claude-5.5",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Claude Sonnet 5.5",
+      "reasoning": true,
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-03",
+        "note": "Found the same way as Opus 5.5: 25 turns on claude-sonnet-5-5 on 1 October 2026 in the author's own transcripts. The display name is read from the identifier."
+      }
+    },
     {
       "id": "claude-opus-5",
       "aliases": [

@@ -1,5 +1,15 @@
 # @betteruseofai/dataset
 
+## 1.1.0
+
+- **Claude Opus 5.5 and Claude Sonnet 5.5.** Both appeared in the author's own Claude Code
+  transcripts from 23 September 2026 and were showing as unknown: 6,412 turns, nearly every turn of
+  the fortnight. They now sit on their own ladder, `claude-5.5`, priced through the existing Opus and
+  Sonnet proxy rows, so every estimate for them carries the proxy-row flag and reads as scaled from
+  the one measured Sonnet rather than measured. The names are read from the identifiers. A model
+  that goes unrecognised for ten days is the gap the plugin's every-ten-turns message now names.
+
+
 ## 1.0.0
 
 A schema change, so a major bump: a region row may now carry `rangeSource`, a citation for where

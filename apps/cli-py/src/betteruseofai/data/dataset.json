@@ -1,7 +1,63 @@
 {
-  "version": "1.0.0",
-  "sha256": "e290e8bcf18a4f08e19a3398023b5b3a025d2e4aa5afbe3473a20d7dfc911d01",
+  "version": "1.1.0",
+  "sha256": "c06aa08e0931290b6bcc8c15ac48ee25c8ceb2a57cb952f910bd950543f9267a",
   "models": [
+    {
+      "id": "claude-opus-5.5",
+      "aliases": [
+        "claude-opus-5-5",
+        "claude-opus-5.5",
+        "opus-5.5",
+        "opus 5.5",
+        "claude opus 5.5",
+        "claude-opus-5-5-latest"
+      ],
+      "provider": "anthropic",
+      "family": "claude-5.5",
+      "tier": "frontier",
+      "ordinal": 0,
+      "displayName": "Claude Opus 5.5",
+      "reasoning": true,
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-03",
+        "note": "Found by running the doctor command against real transcripts on the author's machine, which reported 6,412 turns on an unrecognised claude-opus-5-5 between 23 September and 3 October 2026. The display name is read from the identifier; no release note was consulted. Kept on its own ladder with Sonnet 5.5 because its position relative to the Claude 5 models is not confirmed, so the only downgrade it offers is to Sonnet 5.5."
+      }
+    },
+    {
+      "id": "claude-sonnet-5.5",
+      "aliases": [
+        "claude-sonnet-5-5",
+        "claude-sonnet-5.5",
+        "sonnet-5.5",
+        "sonnet 5.5",
+        "claude sonnet 5.5",
+        "claude-sonnet-5-5-latest"
+      ],
+      "provider": "anthropic",
+      "family": "claude-5.5",
+      "tier": "mid",
+      "ordinal": 1,
+      "displayName": "Claude Sonnet 5.5",
+      "reasoning": true,
+      "thinkingRatio": {
+        "low": 0.3,
+        "central": 1.5,
+        "high": 6
+      },
+      "hosting": "cloud",
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-03",
+        "note": "Found the same way as Opus 5.5: 25 turns on claude-sonnet-5-5 on 1 October 2026 in the author's own transcripts. The display name is read from the identifier."
+      }
+    },
     {
       "id": "claude-opus-5",
       "aliases": [
@@ -1840,6 +1896,7 @@
     {
       "id": "proxy.claude-opus",
       "modelIds": [
+        "claude-opus-5.5",
         "claude-opus-5",
         "claude-opus-4.8",
         "claude-opus-4.1",
@@ -1886,6 +1943,7 @@
     {
       "id": "proxy.claude-sonnet",
       "modelIds": [
+        "claude-sonnet-5.5",
         "claude-sonnet-5",
         "claude-sonnet-4"
       ],
@@ -3367,7 +3425,7 @@
     }
   ],
   "calibration": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

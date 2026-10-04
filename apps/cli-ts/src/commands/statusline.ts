@@ -275,8 +275,27 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
     const top = byModel[0];
     const share = top ? ` · ${Math.round((top[1] / rolled.count) * 100)}% ${getModel(top[0], context.dataset)?.displayName ?? top[0]}` : '';
 
+    /*
+     * A model the dataset does not know is priced as nothing, and the readout
+     * says "unknown" rather than a nought. That is right, and it is also easy to
+     * live with for weeks without noticing, which is what happened on the
+     * author's own machine when a new model arrived: ten days of turns, all
+     * unknown, and no line anywhere said so. So the periodic message names them.
+     */
+    const unknownNames = [
+      ...new Set(
+        totals.events
+          .filter((one, index) => totals.estimates[index]?.basis.flags.includes('model-unknown'))
+          .map((one) => one.modelRaw),
+      ),
+    ].sort();
+    const unknownNote =
+      unknownNames.length > 0
+        ? ` ${rolled.unknownModelCount} ${rolled.unknownModelCount === 1 ? 'turn is' : 'turns are'} on ${unknownNames.length === 1 ? 'a model' : 'models'} the dataset does not know (${unknownNames.join(', ')}) and ${rolled.unknownModelCount === 1 ? 'is' : 'are'} not in the total.`
+        : '';
+
     return say(
-      `Session so far: ${cached.join(', ')} across ${rolled.count} turns${share}`,
+      `Session so far: ${cached.join(', ')} across ${rolled.count} turns${share}.${unknownNote}`,
     );
   }
 

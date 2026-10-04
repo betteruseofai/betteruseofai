@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "defaultRegion": "WORLD",
   "notes": "Location-based grid intensity and the water consumed generating that electricity. Location-based is the default basis for carbon on purpose: market-based factors, which let a provider net off certificates bought elsewhere, flatter the result by three or four times. Electricity Maps is deliberately absent because its data is share-alike licensed and this repository is MIT. Off-site water is the weakest part of this file: the World Resources Institute publishes per-region factors and we have not yet transcribed them, so every region currently carries the same range built around the United States figure from Li and colleagues. Fixing that is the highest-value contribution anyone could make here.",
   "regions": [

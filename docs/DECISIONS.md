@@ -173,8 +173,24 @@ against. The decisions taken on it, on 2026-09-13:
     was ruled out. No share card, by the owner's choice. The saving arithmetic moved from the
     extension into core so both the dashboard and the extension draw the same rings.
 
+50. **The first efficacy audit, 2026-10-03.** Run against the author's own machine, counts only.
+    Finding one: 6,412 of the fortnight's turns were on `claude-opus-5-5`, which the dataset did
+    not know, so the plugin showed "unknown" for nearly every turn for ten days and nothing said so.
+    Both 5.5 models are now in the dataset (1.1.0) on their own ladder, priced through the existing
+    proxy rows, and the every-ten-turns message names any model it cannot price. Finding two: on
+    400 real prompts the nudge would have fired 206 times at the default bar, every one of them
+    `downgrade.short-simple`, and zero times at the plugin's bar with its mutes; in a coding session
+    the nudge never fires. Over half of all prompts in a coding session are short follow-ups, and
+    only 7 of 56 session-opening prompts would be nudged. The owner has not yet decided what the
+    nudge should do in Claude Code. Finding three: the extension's adapters have never been checked
+    against a live site; the owner is checking by hand. Also found: the weekly refresh cannot open
+    its pull request until the organisation allows Actions to, and the link check now tells a site
+    that blocks unknown agents from a dead one.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
+- What the nudge should do inside Claude Code, given that it cannot fire at its current bar and
+  would fire on half of all prompts at the default one.
 
 - The tokenizer ratios, which need the providers' counting endpoints and so an API key, in
   `packages/dataset/CHANGELOG.md`.
