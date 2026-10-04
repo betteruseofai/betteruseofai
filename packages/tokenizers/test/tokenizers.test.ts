@@ -132,13 +132,25 @@ describe('the synchronous estimate, for text somebody is still typing', () => {
     // the machine is doing at the time.
     await loadEncoder();
 
-    const quickStart = performance.now();
-    for (let run = 0; run < 200; run += 1) estimateTokensSync(PROSE, 'anthropic', calibration);
-    const quick = performance.now() - quickStart;
+    // Both paths warmed first, and the best of five batches taken for each.
+    // The first version timed the quick path cold and the encoder warm, and
+    // on a busy Windows runner the quick path's own start-up cost once made it
+    // the slower of the two. The minimum of several batches is what the code
+    // costs; the rest is the machine.
+    for (let run = 0; run < 50; run += 1) estimateTokensSync(PROSE, 'anthropic', calibration);
+    for (let run = 0; run < 20; run += 1) await estimateTokens(PROSE, 'anthropic', calibration);
 
-    const exactStart = performance.now();
-    for (let run = 0; run < 200; run += 1) await estimateTokens(PROSE, 'anthropic', calibration);
-    const exact = performance.now() - exactStart;
+    let quick = Number.POSITIVE_INFINITY;
+    let exact = Number.POSITIVE_INFINITY;
+    for (let batch = 0; batch < 5; batch += 1) {
+      const quickStart = performance.now();
+      for (let run = 0; run < 100; run += 1) estimateTokensSync(PROSE, 'anthropic', calibration);
+      quick = Math.min(quick, performance.now() - quickStart);
+
+      const exactStart = performance.now();
+      for (let run = 0; run < 100; run += 1) await estimateTokens(PROSE, 'anthropic', calibration);
+      exact = Math.min(exact, performance.now() - exactStart);
+    }
 
     expect(quick).toBeLessThan(exact);
   });
