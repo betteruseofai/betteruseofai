@@ -1,5 +1,11 @@
 # @betteruseofai/dataset
 
+## 1.2.0
+
+Data only, refreshed by the weekly snapshot.
+
+- Great Britain as consumed (NESO) moved to 123.7 gCO2/kWh (months 94 to 145), twelve months to 2026-09.
+
 ## 1.1.0
 
 - **Claude Opus 5.5 and Claude Sonnet 5.5.** Both appeared in the author's own Claude Code
