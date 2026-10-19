@@ -1,5 +1,11 @@
 # @betteruseofai/dataset
 
+## 2.1.0
+
+Data only, refreshed by the weekly snapshot.
+
+- Great Britain as consumed (NESO) moved to 123.7 gCO2/kWh (months 94 to 145), twelve months to 2026-09.
+
 ## 2.0.0
 
 A schema change, so a major bump: a benchmark row may now carry `includesThinking`, true when the
