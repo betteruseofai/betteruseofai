@@ -148,108 +148,122 @@ const adoptSheet = (root: ShadowRoot): boolean => {
   return true;
 };
 
-export class BuaiHint extends HTMLElement {
-  static observedAttributes = ['explanation', 'rule', 'saving', 'answer'];
+/** Removes a hint and asks for its rule to be muted for the cooldown. */
+const dismiss = (host: HTMLElement): void => {
+  host.dispatchEvent(
+    new CustomEvent('buai:dismiss', {
+      bubbles: true,
+      composed: true,
+      detail: { ruleId: host.getAttribute('rule') ?? '', until: Date.now() + COOLDOWN_MS },
+    }),
+  );
+  host.remove();
+};
 
-  private root: ShadowRoot;
+/**
+ * Draws the hint into a shadow root from the host's attributes.
+ *
+ * Shared by the custom element and by the plain host showHint builds, because a
+ * content script cannot rely on custom elements: in Chrome's isolated world
+ * `customElements` is null, so a hint that needed one never appeared at all.
+ */
+const paint = (root: ShadowRoot, host: HTMLElement): void => {
+  const explanation = host.getAttribute('explanation') ?? '';
+  const rule = host.getAttribute('rule') ?? '';
+  const saving = host.getAttribute('saving');
+  const answer = host.getAttribute('answer');
+  const doc = host.ownerDocument;
 
-  constructor() {
-    super();
-    this.root = this.attachShadow({ mode: 'open' });
+  root.replaceChildren();
+
+  /*
+   * The styles go in as a constructed stylesheet where the browser has them.
+   * A <style> element inserted into a host page is subject to that page's
+   * style-src, even inside a shadow root, and a strict host would silently
+   * leave the hint unstyled. Adopted sheets are not governed by the page's
+   * policy. The element form stays as the fallback for anything older.
+   */
+  const adopted = adoptSheet(root);
+
+  const wrapper = doc.createElement('div');
+  wrapper.className = 'hint';
+  // Polite rather than assertive: this is a suggestion arriving while
+  // somebody types, and it must not interrupt a screen reader mid sentence.
+  wrapper.setAttribute('role', 'status');
+  wrapper.setAttribute('aria-live', 'polite');
+
+  const body = doc.createElement('div');
+  body.className = 'body';
+
+  const ruleLabel = doc.createElement('span');
+  ruleLabel.className = 'rule';
+  ruleLabel.textContent = rule;
+  body.append(ruleLabel);
+
+  // textContent, never innerHTML. The explanation is ours, but this element
+  // lives inside somebody else's page and the habit is worth keeping.
+  const text = doc.createElement('span');
+  text.textContent = explanation;
+  body.append(text);
+
+  if (answer) {
+    const box = doc.createElement('span');
+    box.className = 'answer';
+    box.textContent = answer;
+    body.append(doc.createElement('br'), box);
   }
 
-  connectedCallback(): void {
-    this.render();
+  if (saving) {
+    const note = doc.createElement('span');
+    note.className = 'saving';
+    note.textContent = saving;
+    body.append(note);
   }
 
-  attributeChangedCallback(): void {
-    if (this.isConnected) this.render();
+  const button = doc.createElement('button');
+  button.type = 'button';
+  button.textContent = 'Not this one';
+  button.setAttribute('aria-label', `Dismiss this suggestion and mute ${rule} for a day`);
+  button.addEventListener('click', () => dismiss(host));
+
+  wrapper.append(body, button);
+  if (adopted) {
+    root.append(wrapper);
+  } else {
+    const style = doc.createElement('style');
+    style.textContent = STYLE;
+    root.append(style, wrapper);
   }
+};
 
-  private dismiss(): void {
-    this.dispatchEvent(
-      new CustomEvent('buai:dismiss', {
-        bubbles: true,
-        composed: true,
-        detail: { ruleId: this.getAttribute('rule') ?? '', until: Date.now() + COOLDOWN_MS },
-      }),
-    );
-    this.remove();
-  }
+/**
+ * The same hint as a custom element, for a page that wants to write
+ * `<buai-hint>` itself. The extension does not depend on it.
+ */
+export const defineHintElement = (): typeof HTMLElement | null => {
+  if (typeof HTMLElement === 'undefined') return null;
+  return class BuaiHint extends HTMLElement {
+    static observedAttributes = ['explanation', 'rule', 'saving', 'answer'];
 
-  private render(): void {
-    const explanation = this.getAttribute('explanation') ?? '';
-    const rule = this.getAttribute('rule') ?? '';
-    const saving = this.getAttribute('saving');
-    const answer = this.getAttribute('answer');
-
-    this.root.replaceChildren();
-
-    /*
-     * The styles go in as a constructed stylesheet where the browser has them.
-     * A <style> element inserted into a host page is subject to that page's
-     * style-src, even inside a shadow root, and a strict host would silently
-     * leave the hint unstyled. Adopted sheets are not governed by the page's
-     * policy. The element form stays as the fallback for anything older.
-     */
-    const adopted = adoptSheet(this.root);
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'hint';
-    // Polite rather than assertive: this is a suggestion arriving while
-    // somebody types, and it must not interrupt a screen reader mid sentence.
-    wrapper.setAttribute('role', 'status');
-    wrapper.setAttribute('aria-live', 'polite');
-
-    const body = document.createElement('div');
-    body.className = 'body';
-
-    const ruleLabel = document.createElement('span');
-    ruleLabel.className = 'rule';
-    ruleLabel.textContent = rule;
-    body.append(ruleLabel);
-
-    // textContent, never innerHTML. The explanation is ours, but this element
-    // lives inside somebody else's page and the habit is worth keeping.
-    const text = document.createElement('span');
-    text.textContent = explanation;
-    body.append(text);
-
-    if (answer) {
-      const box = document.createElement('span');
-      box.className = 'answer';
-      box.textContent = answer;
-      body.append(document.createElement('br'), box);
+    connectedCallback(): void {
+      paint(this.shadowRoot ?? this.attachShadow({ mode: 'open' }), this);
     }
 
-    if (saving) {
-      const note = document.createElement('span');
-      note.className = 'saving';
-      note.textContent = saving;
-      body.append(note);
+    attributeChangedCallback(): void {
+      if (this.isConnected) paint(this.shadowRoot ?? this.attachShadow({ mode: 'open' }), this);
     }
+  };
+};
 
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = 'Not this one';
-    button.setAttribute('aria-label', `Dismiss this suggestion and mute ${rule} for a day`);
-    button.addEventListener('click', () => this.dismiss());
-
-    wrapper.append(body, button);
-    if (adopted) {
-      this.root.append(wrapper);
-    } else {
-      const style = document.createElement('style');
-      style.textContent = STYLE;
-      this.root.append(style, wrapper);
-    }
-  }
-}
-
-/** Registers the element. Safe to call more than once. */
+/**
+ * Registers the element where custom elements exist. Safe to call more than
+ * once, and safe in a content script, where the registry is null.
+ */
 export const register = (): void => {
-  if (typeof customElements === 'undefined') return;
-  if (!customElements.get(HINT_TAG)) customElements.define(HINT_TAG, BuaiHint);
+  const registry = (globalThis as { customElements?: CustomElementRegistry | null }).customElements;
+  if (!registry || registry.get(HINT_TAG)) return;
+  const element = defineHintElement();
+  if (element) registry.define(HINT_TAG, element);
 };
 
 /**
@@ -266,9 +280,10 @@ export const showHint = (
 ): HTMLElement | null => {
   if ((cooldowns[content.ruleId] ?? 0) > now) return null;
 
-  register();
   removeHint(anchor.ownerDocument);
 
+  // A plain host with its own shadow root, painted here. No registry needed,
+  // so it renders the same in a content script as in a page.
   const hint = anchor.ownerDocument.createElement(HINT_TAG);
   hint.setAttribute('explanation', content.explanation);
   hint.setAttribute('rule', content.ruleId);
@@ -277,6 +292,8 @@ export const showHint = (
   hint.setAttribute('data-buai-hint', 'true');
 
   anchor.parentElement?.insertBefore(hint, anchor);
+  // Where the element is registered it has painted itself on insertion.
+  if (!hint.shadowRoot) paint(hint.attachShadow({ mode: 'open' }), hint);
   return hint;
 };
 

@@ -39,6 +39,8 @@ export default defineContentScript({
      */
     const nonce = crypto.randomUUID();
     let turnIndex = 0;
+    // Kept apart from the nonce, which guards the page boundary and stays private.
+    const loadId = crypto.randomUUID();
 
     window.addEventListener(EVENT_NAME, (event) => {
       const exchange = parseExchange((event as CustomEvent).detail, nonce);
@@ -46,7 +48,7 @@ export default defineContentScript({
       if (!adapter.shouldCapture(exchange.url, exchange.method)) return;
 
       turnIndex += 1;
-      const turn = turnFromExchange(exchange, adapter, turnIndex);
+      const turn = turnFromExchange(exchange, adapter, turnIndex, loadId);
       if (!turn) return;
 
       send(fillModelFromPage(turn, adapter, document));

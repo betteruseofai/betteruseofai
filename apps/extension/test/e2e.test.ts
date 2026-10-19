@@ -104,6 +104,39 @@ describe('the extension in a browser', () => {
     await page.close();
   }, 30000);
 
+  it('keeps the settings when the service worker restarts before the first turn', async () => {
+    if (skipIfUnavailable() || !context) return;
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/popup.html`);
+    await page.waitForSelector('.buai-popup', { timeout: 10000 });
+    const chooseRegion = (code: string) =>
+      page.evaluate(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (region) => (globalThis as any).chrome.runtime.sendMessage({ type: 'settings:set', patch: { regionCode: region } }),
+        code,
+      );
+    await chooseRegion('GB');
+
+    // A worker that stops and wakes runs its start-up again. With no turns
+    // stored, that start-up used to write the defaults over every choice.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('ServiceWorker.enable');
+    await cdp.send('ServiceWorker.stopAllWorkers');
+    await page.waitForTimeout(500);
+    await page.evaluate(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).chrome.runtime.sendMessage({ type: 'summary:get' }),
+    );
+    await page.waitForTimeout(500);
+
+    const stored = await page.evaluate(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      () => (globalThis as any).chrome.storage.local.get('settings'),
+    );
+    expect((stored as { settings: { regionCode: string } }).settings.regionCode).toBe('GB');
+    await page.close();
+  }, 30000);
+
   it('opens the dashboard', async () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
@@ -138,7 +171,7 @@ describe('the extension in a browser', () => {
     // appear. Either way, after an answer it stays away.
     const asked = await page.locator('[data-first-run]').count();
     if (asked > 0) {
-      await page.click('[data-first-run] button');
+      await page.click('[data-first-run] button:has-text("world average")');
       await page.waitForTimeout(500);
       await page.reload();
       await page.waitForSelector('.buai-popup', { timeout: 10000 });

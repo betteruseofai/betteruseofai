@@ -8,7 +8,6 @@ import { setRanksLoader } from '@betteruseofai/tokenizers';
 
 import { priceTurn, reprice } from '../lib/pipeline.js';
 import {
-  countEvents,
   DEFAULT_SETTINGS,
   getEvents,
   prune,
@@ -270,7 +269,12 @@ browser.alarms.onAlarm.addListener((alarm) => {
 export default defineBackground(() => {
   // Everything is registered above, at module scope, because a service worker
   // can be woken by an event before this callback runs.
-  void countEvents().then((count) => {
-    if (count === 0) void settings.set(DEFAULT_SETTINGS);
+  //
+  // Defaults are written only when nothing has been written before. Keying this
+  // on an empty event store used to wipe the region and every other choice
+  // whenever the worker woke before the first turn, or after the turns were
+  // deleted, and a service worker wakes all the time.
+  void browser.storage.local.get(['settings']).then((stored) => {
+    if (stored['settings'] === undefined) void settings.set(DEFAULT_SETTINGS);
   });
 });

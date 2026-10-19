@@ -41,6 +41,12 @@ export const turnFromExchange = (
   exchange: InterceptedExchange,
   adapter: SiteAdapter,
   turnIndex: number,
+  /**
+   * Different on every page load. The turn number restarts at one on each load
+   * and Gemini never says which conversation it is in, so without this a reload
+   * or a second tab wrote over turns already stored.
+   */
+  loadId = '',
 ): CapturedTurn | null => {
   const request = adapter.parseRequest(exchange.requestBody, exchange.requestHeaders, exchange.url);
   const stream = adapter.parseStream(exchange.responseBody);
@@ -68,7 +74,7 @@ export const turnFromExchange = (
       : 'unknown';
 
   return {
-    key: `${conversationId ?? 'no-conversation'}:${turnIndex}`,
+    key: `${conversationId ?? 'no-conversation'}:${loadId ? `${loadId}:` : ''}${turnIndex}`,
     conversationId,
     modelRaw,
     modelSource,

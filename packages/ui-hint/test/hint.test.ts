@@ -67,6 +67,33 @@ describe('showing a hint', () => {
   });
 });
 
+describe('in a content script, where the registry is null', () => {
+  // Chrome gives an extension's isolated world `customElements === null`. The
+  // hint used to look up its element there, throw, and never appear on a site.
+  it('registers nothing and throws nothing', () => {
+    vi.stubGlobal('customElements', null);
+    try {
+      expect(() => register()).not.toThrow();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('still draws the hint, in its own shadow root', () => {
+    const page = document.implementation.createHTMLDocument('a chat site');
+    page.body.innerHTML = '<div><div id="composer" contenteditable="true"></div></div>';
+    const anchor = page.getElementById('composer') as HTMLElement;
+    vi.stubGlobal('customElements', null);
+    try {
+      const hint = showHint(anchor, content);
+      expect(hint?.shadowRoot?.textContent).toContain('downgrade.rewrite-task');
+      expect(hint?.shadowRoot?.querySelector('button')?.textContent).toBe('Not this one');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+});
+
 describe('saying no', () => {
   it('removes the hint and asks for that rule to be muted for a day', () => {
     const hint = showHint(composer, content);

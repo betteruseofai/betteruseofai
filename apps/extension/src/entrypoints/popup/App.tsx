@@ -134,12 +134,16 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       ) : null}
 
       <div class="buai-popup__models">
-        {summary.byModel.slice(0, 4).map((one) => (
-          <div class="buai-popup__model" key={one.key}>
-            <span>{one.key === 'unknown' ? 'unrecognised' : one.key}</span>
-            <span class="buai-mono">{one.count}</span>
-          </div>
-        ))}
+        {/* The four most used, so a model with most of the turns is never hidden behind rarer ones. */}
+        {[...summary.byModel]
+          .sort((a, b) => b.count - a.count || (a.key < b.key ? -1 : 1))
+          .slice(0, 4)
+          .map((one) => (
+            <div class="buai-popup__model" key={one.key}>
+              <span>{one.key === 'unknown' ? 'unrecognised' : one.key}</span>
+              <span class="buai-mono">{one.count}</span>
+            </div>
+          ))}
       </div>
 
       {/*
@@ -195,13 +199,18 @@ const Header = ({ datasetVersion }: { datasetVersion: string }) => (
 );
 
 /**
- * The one question a first run asks. A select grouped by continent, one
- * button that says "the world average will do", and nothing else. Whatever
- * is chosen, the question is marked asked and does not come back; the options
- * page has the same control for later.
+ * The one question a first run asks. A select grouped by continent, a button
+ * that confirms it, one that says "the world average will do", and nothing
+ * else. Whatever is chosen, the question is marked asked and does not come
+ * back; the options page has the same control for later.
+ *
+ * The select only remembers; the button or Enter answers. A select fires
+ * change on every arrow key, so answering on change took the first region a
+ * keyboard user passed through on the way to their own.
  */
 const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: string | null) => void }) => {
   const continents = [...new Set(dataset.regions.map((one) => one.continent ?? 'Global'))].sort();
+  const [picked, setPicked] = useState('');
   return (
     <section class="buai-popup__firstrun" data-first-run>
       <p class="buai-readout__label">One question before the first count</p>
@@ -211,7 +220,13 @@ const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: st
       </p>
       <label class="buai-popup__firstrun-field">
         <span class="buai-visually-hidden">Region</span>
-        <select onChange={(event) => onChoose((event.currentTarget as HTMLSelectElement).value || null)}>
+        <select
+          value={picked}
+          onChange={(event) => setPicked((event.currentTarget as HTMLSelectElement).value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && picked) onChoose(picked);
+          }}
+        >
           <option value="">Pick a region</option>
           {continents.map((continent) => (
             <optgroup label={continent} key={continent}>
@@ -226,6 +241,9 @@ const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: st
           ))}
         </select>
       </label>
+      <button class="buai-button" type="button" disabled={!picked} onClick={() => onChoose(picked)}>
+        Use this region
+      </button>
       <button class="buai-button buai-button--quiet" type="button" onClick={() => onChoose(null)}>
         Use the world average
       </button>
