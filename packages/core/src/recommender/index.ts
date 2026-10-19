@@ -169,6 +169,16 @@ export const createRecommender = (options: RecommenderOptions): Recommender => {
 
     const savings = target && model ? priceSwap(input, features, model, target, dataset) : null;
 
+    // A smaller model is not always a lighter one: a mini model on a high
+    // reasoning budget can cost more than the model above it. If ours prices the
+    // swap at no saving, the suggestion would be advice to use more.
+    const lighter = savings?.energyWh ?? savings?.carbonG ?? null;
+    if (winner.kind === 'downgrade' && target && model && lighter !== null && lighter.central <= 0) {
+      return nothing(
+        `${target.displayName} would not be lighter than ${model.displayName} here, so there is nothing to suggest.`,
+      );
+    }
+
     return {
       kind: winner.kind,
       ruleId: winner.ruleId,

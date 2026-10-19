@@ -1,5 +1,27 @@
 # @betteruseofai/dataset
 
+## 2.0.0
+
+A schema change, so a major bump: a benchmark row may now carry `includesThinking`, true when the
+measurement ran the model's reasoning and the rate already holds the thinking. Found in the audit
+of 19 October 2026 (`docs/AUDIT-2026-10.md`, E1 and E2).
+
+- **Thinking is no longer added twice.** Six rows now say their measurement included the reasoning:
+  `jegham.o3`, whose own note already said so, `jegham.o4-mini`, measured on high effort,
+  `jegham.deepseek-r1`, the Altman statement, the Gemini Apps median and the Hugging Face R1
+  distill row. Proxy rows inherit it, so GPT-5.6 and Gemini 2.5 Pro do too. o3 on 200 in and 300
+  out drops from 5.45 Wh to 1.64 central, which is what the row measured.
+- **PUE is no longer applied twice on the Jegham rows.** Their equation 1 ends in a factor of PUE,
+  so the published per-query figures already carry it. All nine `jegham.*` rows, and the five
+  proxies scaled from them, now set `energyIncludesPue`. Claude 3.7 Sonnet on a short prompt lands
+  on the published 0.950 Wh rather than 1.08. Every Claude model, and every OpenAI model except
+  GPT-5, reads 12 to 14 per cent lower.
+- **On-site water is charged on the servers' energy.** WUE is defined against IT energy, so the
+  engine now divides by PUE before applying it, as Jegham et al. and EcoLogits both do. The Google
+  row gives 0.25 mL against the published 0.26, where it gave 0.28 before.
+- **A row with no on-site water figure gives unknown water, not zero.** The R1 distill row is
+  measured at the GPU and publishes none.
+
 ## 1.1.0
 
 - **Claude Opus 5.5 and Claude Sonnet 5.5.** Both appeared in the author's own Claude Code

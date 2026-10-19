@@ -131,6 +131,9 @@ export const fromLine = (line: LogLine, file: string): UsageEvent => {
     estimator: line.tokens.estimator ?? 'provider',
   };
   if ('thinking' in line.tokens) tokens.thinking = line.tokens.thinking;
+  // The log keeps the provider's counts as they came, and Anthropic's output
+  // count holds the thinking. Every Claude Code line was written that way.
+  if (line.surface === 'claude-code') tokens.thinkingInOutput = true;
   if (line.tokens.tool) tokens.tool = line.tokens.tool;
   return {
     id: line.id,

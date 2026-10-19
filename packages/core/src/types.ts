@@ -123,6 +123,12 @@ export interface BenchmarkRow {
   hosting?: 'cloud' | 'local';
   pue: Range;
   energyIncludesPue: boolean;
+  /**
+   * True when the measurement ran the model's reasoning, so the per token rate
+   * already carries the thinking and the engine must not add any. A proxy row
+   * without the field takes its parent's.
+   */
+  includesThinking?: boolean;
   waterOnsiteLPerKwh?: Range;
   carbonGPerKwh?: Range;
   carbonBasis?: 'market-based' | 'location-based';
@@ -219,6 +225,12 @@ export interface TokenCounts {
   cachedRead?: number;
   cachedWrite?: number;
   thinking?: number | null;
+  /**
+   * True when `output` already holds the thinking, as Anthropic's count does. A
+   * number in `thinking` is then the part of `output` that was thinking, and null
+   * means the split was not given, not that the thinking is missing.
+   */
+  thinkingInOutput?: boolean;
   tool?: number;
   /** True when any count came from a tokenizer estimate rather than the provider. */
   estimated: boolean;
@@ -298,7 +310,15 @@ export interface EstimateBasis {
   regionCode: string;
   tokens: TokenCounts;
   /** How the thinking tokens in this estimate were arrived at. */
-  thinkingHandling: 'reported' | 'estimated' | 'not-applicable' | 'unknown-model';
+  thinkingHandling:
+    | 'reported'
+    | 'estimated'
+    | 'not-applicable'
+    | 'unknown-model'
+    /** The row's measurement already ran the model's reasoning, so none is added. */
+    | 'included-in-row'
+    /** The output count already holds the thinking and did not say how much. */
+    | 'included-in-output';
   /** Thinking tokens actually charged, as a range when they were not disclosed. */
   thinkingTokens: Range | null;
   waterScope: WaterScope;

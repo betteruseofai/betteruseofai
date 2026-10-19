@@ -183,11 +183,26 @@ describe('the rules that stop a number lying', () => {
     expect(local.waterOnsiteLPerKwh.high).toBe(0);
   });
 
-  it('the Google row reproduces its own published water figure from energy times WUE', () => {
+  it('the Google row reproduces its own published water figure from server energy times WUE', () => {
     const row = benchmarks.benchmarks.find((r: any) => r.id === 'google.gemini-apps.2025-median');
-    const millilitres = row.perPrompt.energyWh.central * row.waterOnsiteLPerKwh.central;
+    // WUE is defined against the servers' energy, which is the total over PUE.
+    const millilitres = (row.perPrompt.energyWh.central / row.pue.central) * row.waterOnsiteLPerKwh.central;
     expect(millilitres).toBeGreaterThan(0.24);
-    expect(millilitres).toBeLessThan(0.3);
+    expect(millilitres).toBeLessThan(0.28);
+  });
+
+  it('a proxy row counts facility overhead the same way as the row it scales', () => {
+    // A proxy takes its parent's rates, so a mismatch would add PUE twice or leave it out.
+    for (const row of benchmarks.benchmarks.filter((r: any) => r.proxyOf)) {
+      const parent = benchmarks.benchmarks.find((r: any) => r.id === row.proxyOf);
+      expect(row.energyIncludesPue, row.id).toBe(parent.energyIncludesPue);
+    }
+  });
+
+  it('every row from Jegham et al. already carries PUE, as their equation 1 does', () => {
+    for (const row of benchmarks.benchmarks.filter((r: any) => r.id.startsWith('jegham.'))) {
+      expect(row.energyIncludesPue, row.id).toBe(true);
+    }
   });
 });
 

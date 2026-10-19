@@ -81,6 +81,10 @@
           "type": "boolean",
           "description": "True when the quoted energy already carries facility overhead, so the engine must not apply pue again."
         },
+        "includesThinking": {
+          "type": "boolean",
+          "description": "True when the measurement ran the model's reasoning, so the per token rate already carries the thinking and the engine must not add any. A proxy row without it takes its parent's."
+        },
         "waterOnsiteLPerKwh": {
           "$ref": "common.schema.json#/$defs/nonNegativeRange"
         },

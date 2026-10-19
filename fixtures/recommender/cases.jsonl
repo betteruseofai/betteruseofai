@@ -25,3 +25,4 @@
 {"name":"empty","prompt":"   ","expect":{"kind":"keep","confidence":0}}
 {"name":"bottom-of-the-ladder","prompt":"What is the capital of Australia","modelId":"claude-haiku-4.5","expect":{"kind":"keep"},"why":"Nothing smaller to move to, so say nothing rather than naming a swap we cannot make."}
 {"name":"long-open-ended","prompt":"I am trying to work out whether to shard this table by tenant or by time, and I need to weigh the trade-offs against our query patterns and our retention policy.","expect":{"kind":"keep","vetoedBy":["keep.deep-reasoning"]}}
+{"name":"no-downgrade-to-a-heavier-model","prompt":"tidy this paragraph please","modelId":"o3","why":"o4-mini was measured on a high reasoning budget and prices heavier than o3, so suggesting it would be advice to use more.","expect":{"kind":"keep","showAsHint":false}}

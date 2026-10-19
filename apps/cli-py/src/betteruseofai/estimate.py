@@ -34,6 +34,10 @@ class TokenCounts:
     # say, and "absent" means the model cannot think at all. Collapsing any of
     # these into another is the exact failure this project exists to avoid.
     thinking: int | None | str = "absent"
+    # True when output already holds the thinking, as Anthropic's count does. A
+    # number in thinking is then the part of output that was thinking, and None
+    # means the split was not given, not that the thinking is missing.
+    thinking_in_output: bool = False
     tool: int = 0
     estimated: bool = False
     estimator: str = "provider"
@@ -105,10 +109,22 @@ def _unknown(
 
 
 def _thinking_for(
-    tokens: TokenCounts, model: dict[str, Any], visible_output: int
+    tokens: TokenCounts,
+    model: dict[str, Any],
+    visible_output: int,
+    row_includes_thinking: bool,
 ) -> tuple[Range, str, str | None]:
     """How many thinking tokens to charge, and whether we are guessing."""
-    if isinstance(tokens.thinking, int) and not isinstance(tokens.thinking, bool):
+    reported = isinstance(tokens.thinking, int) and not isinstance(tokens.thinking, bool)
+    # A row whose measurement already ran the reasoning carries it in its rate.
+    if row_includes_thinking and model.get("reasoning"):
+        return ZERO, "included-in-row", None
+    # An output count that already holds the thinking is charged once.
+    if tokens.thinking_in_output:
+        if reported:
+            return exact(float(tokens.thinking)), "reported", None
+        return ZERO, "included-in-output", None
+    if reported:
         return exact(float(tokens.thinking)), "reported", None
     if tokens.thinking is None and model.get("reasoning"):
         ratio = to_range(model.get("thinkingRatio"))
@@ -188,9 +204,21 @@ def estimate(
 
     # ------------------------------------------------------------- tokens
 
-    visible_output = (event.tokens.output or 0) + (event.tokens.tool or 0)
+    # When the output count already holds a reported thinking count, the visible
+    # part is the difference, so the thinking is charged once and only once.
+    reported_inside = (
+        min(event.tokens.thinking, event.tokens.output or 0)
+        if event.tokens.thinking_in_output
+        and isinstance(event.tokens.thinking, int)
+        and not isinstance(event.tokens.thinking, bool)
+        else 0
+    )
+    visible_output = (event.tokens.output or 0) - reported_inside + (event.tokens.tool or 0)
+    row_includes_thinking = bool(
+        row.get("includesThinking", (parent or {}).get("includesThinking", False))
+    )
     thinking_range, thinking_handling, thinking_flag = _thinking_for(
-        event.tokens, model, event.tokens.output or 0
+        event.tokens, model, (event.tokens.output or 0) - reported_inside, row_includes_thinking
     )
     if thinking_flag:
         flags.append(thinking_flag)
@@ -223,6 +251,9 @@ def estimate(
 
     rates = normalize_to_per_token(row, dataset, model)
     energy_wh: Range | None = None
+    # The energy drawn by the servers alone, before facility overhead. On-site
+    # water is charged on this.
+    it_energy_wh: Range | None = None
     if rates is not None:
         for flag in rates.flags:
             if flag not in flags:
@@ -231,8 +262,17 @@ def estimate(
             add(rates.intercept_wh, mul(rates.input_wh, input_tokens)),
             mul(rates.output_wh, output_tokens),
         )
-        with_overhead = raw if row["energyIncludesPue"] else mul(raw, to_range(row["pue"]))
+        pue = to_range(row["pue"])
+        with_overhead = raw if row["energyIncludesPue"] else mul(raw, pue)
         energy_wh = clamp_non_negative(order(with_overhead))
+        # Bound by bound, because the overhead in the total is the same overhead taken out here.
+        it_energy_wh = (
+            clamp_non_negative(
+                order(Range(raw.low / pue.low, raw.central / pue.central, raw.high / pue.high))
+            )
+            if row["energyIncludesPue"]
+            else clamp_non_negative(order(raw))
+        )
     else:
         flags.append("no-energy-figure")
 
@@ -276,9 +316,14 @@ def estimate(
         water_ml = clamp_non_negative(order(mul(direct_water, direct_scale())))
         if "scaled-direct-figure" not in flags:
             flags.append("scaled-direct-figure")
-    elif energy_kwh is not None:
-        onsite = to_range(row.get("waterOnsiteLPerKwh")) or ZERO
-        litres = mul(energy_kwh, onsite)
+    elif (
+        energy_kwh is not None
+        and it_energy_wh is not None
+        and row.get("waterOnsiteLPerKwh") is not None
+    ):
+        # WUE is defined against the servers' energy, so on-site water is charged on
+        # that, and off-site water, which follows the electricity, on the whole draw.
+        litres = mul(scale(it_energy_wh, 1 / 1000), to_range(row["waterOnsiteLPerKwh"]))
         if water_scope != "on-site":
             litres = add(litres, mul(energy_kwh, to_range(region["waterOffsiteLPerKwh"])))
         water_ml = clamp_non_negative(order(scale(litres, 1000)))
@@ -321,7 +366,11 @@ def estimate(
         boundary=row["boundary"],
         region_code=resolved_region,
         thinking_handling=thinking_handling,
-        thinking_tokens=None if thinking_handling == "not-applicable" else thinking_range,
+        thinking_tokens=(
+            None
+            if thinking_handling in ("not-applicable", "included-in-row", "included-in-output")
+            else thinking_range
+        ),
         water_scope=water_scope,
         carbon_basis=carbon_basis,
         quality_score=row["qualityScore"],

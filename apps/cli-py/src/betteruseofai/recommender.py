@@ -753,6 +753,26 @@ class Recommender:
             else None
         )
 
+        # A smaller model is not always a lighter one: a mini model on a high
+        # reasoning budget can cost more than the model above it. If ours prices
+        # the swap at no saving, the suggestion would be advice to use more.
+        lighter = (
+            (savings.energy_wh if savings.energy_wh is not None else savings.carbon_g)
+            if savings is not None
+            else None
+        )
+        if (
+            winner.kind == "downgrade"
+            and target
+            and model
+            and lighter is not None
+            and lighter.central <= 0
+        ):
+            return _nothing(
+                f"{target['displayName']} would not be lighter than {model['displayName']} here, "
+                "so there is nothing to suggest."
+            )
+
         return Recommendation(
             kind=winner.kind,
             rule_id=winner.rule_id,

@@ -140,7 +140,8 @@ describe('the numbers land where the published measurements land', () => {
   });
 
   it('reproduces the published Jegham figure for the model it was measured on', () => {
-    // Short prompt: 100 in, 300 out, published as 0.950 Wh at server level, times a PUE of 1.14.
+    // Short prompt: 100 in, 300 out, published as 0.950 Wh. Their equation 1 already
+    // multiplies by PUE, so the published figure is the one we should land on.
     const result = estimate(
       event({
         modelRaw: 'claude-3.7-sonnet',
@@ -148,8 +149,7 @@ describe('the numbers land where the published measurements land', () => {
       }),
       { dataset },
     );
-    expect(result.energyWh?.central).toBeGreaterThan(0.95);
-    expect(result.energyWh?.central).toBeLessThan(1.25);
+    expect(result.energyWh?.central).toBeCloseTo(0.95, 3);
   });
 
   it('a reasoning model costs more than a plain one for the same exchange', () => {
@@ -349,5 +349,80 @@ describe('resolving', () => {
 
   it('matches the dated identifier a transcript actually writes', () => {
     expect(resolveModel('claude-haiku-4-5-20251001', dataset)?.id).toBe('claude-haiku-4.5');
+  });
+});
+
+describe('thinking is charged once', () => {
+  const claudeCode = (overrides: Partial<ReturnType<typeof tokens>>) =>
+    event({ surface: 'claude-code', modelRaw: 'claude-opus-5', tokens: tokens({ input: 2, ...overrides }) });
+
+  it('takes a reported count out of an output count that already holds it', () => {
+    const inside = estimate(claudeCode({ output: 990, thinking: 809, thinkingInOutput: true }), { dataset });
+    const visibleOnly = estimate(claudeCode({ output: 181, thinking: 809 }), { dataset });
+    expect(inside.energyWh).toEqual(visibleOnly.energyWh);
+    expect(inside.basis.thinkingHandling).toBe('reported');
+  });
+
+  it('adds nothing and claims no lower bound when the split was not given', () => {
+    const result = estimate(claudeCode({ output: 990, thinking: null, thinkingInOutput: true }), { dataset });
+    const asCounted = estimate(claudeCode({ output: 990, thinking: 0 }), { dataset });
+    expect(result.energyWh).toEqual(asCounted.energyWh);
+    expect(result.basis.thinkingHandling).toBe('included-in-output');
+    expect(result.basis.flags).not.toContain('thinking-unknown');
+    expect(result.basis.thinkingTokens).toBeNull();
+  });
+
+  it('adds nothing on top of a row whose measurement already ran the reasoning', () => {
+    const undisclosed = estimate(event({ modelRaw: 'o3', tokens: tokens({ input: 200, output: 300, thinking: null }) }), { dataset });
+    const none = estimate(event({ modelRaw: 'o3', tokens: tokens({ input: 200, output: 300, thinking: 0 }) }), { dataset });
+    expect(undisclosed.basis.thinkingHandling).toBe('included-in-row');
+    expect(undisclosed.basis.flags).not.toContain('thinking-unknown');
+    expect(undisclosed.energyWh).toEqual(none.energyWh);
+  });
+
+  it('lets a proxy row inherit that from the row it scales', () => {
+    const result = estimate(event({ modelRaw: 'gpt-5.6', tokens: tokens({ thinking: null }) }), { dataset });
+    expect(result.basis.benchmarkRowId).toBe('proxy.gpt-5.6');
+    expect(result.basis.thinkingHandling).toBe('included-in-row');
+  });
+
+  it('still estimates the thinking when neither the count nor the row holds it', () => {
+    const result = estimate(event({ modelRaw: 'claude-opus-5', tokens: tokens({ thinking: null }) }), { dataset });
+    expect(result.basis.thinkingHandling).toBe('estimated');
+    expect(result.basis.flags).toContain('thinking-unknown');
+  });
+});
+
+describe('facility overhead and water', () => {
+  it('does not apply PUE again to a row that already carries it', () => {
+    const result = estimate(event({ modelRaw: 'gpt-4o', tokens: tokens({ input: 200, output: 300 }) }), {
+      dataset,
+      at: '2026-09-01',
+    });
+    const row = selectBenchmark(model('gpt-4o'), dataset, { at: '2026-09-01' });
+    expect(row?.energyIncludesPue).toBe(true);
+    const rates = normalizeToPerToken(row!, { dataset, model: model('gpt-4o'), calibration: dataset.calibration });
+    const raw = rates!.interceptWh.central + rates!.inputWh.central * 200 + rates!.outputWh.central * 300;
+    expect(result.energyWh?.central).toBeCloseTo(raw, 9);
+  });
+
+  it('charges on-site water on the servers’ energy, which is the total over PUE', () => {
+    const result = estimate(event({ modelRaw: 'gpt-4o', tokens: tokens({ input: 200, output: 300 }) }), {
+      dataset,
+      at: '2026-09-01',
+      waterScope: 'on-site',
+    });
+    const row = selectBenchmark(model('gpt-4o'), dataset, { at: '2026-09-01' })!;
+    const expected = (result.energyWh!.central / row.pue.central) * row.waterOnsiteLPerKwh!.central;
+    expect(result.waterMl?.central).toBeCloseTo(expected, 9);
+  });
+
+  it('reads unknown, never zero, when the row has no on-site water figure', () => {
+    const result = estimate(
+      event({ modelRaw: 'deepseek-r1-distill-llama-70b', tokens: tokens({ input: 200, output: 300 }) }),
+      { dataset, waterScope: 'on-site' },
+    );
+    expect(result.energyWh).not.toBeNull();
+    expect(result.waterMl).toBeNull();
   });
 });

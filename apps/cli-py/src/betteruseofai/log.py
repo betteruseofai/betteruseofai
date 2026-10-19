@@ -95,6 +95,9 @@ def from_line(line: dict[str, Any], file: str) -> UsageEvent:
         cached_read=body.get("cachedRead", 0),
         cached_write=body.get("cachedWrite", 0),
         thinking=body.get("thinking", "absent"),
+        # The log keeps the provider's counts as they came, and Anthropic's output
+        # count holds the thinking. Every Claude Code line was written that way.
+        thinking_in_output=line.get("surface") == "claude-code",
         tool=body.get("tool", 0),
         estimated=body.get("estimated") is True,
         estimator=body.get("estimator", "provider"),

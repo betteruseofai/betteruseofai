@@ -83,8 +83,9 @@ describe('summary', () => {
     const result = await cli(['summary']);
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('8 turns');
-    // The total is a lower bound, because a fixture turn hid its thinking count.
-    expect(result.stdout).toMatch(/energy\s+≥ [\d.]+ Wh/);
+    // Not a lower bound: Anthropic's output count already holds the thinking, so a
+    // turn that gave no split has nothing missing from it.
+    expect(result.stdout).toMatch(/energy\s+[\d.]+ Wh/);
   });
 
   it('names what it could not price rather than quietly dropping it', async () => {
@@ -93,9 +94,10 @@ describe('summary', () => {
     expect(result.stdout).toContain('not in the figures above');
   });
 
-  it('says the figures are a lower bound when a thinking count was hidden', async () => {
+  it('does not call a Claude Code total a lower bound when the thinking split is missing', async () => {
+    // The thinking is inside the output count whether or not the split was given.
     const result = await cli(['summary']);
-    expect(result.stdout).toContain('lower bound');
+    expect(result.stdout).not.toContain('lower bound');
   });
 
   it('groups by whatever bucket is asked for', async () => {

@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "1.1.0",
-  "datasetSha256": "c06aa08e0931290b6bcc8c15ac48ee25c8ceb2a57cb952f910bd950543f9267a",
+  "datasetVersion": "2.0.0",
+  "datasetSha256": "9417767a42b2c1d2a2f5f967bb8fcdcc219395b4558478461ba4e02151ce26af",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -51,19 +51,19 @@
     "measured-per-query-set": {
       "modelId": "claude-3.7-sonnet",
       "energyWh": {
-        "low": "0.5415",
-        "central": "1.083",
-        "high": "2.166"
+        "low": "0.475",
+        "central": "0.95",
+        "high": "1.9"
       },
       "waterMl": {
-        "low": "1.28877",
-        "central": "3.59556",
-        "high": "10.5917"
+        "low": "1.12",
+        "central": "3.133",
+        "high": "9.249"
       },
       "carbonG": {
-        "low": "0.161529",
-        "central": "0.378725",
-        "high": "0.858169"
+        "low": "0.141692",
+        "central": "0.332215",
+        "high": "0.75278"
       },
       "basis": {
         "benchmarkRowId": "jegham.claude-3.7-sonnet",
@@ -91,19 +91,19 @@
     "thinking-unknown": {
       "modelId": "claude-opus-5",
       "energyWh": {
-        "low": "1.47675",
-        "central": "13.6282",
-        "high": "165.262"
+        "low": "1.29539",
+        "central": "11.9546",
+        "high": "144.967"
       },
       "waterMl": {
-        "low": "2.70245",
-        "central": "34.4793",
-        "high": "613.122"
+        "low": "2.34194",
+        "central": "29.9808",
+        "high": "534.622"
       },
       "carbonG": {
-        "low": "0.144131",
-        "central": "2.96277",
-        "high": "58.7011"
+        "low": "0.12643",
+        "central": "2.59892",
+        "high": "51.4922"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-opus",
@@ -136,19 +136,19 @@
     "thinking-reported": {
       "modelId": "claude-opus-5",
       "energyWh": {
-        "low": "3.34018",
-        "central": "13.3607",
-        "high": "60.2736"
+        "low": "2.92998",
+        "central": "11.7199",
+        "high": "52.8716"
       },
       "waterMl": {
-        "low": "6.11252",
-        "central": "33.8026",
-        "high": "223.615"
+        "low": "5.29709",
+        "central": "29.3923",
+        "high": "194.985"
       },
       "carbonG": {
-        "low": "0.326001",
-        "central": "2.90462",
-        "high": "21.4092"
+        "low": "0.285966",
+        "central": "2.54791",
+        "high": "18.78"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-opus",
@@ -179,19 +179,19 @@
     "cache-heavy-agent-turn": {
       "modelId": "claude-sonnet-5",
       "energyWh": {
-        "low": "1.28871",
-        "central": "10.207",
-        "high": "110.449"
+        "low": "1.13044",
+        "central": "8.95347",
+        "high": "96.8855"
       },
       "waterMl": {
-        "low": "3.06712",
-        "central": "33.8871",
-        "high": "540.098"
+        "low": "2.66547",
+        "central": "29.5276",
+        "high": "471.628"
       },
       "carbonG": {
-        "low": "0.384421",
-        "central": "3.56937",
-        "high": "43.7601"
+        "low": "0.337212",
+        "central": "3.13103",
+        "high": "38.386"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-sonnet",
@@ -228,9 +228,9 @@
         "high": "2.40923"
       },
       "waterMl": {
-        "low": "0.12425",
-        "central": "1.47441",
-        "high": "25.9474"
+        "low": "0.120927",
+        "central": "1.45092",
+        "high": "25.7186"
       },
       "carbonG": {
         "low": "0.012075",
@@ -243,12 +243,8 @@
         "methodology": "provider-measured",
         "boundary": "datacenter",
         "regionCode": "GOOGLE-FLEET",
-        "thinkingHandling": "reported",
-        "thinkingTokens": {
-          "low": "0",
-          "central": "0",
-          "high": "0"
-        },
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
         "waterScope": "on-site + off-site",
         "carbonBasis": "location-based",
         "qualityScore": 4,
@@ -273,9 +269,9 @@
         "high": "2.40923"
       },
       "waterMl": {
-        "low": "0.12425",
-        "central": "1.47441",
-        "high": "25.9474"
+        "low": "0.120927",
+        "central": "1.45092",
+        "high": "25.7186"
       },
       "carbonG": {
         "low": "0.00329",
@@ -288,12 +284,8 @@
         "methodology": "provider-measured",
         "boundary": "datacenter",
         "regionCode": "GOOGLE-FLEET",
-        "thinkingHandling": "reported",
-        "thinkingTokens": {
-          "low": "0",
-          "central": "0",
-          "high": "0"
-        },
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
         "waterScope": "on-site + off-site",
         "carbonBasis": "provider-reported",
         "qualityScore": 4,
@@ -348,19 +340,19 @@
     "water-scope-onsite": {
       "modelId": "gpt-4o",
       "energyWh": {
-        "low": "0.6804",
-        "central": "1.3608",
-        "high": "2.7216"
+        "low": "0.6075",
+        "central": "1.215",
+        "high": "2.43"
       },
       "waterMl": {
-        "low": "0.20412",
-        "central": "0.40824",
-        "high": "0.81648"
+        "low": "0.162723",
+        "central": "0.325446",
+        "high": "0.650893"
       },
       "carbonG": {
-        "low": "0.202963",
-        "central": "0.475872",
-        "high": "1.0783"
+        "low": "0.181217",
+        "central": "0.424886",
+        "high": "0.962766"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4o",
@@ -384,19 +376,19 @@
     "water-scope-both": {
       "modelId": "gpt-4o",
       "energyWh": {
-        "low": "0.6804",
-        "central": "1.3608",
-        "high": "2.7216"
+        "low": "0.6075",
+        "central": "1.215",
+        "high": "2.43"
       },
       "waterMl": {
-        "low": "1.701",
-        "central": "4.68115",
-        "high": "13.6352"
+        "low": "1.49922",
+        "central": "4.14055",
+        "high": "12.0962"
       },
       "carbonG": {
-        "low": "0.202963",
-        "central": "0.475872",
-        "high": "1.0783"
+        "low": "0.181217",
+        "central": "0.424886",
+        "high": "0.962766"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4o",
@@ -459,19 +451,19 @@
     "long-context": {
       "modelId": "gpt-4o",
       "energyWh": {
-        "low": "7.67006",
-        "central": "15.3401",
-        "high": "30.6802"
+        "low": "6.84827",
+        "central": "13.6965",
+        "high": "27.3931"
       },
       "waterMl": {
-        "low": "28.1491",
-        "central": "78.388",
-        "high": "230.409"
+        "low": "24.913",
+        "central": "69.5491",
+        "high": "204.842"
       },
       "carbonG": {
-        "low": "3.34108",
-        "central": "7.03345",
-        "high": "14.8247"
+        "low": "2.98311",
+        "central": "6.27986",
+        "high": "13.2363"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4o",
@@ -495,19 +487,19 @@
     "no-region-given": {
       "modelId": "gpt-4.1-nano",
       "energyWh": {
-        "low": "0.174828",
-        "central": "0.349656",
-        "high": "0.699312"
+        "low": "0.156096",
+        "central": "0.312193",
+        "high": "0.624385"
       },
       "waterMl": {
-        "low": "0.641618",
-        "central": "1.78674",
-        "high": "5.25183"
+        "low": "0.567856",
+        "central": "1.58527",
+        "high": "4.66906"
       },
       "carbonG": {
-        "low": "0.076155",
-        "central": "0.160317",
-        "high": "0.337907"
+        "low": "0.0679956",
+        "central": "0.14314",
+        "high": "0.301703"
       },
       "basis": {
         "benchmarkRowId": "jegham.gpt-4.1-nano",
@@ -533,19 +525,19 @@
     "reasoning-frontier": {
       "modelId": "o3",
       "energyWh": {
-        "low": "6.84744",
-        "central": "13.6949",
-        "high": "27.3897"
+        "low": "6.11378",
+        "central": "12.2276",
+        "high": "24.4551"
       },
       "waterMl": {
-        "low": "18.5566",
-        "central": "51.2188",
-        "high": "149.548"
+        "low": "16.3718",
+        "central": "45.3381",
+        "high": "132.739"
       },
       "carbonG": {
-        "low": "4.65626",
-        "central": "9.72336",
-        "high": "20.4054"
+        "low": "4.15737",
+        "central": "8.68157",
+        "high": "18.2191"
       },
       "basis": {
         "benchmarkRowId": "jegham.o3",
@@ -553,12 +545,8 @@
         "methodology": "independent-benchmark",
         "boundary": "server",
         "regionCode": "IN",
-        "thinkingHandling": "reported",
-        "thinkingTokens": {
-          "low": "0",
-          "central": "0",
-          "high": "0"
-        },
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
         "waterScope": "on-site + off-site",
         "carbonBasis": "location-based",
         "qualityScore": 3,

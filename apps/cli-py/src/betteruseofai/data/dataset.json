@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "sha256": "c06aa08e0931290b6bcc8c15ac48ee25c8ceb2a57cb952f910bd950543f9267a",
+  "version": "2.0.0",
+  "sha256": "9417767a42b2c1d2a2f5f967bb8fcdcc219395b4558478461ba4e02151ce26af",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -862,6 +862,7 @@
         "high": 1.09
       },
       "energyIncludesPue": true,
+      "includesThinking": true,
       "waterOnsiteLPerKwh": {
         "low": 1.15,
         "central": 1.15,
@@ -888,7 +889,7 @@
       },
       "validFrom": "2025-08-21",
       "qualityScore": 4,
-      "notes": "Median text prompt across the Gemini Apps fleet: 0.24 Wh, 0.26 mL, 0.03 gCO2e. The low bound is Google's own narrow accelerator-only figure of 0.10 Wh; the high bound is three times the median, because a fleet median says nothing about the tail. Breakdown: TPU 0.14, host CPU and DRAM 0.06, idle 0.02, overhead 0.02 Wh. Water follows from the energy and a WUE of 1.15 L/kWh, which reproduces the published 0.26 mL. The 94 gCO2e/kWh is market-based and flatters the result by roughly three and a half times against the location-based 345, so it is only used when the reader asks for provider-reported carbon. Google did not publish the token counts behind the median prompt, so the reference counts here are ours.",
+      "notes": "Median text prompt across the Gemini Apps fleet: 0.24 Wh, 0.26 mL, 0.03 gCO2e. The low bound is Google's own narrow accelerator-only figure of 0.10 Wh; the high bound is three times the median, because a fleet median says nothing about the tail. Breakdown: TPU 0.14, host CPU and DRAM 0.06, idle 0.02, overhead 0.02 Wh. Water follows from the servers' share of the energy, the total over a PUE of 1.09, and a WUE of 1.15 L/kWh, which gives 0.25 mL against the published 0.26. The 94 gCO2e/kWh is market-based and flatters the result by roughly three and a half times against the location-based 345, so it is only used when the reader asks for provider-reported carbon. Google did not publish the token counts behind the median prompt, so the reference counts here are ours.",
       "hosting": "cloud"
     },
     {
@@ -926,6 +927,7 @@
         "high": 1.2
       },
       "energyIncludesPue": true,
+      "includesThinking": true,
       "methodology": "provider-statement",
       "boundary": "datacenter",
       "source": {
@@ -1035,7 +1037,7 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1105,7 +1107,7 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1173,7 +1175,7 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1242,7 +1244,8 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
+      "includesThinking": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1311,7 +1314,8 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
+      "includesThinking": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1380,7 +1384,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -1449,7 +1453,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -1517,7 +1521,8 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
+      "includesThinking": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -1586,7 +1591,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -1757,6 +1762,7 @@
         "high": 1.4
       },
       "energyIncludesPue": false,
+      "includesThinking": true,
       "methodology": "independent-benchmark",
       "boundary": "accelerator-only",
       "source": {
@@ -1914,7 +1920,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -1959,7 +1965,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -2001,7 +2007,7 @@
         "central": 1.14,
         "high": 1.14
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.18,
         "central": 0.18,
@@ -2042,7 +2048,7 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -2085,7 +2091,7 @@
         "central": 1.12,
         "high": 1.12
       },
-      "energyIncludesPue": false,
+      "energyIncludesPue": true,
       "waterOnsiteLPerKwh": {
         "low": 0.3,
         "central": 0.3,
@@ -3425,7 +3431,7 @@
     }
   ],
   "calibration": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

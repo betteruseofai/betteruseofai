@@ -34,6 +34,9 @@ explanation.
 
 - **`thinking-unknown`** The model thinks before it answers and did not say how much. The figure is
   a lower bound and renders with a "greater than or equal to" marker. Never describe it as a total.
+  Claude Code turns never carry it: Anthropic's output count already holds the thinking, so a turn
+  with no split still has nothing missing. Nor do rows whose measurement ran the model's reasoning,
+  such as o3, because the thinking is already inside their rate.
 - **`proxy-row`** Nobody has measured this model, so the figure is scaled from one that has been.
   Anthropic has published no per-query figures at all, so every current Claude model is scaled from
   a measurement of Claude 3.7 Sonnet. Quality is capped at 2 of 5 for these.

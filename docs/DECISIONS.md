@@ -187,6 +187,20 @@ against. The decisions taken on it, on 2026-09-13:
     its pull request until the organisation allows Actions to, and the link check now tells a site
     that blocks unknown agents from a dead one.
 
+51. **The number fixes from the audit of 2026-10-19.** Dataset 2.0.0, a major bump by the rule in
+    48, because rows may now carry `includesThinking`. Decided with the owner the same day. Claude
+    Code's output count already holds the thinking, so the reader marks it `thinkingInOutput` and
+    the engine charges a reported split once and an absent split not at all. The marker is a
+    property of the surface, so log lines written before the fix are read the same way and the
+    log format did not change. By the owner's choice those turns no longer render as a lower
+    bound. Rows whose measurement ran the reasoning charge no thinking on top, and the Jegham rows
+    and their proxies stop applying PUE twice. On-site water is now charged on energy over PUE for
+    every row, not only the Jegham ones, because WUE is defined against server energy and the
+    Google row matches its published figure more closely that way. A row with no on-site water
+    figure gives unknown water instead of zero. The recommender no longer suggests a model it
+    prices as heavier. On the owner's fortnight of Claude Code the figures fell from 129.4 kWh and
+    646 L to 106.9 kWh and 531 L, and no turn is marked a lower bound.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 - What the nudge should do inside Claude Code, given that it cannot fire at its current bar and

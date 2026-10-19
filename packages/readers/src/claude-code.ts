@@ -91,12 +91,19 @@ const toEvent = (line: AssistantLine, file: string): UsageEvent => {
   const serverTools = usage.server_tool_use ?? {};
   const toolCalls = Object.values(serverTools).reduce((total, count) => total + (count ?? 0), 0);
 
+  /*
+   * Anthropic's output_tokens already includes the thinking, and the details
+   * figure, when it is there, is the part of it that was thinking. Across real
+   * transcripts the visible text tracks output minus thinking. So the count is
+   * passed as it stands and marked, and the engine charges the thinking once.
+   */
   const tokens: TokenCounts = {
     input: usage.input_tokens ?? 0,
     output: usage.output_tokens ?? 0,
     cachedRead: usage.cache_read_input_tokens ?? 0,
     cachedWrite: usage.cache_creation_input_tokens ?? 0,
     thinking,
+    thinkingInOutput: true,
     estimated: false,
     estimator: 'provider',
   };

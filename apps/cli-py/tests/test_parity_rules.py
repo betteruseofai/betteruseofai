@@ -153,12 +153,13 @@ def test_a_fit_never_produces_a_negative_rate():
 
 
 def test_the_measured_row_reproduces_its_published_figure():
-    # 100 in, 300 out was published as 0.950 Wh at server level, times a PUE of 1.14.
+    # 100 in, 300 out was published as 0.950 Wh. Their equation 1 already multiplies
+    # by PUE, so the published figure is the one we should land on.
     result = estimate(
         event(model_raw="claude-3.7-sonnet", tokens=TokenCounts(input=100, output=300, thinking=0)),
         DATASET,
     )
-    assert 0.95 < result.energy_wh.central < 1.25
+    assert result.energy_wh.central == pytest.approx(0.95, abs=5e-4)
 
 
 def test_choosing_a_row_is_deterministic():
@@ -432,3 +433,58 @@ def test_the_dashboard_file_escapes_the_one_thing_that_could_end_its_script():
     html = render_dashboard('{"text":"</script><script>alert(1)</script>"}')
     assert "</script><script>alert" not in html
     assert "<\/script><script>alert(1)<\/script>" in html
+
+
+# ------------------------------------------------- thinking is charged once
+
+
+def test_a_reported_count_inside_the_output_is_charged_once():
+    inside = estimate(
+        event(
+            surface="claude-code",
+            tokens=TokenCounts(input=2, output=990, thinking=809, thinking_in_output=True),
+        ),
+        DATASET,
+    )
+    visible_only = estimate(
+        event(surface="claude-code", tokens=TokenCounts(input=2, output=181, thinking=809)), DATASET
+    )
+    assert inside.energy_wh == visible_only.energy_wh
+    assert inside.thinking_handling == "reported"
+
+
+def test_an_unsplit_count_adds_nothing_and_claims_no_lower_bound():
+    result = estimate(
+        event(
+            surface="claude-code",
+            tokens=TokenCounts(input=2, output=990, thinking=None, thinking_in_output=True),
+        ),
+        DATASET,
+    )
+    as_counted = estimate(
+        event(surface="claude-code", tokens=TokenCounts(input=2, output=990, thinking=0)), DATASET
+    )
+    assert result.energy_wh == as_counted.energy_wh
+    assert result.thinking_handling == "included-in-output"
+    assert "thinking-unknown" not in result.flags
+    assert result.thinking_tokens is None
+
+
+def test_a_row_that_ran_the_reasoning_gets_none_added():
+    shape = {"input": 200, "output": 300}
+    hidden = TokenCounts(**shape, thinking=None)
+    undisclosed = estimate(event(model_raw="o3", tokens=hidden), DATASET)
+    none = estimate(event(model_raw="o3", tokens=TokenCounts(**shape, thinking=0)), DATASET)
+    assert undisclosed.thinking_handling == "included-in-row"
+    assert "thinking-unknown" not in undisclosed.flags
+    assert undisclosed.energy_wh == none.energy_wh
+
+
+def test_missing_on_site_water_reads_unknown_not_zero():
+    result = estimate(
+        event(model_raw="deepseek-r1-distill-llama-70b", tokens=TokenCounts(input=200, output=300)),
+        DATASET,
+        water_scope="on-site",
+    )
+    assert result.energy_wh is not None
+    assert result.water_ml is None

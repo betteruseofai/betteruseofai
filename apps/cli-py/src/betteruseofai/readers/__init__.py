@@ -118,6 +118,9 @@ def _claude_event(line: dict[str, Any], file: str) -> UsageEvent:
             cached_read=usage.get("cache_read_input_tokens") or 0,
             cached_write=usage.get("cache_creation_input_tokens") or 0,
             thinking=thinking,
+            # Anthropic's output count already holds the thinking; the engine
+            # charges it once.
+            thinking_in_output=True,
             estimated=False,
             estimator="provider",
         ),

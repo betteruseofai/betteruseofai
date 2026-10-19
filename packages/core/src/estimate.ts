@@ -57,16 +57,29 @@ const unknownEstimate = (
 /**
  * Works out how many thinking tokens to charge.
  *
- * A reported count is used as it stands. An undisclosed count on a model that
- * can think becomes a range from zero to the model's high ratio, flagged, so the
- * interface can render it as a lower bound. A model that cannot think charges
- * nothing, and that is the only case where zero is the right answer.
+ * A row whose measurement already ran the model's reasoning charges none on
+ * top: the thinking is inside its per token rate. A count that already holds
+ * the thinking, as Anthropic's output count does, charges none on top either.
+ * Otherwise a reported count is used as it stands. An undisclosed count on a
+ * model that can think becomes a range from zero to the model's high ratio,
+ * flagged, so the interface can render it as a lower bound. A model that cannot
+ * think charges nothing, and that is the only case where zero is the right
+ * answer.
  */
 const thinkingTokensFor = (
   tokens: TokenCounts,
   model: Model,
   visibleOutput: number,
+  rowIncludesThinking: boolean,
 ): { range: Range; handling: Estimate['basis']['thinkingHandling']; flag: EstimateFlag | null } => {
+  if (rowIncludesThinking && model.reasoning) {
+    return { range: ZERO, handling: 'included-in-row', flag: null };
+  }
+  if (tokens.thinkingInOutput === true) {
+    return typeof tokens.thinking === 'number'
+      ? { range: exact(tokens.thinking), handling: 'reported', flag: null }
+      : { range: ZERO, handling: 'included-in-output', flag: null };
+  }
   if (typeof tokens.thinking === 'number') {
     return { range: exact(tokens.thinking), handling: 'reported', flag: null };
   }
@@ -142,8 +155,22 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
 
   // ------------------------------------------------------------------ tokens
 
-  const visibleOutput = (event.tokens.output ?? 0) + (event.tokens.tool ?? 0);
-  const thinking = thinkingTokensFor(event.tokens, model, event.tokens.output ?? 0);
+  /*
+   * When the output count already holds a reported thinking count, the visible
+   * part is the difference, so the thinking is charged once and only once.
+   */
+  const reportedInside =
+    event.tokens.thinkingInOutput === true && typeof event.tokens.thinking === 'number'
+      ? Math.min(event.tokens.thinking, event.tokens.output ?? 0)
+      : 0;
+  const visibleOutput = (event.tokens.output ?? 0) - reportedInside + (event.tokens.tool ?? 0);
+  const rowIncludesThinking = row.includesThinking ?? parent?.includesThinking ?? false;
+  const thinking = thinkingTokensFor(
+    event.tokens,
+    model,
+    (event.tokens.output ?? 0) - reportedInside,
+    rowIncludesThinking,
+  );
   if (thinking.flag) flags.push(thinking.flag);
   const outputTokens = order(add(exact(visibleOutput), thinking.range));
 
@@ -173,11 +200,23 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
   const rates = normalizeToPerToken(row, { dataset, model, calibration });
 
   let energyWh: Range | null = null;
+  /** The energy drawn by the servers alone, before facility overhead. On-site water is charged on this. */
+  let itEnergyWh: Range | null = null;
   if (rates) {
     for (const flag of rates.flags) if (!flags.includes(flag)) flags.push(flag);
     const raw = add(add(rates.interceptWh, mul(rates.inputWh, inputTokens)), mul(rates.outputWh, outputTokens));
     const withOverhead = row.energyIncludesPue ? raw : mul(raw, row.pue);
     energyWh = clampNonNegative(order(withOverhead));
+    // Bound by bound, because the overhead in the total is the same overhead taken out here.
+    itEnergyWh = row.energyIncludesPue
+      ? clampNonNegative(
+          order({
+            low: raw.low / row.pue.low,
+            central: raw.central / row.pue.central,
+            high: raw.high / row.pue.high,
+          }),
+        )
+      : clampNonNegative(order(raw));
   } else {
     flags.push('no-energy-figure');
   }
@@ -212,10 +251,11 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
   if (directWater) {
     waterMl = clampNonNegative(order(mul(directWater, directScale())));
     if (!flags.includes('scaled-direct-figure')) flags.push('scaled-direct-figure');
-  } else if (energyKwh) {
+  } else if (energyKwh && itEnergyWh && row.waterOnsiteLPerKwh) {
     // Litres per kilowatt hour, times kilowatt hours, times a thousand for millilitres.
-    const onsite = row.waterOnsiteLPerKwh ?? ZERO;
-    let litres = mul(energyKwh, onsite);
+    // WUE is defined against the servers' energy, so on-site water is charged on that,
+    // and off-site water, which follows the electricity, on the whole draw.
+    let litres = mul(scale(itEnergyWh, 1 / 1000), row.waterOnsiteLPerKwh);
     if (waterScope !== 'on-site') {
       litres = add(litres, mul(energyKwh, region.waterOffsiteLPerKwh));
     }
@@ -269,7 +309,12 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
       regionCode,
       tokens: event.tokens,
       thinkingHandling: thinking.handling,
-      thinkingTokens: thinking.handling === 'not-applicable' ? null : thinking.range,
+      thinkingTokens:
+        thinking.handling === 'not-applicable' ||
+        thinking.handling === 'included-in-row' ||
+        thinking.handling === 'included-in-output'
+          ? null
+          : thinking.range,
       waterScope,
       carbonBasis,
       qualityScore: row.qualityScore,
