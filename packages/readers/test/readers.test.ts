@@ -1,4 +1,4 @@
-import { appendFileSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, cpSync, mkdtempSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -277,5 +277,41 @@ describe('reading everything at once', () => {
     expect(new Set(merged.map((event) => event.surface))).toEqual(
       new Set(['claude-code', 'codex-cli']),
     );
+  });
+});
+
+describe('reading less without losing a turn', () => {
+  /** A copy of the fixture transcripts whose files can be aged. */
+  const copy = (): string => {
+    const dir = mkdtempSync(join(tmpdir(), 'buai-readers-'));
+    cpSync(claudeDir, dir, { recursive: true });
+    return dir;
+  };
+
+  it('skips a transcript last written before the window opened', async () => {
+    const dir = copy();
+    const all = await readClaudeCode({ dir });
+    const old = all.files[0] as string;
+    const longAgo = new Date('2020-01-01T00:00:00Z');
+    utimesSync(old, longAgo, longAgo);
+
+    const windowed = await readClaudeCode({ dir, since: '2021-01-01T00:00:00.000Z' });
+    expect(windowed.files).not.toContain(old);
+    expect(windowed.files.length).toBe(all.files.length - 1);
+  });
+
+  it('reads only the files named after the session it was asked about', async () => {
+    const all = await readClaudeCode({ dir: claudeDir });
+    const narrowed = await readClaudeCode({ dir: claudeDir, pathHint: 'session-alpha' });
+    expect(narrowed.files.length).toBeLessThan(all.files.length);
+    expect(narrowed.files.every((file) => file.includes('session-alpha'))).toBe(true);
+    const alpha = (events: typeof all.events) => events.filter((e) => e.sessionId === 'session-alpha');
+    expect(alpha(narrowed.events)).toEqual(alpha(all.events));
+  });
+
+  it('reads everything when no file matches the hint, so a hint can never lose a turn', async () => {
+    const all = await readClaudeCode({ dir: claudeDir });
+    const unmatched = await readClaudeCode({ dir: claudeDir, pathHint: 'no-file-has-this-name' });
+    expect(unmatched.files).toEqual(all.files);
   });
 });

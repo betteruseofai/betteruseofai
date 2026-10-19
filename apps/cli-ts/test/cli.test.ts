@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -332,6 +332,59 @@ describe('the status line and the hooks', () => {
     // Muted inside a coding session: a sum on a line is usually being discussed.
     const sum = JSON.parse((await speak('17 * 23')).stdout);
     expect(sum.systemMessage).toBeUndefined();
+  });
+
+  /** Sends a hook payload the way Claude Code does, with no model field unless given one. */
+  const hookWith = async (event: string, payload: Record<string, unknown>) => {
+    const original = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
+    Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+    const { Readable } = await import('node:stream');
+    const fake = Readable.from([Buffer.from(JSON.stringify(payload))]);
+    Object.defineProperty(process, 'stdin', { value: fake, configurable: true });
+    try {
+      return await run(['hook', event, '--now', NOW]);
+    } finally {
+      if (original) Object.defineProperty(process.stdin, 'isTTY', original);
+    }
+  };
+  const alpha = join(logs, 'claude-code', 'projects', 'example-project', 'session-alpha.jsonl');
+  const rewrite = 'Rewrite this paragraph so it reads more plainly.';
+
+  it('reads the model from the transcript, because UserPromptSubmit does not send one', async () => {
+    const result = await hookWith('UserPromptSubmit', {
+      session_id: 'no-model-field',
+      transcript_path: alpha,
+      prompt: rewrite,
+    });
+    const said = JSON.parse(result.stdout).systemMessage as string;
+    // The last turn in the fixture is on Opus 5, so the nudge can name the rung below.
+    expect(said).toContain('Claude Sonnet 5 would probably do');
+    expect(said).toContain('save roughly');
+  });
+
+  it('takes a model switch made after the last turn over the transcript', async () => {
+    const session = { session_id: 'switched', transcript_path: alpha };
+    await hookWith('PostModelSwitch', { ...session, from_model: 'claude-opus-5', to_model: 'claude-haiku-4-5' });
+    const result = await hookWith('UserPromptSubmit', { ...session, prompt: rewrite });
+    // Haiku is the bottom of its ladder, so there is nothing smaller to suggest.
+    expect(JSON.parse(result.stdout).systemMessage).toBeUndefined();
+  });
+
+  it('honours a rule muted with /betteruseofai:mute', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'buai-config-'));
+    const path = join(dir, 'config.json');
+    writeFileSync(path, JSON.stringify({ muted: ['downgrade.rewrite-task'] }), 'utf8');
+    process.env['BUAI_CONFIG'] = path;
+    try {
+      const result = await hookWith('UserPromptSubmit', {
+        session_id: 'muted',
+        transcript_path: alpha,
+        prompt: rewrite,
+      });
+      expect(JSON.parse(result.stdout).systemMessage).toBeUndefined();
+    } finally {
+      delete process.env['BUAI_CONFIG'];
+    }
   });
 
   it('always answers a hook with valid json and a zero exit code', async () => {

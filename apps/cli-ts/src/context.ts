@@ -128,7 +128,11 @@ export interface Loaded {
 /** The surface a --source name reads. */
 const SURFACE_OF: Record<string, string> = { 'claude-code': 'claude-code', codex: 'codex-cli' };
 
-export const loadEvents = async (context: Context, args: ParsedArgs): Promise<Loaded> => {
+export const loadEvents = async (
+  context: Context,
+  args: ParsedArgs,
+  narrow: { pathHint?: string } = {},
+): Promise<Loaded> => {
   const dir = flagString(args.flags, 'dir');
   const options = {
     ...(context.since ? { since: context.since } : {}),
@@ -137,7 +141,13 @@ export const loadEvents = async (context: Context, args: ParsedArgs): Promise<Lo
 
   const results: ReaderResult[] = [];
   if (context.sources.includes('claude-code')) {
-    results.push(await readClaudeCode({ ...options, ...(dir ? { dir: join(dir, 'projects') } : {}) }));
+    results.push(
+      await readClaudeCode({
+        ...options,
+        ...narrow,
+        ...(dir ? { dir: join(dir, 'projects') } : {}),
+      }),
+    );
   }
   if (context.sources.includes('codex')) {
     results.push(await readCodex({ ...options, ...(dir ? { dir } : {}) }));

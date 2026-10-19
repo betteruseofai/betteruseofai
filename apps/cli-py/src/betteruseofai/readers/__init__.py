@@ -9,6 +9,7 @@ import json
 import os
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -136,6 +137,7 @@ def read_claude_code(
     since: str | None = None,
     until: str | None = None,
     session_id: str | None = None,
+    path_hint: str | None = None,
 ) -> ReaderResult:
     """Read Claude Code transcripts.
 
@@ -154,6 +156,28 @@ def read_claude_code(
         return result
 
     files = _walk(root)
+
+    # Claude Code names a transcript, and the folder of its subagents, after the
+    # session id. A hint narrows the read when any path matches, and only then,
+    # so it can save work but never lose a turn.
+    if path_hint:
+        matched = [p for p in files if path_hint in str(p)]
+        if matched:
+            files = matched
+
+    # A file last written before the window opened cannot hold a turn inside it,
+    # because each line is written after the turn it records.
+    if since:
+        opened = datetime.fromisoformat(since.replace("Z", "+00:00")).timestamp()
+        kept = []
+        for path in files:
+            try:
+                if path.stat().st_mtime >= opened:
+                    kept.append(path)
+            except OSError:
+                kept.append(path)
+        files = kept
+
     result.files = [str(p) for p in files]
 
     by_key: dict[str, UsageEvent] = {}

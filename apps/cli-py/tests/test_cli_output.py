@@ -59,3 +59,17 @@ def test_every_equivalent_names_its_quantity() -> None:
     stdout, _, _ = cli("summary")
     assert "energy: about " in stdout
     assert "carbon: about " in stdout
+
+
+def test_a_pipe_on_a_legacy_code_page_still_gets_every_character():
+    # On Windows a pipe inherits the ANSI code page, which has no greater-than-or-equal sign.
+    import subprocess
+
+    src = REPO / "apps" / "cli-py" / "src"
+    env = {**os.environ, "PYTHONIOENCODING": "cp1252", "PYTHONPATH": str(src)}
+    script = "from betteruseofai.cli import _speak_utf8; _speak_utf8(); print('\u2265')"
+    completed = subprocess.run(
+        [sys.executable, "-c", script], capture_output=True, env=env, check=False
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.decode("utf-8").strip() == "≥"

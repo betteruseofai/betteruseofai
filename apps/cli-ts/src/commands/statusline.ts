@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, readSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -228,7 +228,100 @@ export const statusline = async (context: Context, args: ParsedArgs): Promise<st
 export interface HookInput extends StatuslineInput {
   prompt?: string;
   stop_hook_active?: boolean;
+  /** Sent with PostModelSwitch: the model the session has just moved to. */
+  to_model?: string;
 }
+
+/** The rules a coding session mutes before the person has muted anything. */
+const CODING_SESSION_MUTES = ['no-llm.arithmetic', 'no-llm.unit-conversion', 'downgrade.short-simple'];
+
+/**
+ * Where /betteruseofai:mute keeps the person's own mutes. Beside the event log,
+ * under the Claude configuration directory, so a plugin update leaves it alone.
+ */
+export const configPath = (): string =>
+  process.env['BUAI_CONFIG'] ??
+  join(process.env['CLAUDE_CONFIG_DIR'] ?? join(homedir(), '.claude'), 'betteruseofai', 'config.json');
+
+const readMuted = (): string[] => {
+  try {
+    const parsed = JSON.parse(readFileSync(configPath(), 'utf8')) as { muted?: unknown };
+    return Array.isArray(parsed.muted)
+      ? parsed.muted.filter((id): id is string => typeof id === 'string')
+      : [];
+  } catch {
+    // No file, or one we cannot read, means nothing muted beyond the defaults.
+    return [];
+  }
+};
+
+interface SeenModel {
+  model: string;
+  at: string;
+}
+
+const switchPath = (sessionId: string): string => join(stateDir(), `${safeName(sessionId)}.model`);
+
+const readSwitch = (sessionId: string): SeenModel | null => {
+  try {
+    const parsed = JSON.parse(readFileSync(switchPath(sessionId), 'utf8')) as Partial<SeenModel>;
+    return typeof parsed.model === 'string' && typeof parsed.at === 'string'
+      ? { model: parsed.model, at: parsed.at }
+      : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * The model of the last assistant turn, read from the end of the transcript.
+ * Only the tail is read, so a long session costs the same as a short one.
+ */
+const lastTranscriptModel = (path: string): SeenModel | null => {
+  try {
+    const fd = openSync(path, 'r');
+    try {
+      const size = fstatSync(fd).size;
+      const length = Math.min(size, 256 * 1024);
+      const buffer = Buffer.alloc(length);
+      readSync(fd, buffer, 0, length, size - length);
+      const lines = buffer.toString('utf8').split('\n');
+      for (let index = lines.length - 1; index >= 0; index -= 1) {
+        const line = lines[index] as string;
+        if (!line.includes('"assistant"')) continue;
+        try {
+          const parsed = JSON.parse(line) as { type?: string; timestamp?: string; message?: { model?: string } };
+          const model = parsed.message?.model;
+          if (parsed.type === 'assistant' && typeof model === 'string' && model !== '<synthetic>') {
+            return { model, at: parsed.timestamp ?? '' };
+          }
+        } catch {
+          // The first line in the window may be cut in half.
+        }
+      }
+    } finally {
+      closeSync(fd);
+    }
+  } catch {
+    // No transcript yet, which is the first prompt of a session.
+  }
+  return null;
+};
+
+/**
+ * The model the next turn will run on. Claude Code sends no model with
+ * UserPromptSubmit, so this takes whichever is newer: the last switch we were
+ * told about, or the last turn in the transcript.
+ */
+const currentModel = (input: HookInput): string | null => {
+  if (input.model?.id) return input.model.id;
+  const seen = [
+    input.session_id ? readSwitch(input.session_id) : null,
+    input.transcript_path ? lastTranscriptModel(input.transcript_path) : null,
+  ].filter((one): one is SeenModel => one !== null);
+  seen.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  return seen[0]?.model ?? null;
+};
 
 /**
  * Hook handler. Always exits zero and always emits valid JSON, because a hook
@@ -305,21 +398,23 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
 
     /*
      * A coding session is the worst place to be interrupted, so the bar here is
-     * higher than the default and two rules are muted outright. no-llm.arithmetic
+     * higher than the default and three rules are muted outright. no-llm.arithmetic
      * would fire on a line of a calculation being discussed, and
      * downgrade.short-simple on a one-line follow-up that only makes sense with
      * the whole session behind it. A nudge that fires wrongly gets the feature
-     * switched off, and then nothing is measured at all.
+     * switched off, and then nothing is measured at all. Anything the person has
+     * muted with /betteruseofai:mute is added to those.
      */
     const recommender = createRecommender({
       dataset: context.dataset,
       hintThreshold: 0.75,
-      muted: ['no-llm.arithmetic', 'no-llm.unit-conversion', 'downgrade.short-simple'],
+      muted: [...CODING_SESSION_MUTES, ...readMuted()],
     });
 
+    const model = currentModel(input);
     const advice = recommender.recommend({
       prompt,
-      modelId: input.model?.id ?? null,
+      ...(model ? { modelRaw: model } : {}),
       surface: 'claude-code',
     });
 
@@ -332,10 +427,25 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
     return say(`${advice.explanation} That would save roughly ${displayNumber(saving.central)} Wh.`);
   }
 
-  if (event === 'PostModelSwitch' || event === 'SessionStart') {
-    // Nothing to say. The switch is recorded by the next Stop hook anyway.
+  if (event === 'PostModelSwitch') {
+    // Nothing to say, but the next prompt's nudge needs to know, because
+    // UserPromptSubmit does not say which model it will run on.
+    if (input.to_model) {
+      try {
+        mkdirSync(stateDir(), { recursive: true });
+        writeFileSync(
+          switchPath(input.session_id),
+          JSON.stringify({ model: input.to_model, at: context.now.toISOString() }),
+          'utf8',
+        );
+      } catch {
+        // A nudge that guesses from the transcript is still a nudge.
+      }
+    }
     return say(null);
   }
+
+  if (event === 'SessionStart') return say(null);
 
   return say(null);
 };

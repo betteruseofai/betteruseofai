@@ -1,3 +1,4 @@
+import { stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -155,7 +156,31 @@ export const readClaudeCode = async (options: ReaderOptions = {}): Promise<Reade
     };
   }
 
-  const files = await walk(dir, (name) => name.endsWith('.jsonl'));
+  let files = await walk(dir, (name) => name.endsWith('.jsonl'));
+
+  if (options.pathHint) {
+    const hint = options.pathHint;
+    const matched = files.filter((file) => file.includes(hint));
+    if (matched.length > 0) files = matched;
+  }
+
+  /*
+   * A file last written before the window opened cannot hold a turn inside it,
+   * because each line is written after the turn it records. Skipping those
+   * files is what keeps a one week summary from parsing a whole year.
+   */
+  if (options.since) {
+    const since = Date.parse(options.since);
+    const kept: string[] = [];
+    for (const file of files) {
+      try {
+        if ((await stat(file)).mtimeMs >= since) kept.push(file);
+      } catch {
+        kept.push(file);
+      }
+    }
+    files = kept;
+  }
 
   /*
    * Keyed by message id and request id, so a repeated content block replaces

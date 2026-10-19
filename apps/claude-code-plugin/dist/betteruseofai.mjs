@@ -1776,6 +1776,7 @@ var init_jsonl = __esm({
 });
 
 // ../../packages/readers/dist/claude-code.js
+import { stat as stat2 } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join as join2 } from "node:path";
 var CLAUDE_CODE_SURFACE, NOT_A_REGION, defaultClaudeDir, classify, toEvent, keyOf, withinWindow, readClaudeCode, readClaudeCodeIncremental;
@@ -1863,7 +1864,26 @@ var init_claude_code = __esm({
           skipped
         };
       }
-      const files = await walk(dir, (name) => name.endsWith(".jsonl"));
+      let files = await walk(dir, (name) => name.endsWith(".jsonl"));
+      if (options.pathHint) {
+        const hint = options.pathHint;
+        const matched = files.filter((file) => file.includes(hint));
+        if (matched.length > 0)
+          files = matched;
+      }
+      if (options.since) {
+        const since = Date.parse(options.since);
+        const kept = [];
+        for (const file of files) {
+          try {
+            if ((await stat2(file)).mtimeMs >= since)
+              kept.push(file);
+          } catch {
+            kept.push(file);
+          }
+        }
+        files = kept;
+      }
       const byKey = /* @__PURE__ */ new Map();
       for (const file of files) {
         for await (const { line, value, error } of readJsonl(file)) {
@@ -2317,7 +2337,7 @@ var init_context = __esm({
       };
     };
     SURFACE_OF = { "claude-code": "claude-code", codex: "codex-cli" };
-    loadEvents = async (context, args) => {
+    loadEvents = async (context, args, narrow = {}) => {
       const dir = flagString(args.flags, "dir");
       const options = {
         ...context.since ? { since: context.since } : {},
@@ -2325,7 +2345,13 @@ var init_context = __esm({
       };
       const results = [];
       if (context.sources.includes("claude-code")) {
-        results.push(await readClaudeCode({ ...options, ...dir ? { dir: join5(dir, "projects") } : {} }));
+        results.push(
+          await readClaudeCode({
+            ...options,
+            ...narrow,
+            ...dir ? { dir: join5(dir, "projects") } : {}
+          })
+        );
       }
       if (context.sources.includes("codex")) {
         results.push(await readCodex({ ...options, ...dir ? { dir } : {} }));
@@ -2373,6 +2399,7 @@ var init_context = __esm({
 // ../cli-ts/src/commands/statusline.ts
 var statusline_exports = {};
 __export(statusline_exports, {
+  configPath: () => configPath,
   hook: () => hook,
   linePath: () => linePath,
   parseStdinJson: () => parseStdinJson,
@@ -2382,10 +2409,10 @@ __export(statusline_exports, {
   stateDir: () => stateDir,
   statusline: () => statusline
 });
-import { mkdirSync as mkdirSync3, readFileSync as readFileSync2, writeFileSync as writeFileSync3 } from "node:fs";
+import { closeSync, fstatSync, mkdirSync as mkdirSync3, openSync, readFileSync as readFileSync2, readSync, writeFileSync as writeFileSync3 } from "node:fs";
 import { homedir as homedir4 } from "node:os";
 import { dirname as dirname2, join as join7 } from "node:path";
-var stateDir, safeName, cachePath, linePath, readCheapLine, writeLine, readCache, writeCache, refreshSession, readStdin, parseStdinJson, statusline, hook;
+var stateDir, safeName, cachePath, linePath, readCheapLine, writeLine, readCache, writeCache, refreshSession, readStdin, parseStdinJson, statusline, CODING_SESSION_MUTES, configPath, readMuted, switchPath, readSwitch, lastTranscriptModel, currentModel, hook;
 var init_statusline = __esm({
   "../cli-ts/src/commands/statusline.ts"() {
     "use strict";
@@ -2502,6 +2529,62 @@ var init_statusline = __esm({
       writeLine(input.session_id, line);
       return line;
     };
+    CODING_SESSION_MUTES = ["no-llm.arithmetic", "no-llm.unit-conversion", "downgrade.short-simple"];
+    configPath = () => process.env["BUAI_CONFIG"] ?? join7(process.env["CLAUDE_CONFIG_DIR"] ?? join7(homedir4(), ".claude"), "betteruseofai", "config.json");
+    readMuted = () => {
+      try {
+        const parsed = JSON.parse(readFileSync2(configPath(), "utf8"));
+        return Array.isArray(parsed.muted) ? parsed.muted.filter((id) => typeof id === "string") : [];
+      } catch {
+        return [];
+      }
+    };
+    switchPath = (sessionId) => join7(stateDir(), `${safeName(sessionId)}.model`);
+    readSwitch = (sessionId) => {
+      try {
+        const parsed = JSON.parse(readFileSync2(switchPath(sessionId), "utf8"));
+        return typeof parsed.model === "string" && typeof parsed.at === "string" ? { model: parsed.model, at: parsed.at } : null;
+      } catch {
+        return null;
+      }
+    };
+    lastTranscriptModel = (path) => {
+      try {
+        const fd = openSync(path, "r");
+        try {
+          const size = fstatSync(fd).size;
+          const length = Math.min(size, 256 * 1024);
+          const buffer = Buffer.alloc(length);
+          readSync(fd, buffer, 0, length, size - length);
+          const lines = buffer.toString("utf8").split("\n");
+          for (let index = lines.length - 1; index >= 0; index -= 1) {
+            const line = lines[index];
+            if (!line.includes('"assistant"')) continue;
+            try {
+              const parsed = JSON.parse(line);
+              const model = parsed.message?.model;
+              if (parsed.type === "assistant" && typeof model === "string" && model !== "<synthetic>") {
+                return { model, at: parsed.timestamp ?? "" };
+              }
+            } catch {
+            }
+          }
+        } finally {
+          closeSync(fd);
+        }
+      } catch {
+      }
+      return null;
+    };
+    currentModel = (input) => {
+      if (input.model?.id) return input.model.id;
+      const seen = [
+        input.session_id ? readSwitch(input.session_id) : null,
+        input.transcript_path ? lastTranscriptModel(input.transcript_path) : null
+      ].filter((one) => one !== null);
+      seen.sort((a, b) => a.at < b.at ? 1 : a.at > b.at ? -1 : 0);
+      return seen[0]?.model ?? null;
+    };
     hook = async (context, args) => {
       const event = args.positional[0] ?? "";
       const input = parseStdinJson(await readStdin());
@@ -2547,11 +2630,12 @@ var init_statusline = __esm({
         const recommender = createRecommender({
           dataset: context.dataset,
           hintThreshold: 0.75,
-          muted: ["no-llm.arithmetic", "no-llm.unit-conversion", "downgrade.short-simple"]
+          muted: [...CODING_SESSION_MUTES, ...readMuted()]
         });
+        const model = currentModel(input);
         const advice = recommender.recommend({
           prompt,
-          modelId: input.model?.id ?? null,
+          ...model ? { modelRaw: model } : {},
           surface: "claude-code"
         });
         if (!advice.showAsHint) return say(null);
@@ -2559,9 +2643,21 @@ var init_statusline = __esm({
         if (!saving2) return say(advice.explanation);
         return say(`${advice.explanation} That would save roughly ${displayNumber(saving2.central)} Wh.`);
       }
-      if (event === "PostModelSwitch" || event === "SessionStart") {
+      if (event === "PostModelSwitch") {
+        if (input.to_model) {
+          try {
+            mkdirSync3(stateDir(), { recursive: true });
+            writeFileSync3(
+              switchPath(input.session_id),
+              JSON.stringify({ model: input.to_model, at: context.now.toISOString() }),
+              "utf8"
+            );
+          } catch {
+          }
+        }
         return say(null);
       }
+      if (event === "SessionStart") return say(null);
       return say(null);
     };
   }
@@ -4990,7 +5086,7 @@ var sessions = async (context, args) => {
 var session = async (context, args) => {
   const wanted = args.positional[0];
   if (!wanted) throw new Error('Which session? Run "betteruseofai sessions" to see the list.');
-  const { pairs } = await loadEvents(context, args);
+  const { pairs } = await loadEvents(context, args, { pathHint: wanted });
   const mine = pairs.filter(
     (pair) => pair.event.sessionId === wanted || pair.event.sessionId?.startsWith(wanted)
   );

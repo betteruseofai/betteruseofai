@@ -57,7 +57,8 @@ export const session = async (context: Context, args: ParsedArgs): Promise<strin
   const wanted = args.positional[0];
   if (!wanted) throw new Error('Which session? Run "betteruseofai sessions" to see the list.');
 
-  const { pairs } = await loadEvents(context, args);
+  // Transcripts are named after their session, so only the matching files are parsed.
+  const { pairs } = await loadEvents(context, args, { pathHint: wanted });
   const mine = pairs.filter(
     (pair) => pair.event.sessionId === wanted || pair.event.sessionId?.startsWith(wanted),
   );

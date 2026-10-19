@@ -19,6 +19,13 @@ export interface ReaderOptions {
   until?: string;
   /** Restrict to one session. */
   sessionId?: string;
+  /**
+   * Read only the files whose path contains this, when any does. Claude Code
+   * names a transcript, and the folder of its subagents, after the session id,
+   * so a report on one session need not parse every other. If no path matches,
+   * every file is read, so a hint can narrow the work but never lose a turn.
+   */
+  pathHint?: string;
 }
 
 export interface ReaderWarning {

@@ -277,13 +277,17 @@ class Context:
 _SURFACE_OF = {"claude-code": "claude-code", "codex": "codex-cli"}
 
 
-def load_events(context: Context) -> list[tuple[UsageEvent, Estimate]]:
+def load_events(
+    context: Context, path_hint: str | None = None
+) -> list[tuple[UsageEvent, Estimate]]:
     events: list[UsageEvent] = []
     results = []
 
     if "claude-code" in context.sources:
         directory = str(Path(context.dir) / "projects") if context.dir else None
-        results.append(read_claude_code(directory, context.since, context.until))
+        results.append(
+            read_claude_code(directory, context.since, context.until, path_hint=path_hint)
+        )
     if "codex" in context.sources:
         results.append(read_codex(context.dir, context.since, context.until))
 
@@ -766,7 +770,8 @@ def cmd_session(context: Context, args: dict[str, Any]) -> str:
     if not wanted:
         raise ValueError('Which session? Run "betteruseofai sessions" to see the list.')
 
-    pairs = load_events(context)
+    # Transcripts are named after their session, so only the matching files are parsed.
+    pairs = load_events(context, path_hint=wanted)
     mine = [
         pair
         for pair in pairs
@@ -1771,7 +1776,22 @@ def run(argv: list[str]) -> tuple[str, str, int]:
         return "", str(cause), 1
 
 
+def _speak_utf8() -> None:
+    """Write UTF-8 whatever the locale says, as the TypeScript tool does.
+
+    On Windows a pipe or a redirect inherits the ANSI code page, which cannot
+    carry the greater-than-or-equal sign, so the first lower bound would end the
+    run with an encoding error. An interactive console is not affected.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            with contextlib.suppress(ValueError, OSError):
+                reconfigure(encoding="utf-8")
+
+
 def main() -> None:
+    _speak_utf8()
     stdout, stderr, code = run(sys.argv[1:])
     if stdout:
         sys.stdout.write(stdout + "\n")
