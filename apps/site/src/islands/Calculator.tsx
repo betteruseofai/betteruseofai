@@ -13,7 +13,14 @@
 
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import dataset from '../lib/dataset';
-import { equivalents, estimate, displayNumber, explainFlags, scaleUnit } from '@betteruseofai/core';
+import {
+  equivalents,
+  estimate,
+  displayNumber,
+  explainFlags,
+  resolveModel,
+  scaleUnit,
+} from '@betteruseofai/core';
 import type { Estimate, Range, UsageEvent, WaterScope } from '@betteruseofai/core';
 
 // ------------------------------------------------------------------- state
@@ -45,7 +52,7 @@ const START: Dials = {
 const PERIODS: Record<Dials['period'], number> = { day: 1, month: 30.4, year: 365 };
 
 /** The largest values a dial accepts, the same whether typed or read from a link. */
-const LIMITS = { prompts: 2000, inputTokens: 200000 } as const;
+const LIMITS = { prompts: 2000, inputTokens: 200000, outputTokens: 200000 } as const;
 
 /**
  * A number box that keeps what is being typed and commits only a whole number
@@ -93,30 +100,56 @@ const REPLIES = [
   { label: 'a long document', output: 2000 },
 ];
 
-/** Reads the dials out of the address, falling back to the defaults. */
-const readHash = (): Dials => {
-  if (typeof window === 'undefined') return START;
+/** What a link asked for that the dataset doesn't have, by dial, as the link wrote it. */
+type Dropped = Partial<Record<'model' | 'local' | 'region', string>>;
+
+/**
+ * Reads the dials out of the address, falling back to the defaults. A model
+ * or region we don't have falls back too, and is kept in `dropped` so the
+ * page can say what it used instead.
+ */
+const readHash = (): { dials: Dials; dropped: Dropped } => {
+  const none = { dials: START, dropped: {} };
+  if (typeof window === 'undefined') return none;
   const raw = window.location.hash.replace(/^#/, '');
-  if (!raw) return START;
+  if (!raw) return none;
   const params = new URLSearchParams(raw);
+  const dropped: Dropped = {};
+  const pick = (key: keyof Dropped, find: (asked: string) => string | null): string => {
+    const asked = params.get(key);
+    if (asked === null) return START[key];
+    const found = find(asked);
+    if (found === null) dropped[key] = asked;
+    return found ?? START[key];
+  };
   const number = (key: string, fallback: number): number => {
     const value = Number(params.get(key));
     return Number.isFinite(value) && value > 0 ? value : fallback;
   };
   const period = params.get('period');
   const scope = params.get('scope');
-  return {
-    model: params.get('model') ?? START.model,
-    local: params.get('local') ?? START.local,
-    region: params.get('region') ?? START.region,
+  const dials: Dials = {
+    // Aliases count, so a provider's own name for a model still finds it.
+    model: pick('model', (asked) => resolveModel(asked, dataset)?.id ?? null),
+    local: pick('local', (asked) => {
+      const model = resolveModel(asked, dataset);
+      return model?.hosting === 'both' ? model.id : null;
+    }),
+    region: pick(
+      'region',
+      (asked) =>
+        dataset.regions.find((region) => region.code.toUpperCase() === asked.toUpperCase())
+          ?.code ?? null,
+    ),
     prompts: Math.min(Math.round(number('prompts', START.prompts)), LIMITS.prompts),
     inputTokens: Math.min(Math.round(number('in', START.inputTokens)), LIMITS.inputTokens),
-    outputTokens: Math.min(number('out', START.outputTokens), 200000),
+    outputTokens: Math.min(Math.round(number('out', START.outputTokens)), LIMITS.outputTokens),
     period: period === 'month' || period === 'year' ? period : 'day',
     scope:
       scope === 'on-site' || scope === 'lifecycle' ? (scope as WaterScope) : START.scope,
     compare: params.get('compare') === '1',
   };
+  return { dials, dropped };
 };
 
 const writeHash = (dials: Dials): void => {
@@ -179,6 +212,18 @@ const inOneUnit = (range: Range, unit: string): { range: Range; unit: string } =
 // --------------------------------------------------------------- rendering
 
 const show = (value: number): string => displayNumber(value);
+
+/**
+ * Says what a link asked for that we don't have, and what we used instead, so
+ * whoever opens it knows their figures differ from the sender's.
+ */
+const Substituted = ({ what, asked, used }: { what: string; asked?: string; used: string }) =>
+  asked === undefined ? null : (
+    <p class="note calc__swap" role="status">
+      The link asked for {what} <code>{asked.length > 40 ? `${asked.slice(0, 40)}…` : asked}</code>.
+      We don't have that one, so we're using {used}.
+    </p>
+  );
 
 const Figure = ({
   label,
@@ -248,12 +293,15 @@ const Figure = ({
 
 export default function Calculator() {
   const [dials, setDials] = useState<Dials>(START);
+  const [dropped, setDropped] = useState<Dropped>({});
   const [ready, setReady] = useState(false);
 
   // The address is only readable in the browser, so the first render matches
   // what the server sent and the dials arrive a tick later.
   useEffect(() => {
-    setDials(readHash());
+    const read = readHash();
+    setDials(read.dials);
+    setDropped(read.dropped);
     setReady(true);
   }, []);
 
@@ -261,8 +309,21 @@ export default function Calculator() {
     if (ready) writeHash(dials);
   }, [dials, ready]);
 
-  const set = <K extends keyof Dials>(key: K, value: Dials[K]): void =>
+  const set = <K extends keyof Dials>(key: K, value: Dials[K]): void => {
     setDials((current) => ({ ...current, [key]: value }));
+    // Once somebody picks for themselves, the note about the link has done its job.
+    setDropped((current) => {
+      if (!(key in current)) return current;
+      const next = { ...current };
+      delete next[key as keyof Dropped];
+      return next;
+    });
+  };
+
+  const nameOf = (id: string): string =>
+    dataset.models.find((model) => model.id === id)?.displayName ?? id;
+  const regionName = (code: string): string =>
+    dataset.regions.find((region) => region.code === code)?.name ?? code;
 
   const cloud = useMemo<Estimate>(
     () =>
@@ -358,6 +419,7 @@ export default function Calculator() {
               ))}
             </select>
           </label>
+          <Substituted what="a model called" asked={dropped.model} used={nameOf(dials.model)} />
 
           <label>
             Prompts a day
@@ -400,6 +462,11 @@ export default function Calculator() {
               value={String(dials.outputTokens)}
               onInput={(e) => set('outputTokens', Number(e.currentTarget.value))}
             >
+              {REPLIES.some((reply) => reply.output === dials.outputTokens) ? null : (
+                <option value={String(dials.outputTokens)}>
+                  about {dials.outputTokens} tokens, from the link
+                </option>
+              )}
               {REPLIES.map((reply) => (
                 <option value={String(reply.output)} key={reply.label}>
                   {reply.label}, about {reply.output} tokens
@@ -428,6 +495,7 @@ export default function Calculator() {
               ))}
             </select>
           </label>
+          <Substituted what="a region called" asked={dropped.region} used={regionName(dials.region)} />
 
           <label>
             Water counted as
@@ -462,6 +530,13 @@ export default function Calculator() {
                 ))}
               </select>
             </label>
+          ) : null}
+          {dials.compare ? (
+            <Substituted
+              what="a model to run yourself called"
+              asked={dropped.local}
+              used={nameOf(dials.local)}
+            />
           ) : null}
         </fieldset>
       </form>

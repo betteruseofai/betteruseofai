@@ -429,6 +429,13 @@
   margin-bottom: 0;
 }
 
+/* What the link asked for is quoted as written, so it keeps its own case. */
+.calc__swap code {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
 .calc__dials select,
 .calc__dials input[type='number'] {
   display: block;

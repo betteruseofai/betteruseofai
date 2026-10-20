@@ -341,6 +341,54 @@ describe('the calculator', () => {
     await shared.close();
   }, 60000);
 
+  it('says what a link asked for that we do not have, and fills every dropdown', async () => {
+    if (skip()) return;
+    const { page } = await open(
+      '/calculator#model=gpt-9-imaginary&region=zz&out=250&compare=1&local=gpt-5',
+    );
+    await page.waitForSelector('.calc__swap');
+
+    // Nothing is left blank: the unknowns fall back to the defaults, and a
+    // reply length from the link keeps its own option so the figures match.
+    expect(await page.locator('.calc__dials select').first().inputValue()).toBe('claude-opus-5');
+    expect(await page.getByLabel('Electricity from').inputValue()).toBe('WORLD');
+    expect(await page.getByLabel('On my machine').inputValue()).toBe('llama-3.1-8b');
+    const reply = page.getByLabel('Reply length');
+    expect(await reply.inputValue()).toBe('250');
+    expect(await reply.locator('option:checked').textContent()).toContain('from the link');
+
+    const notes = await page.locator('.calc__swap').allTextContents();
+    expect(notes).toHaveLength(3);
+    expect(notes.join(' ')).toContain('gpt-9-imaginary');
+    expect(notes.join(' ')).toContain('Claude Opus 5');
+    expect(notes.join(' ')).toContain('zz');
+    expect(notes.join(' ')).toContain('gpt-5');
+    expect((await page.textContent('.calc')) ?? '').not.toContain('No region was given');
+
+    // The address now says what is shown, not what was asked for.
+    await page.waitForFunction(() => window.location.hash.includes('region=WORLD'), undefined, {
+      timeout: 10000,
+    });
+    expect(page.url()).toContain('model=claude-opus-5');
+
+    // Picking a model for yourself clears the note about the link's one.
+    await page.locator('.calc__dials select').first().selectOption('claude-haiku-4.5');
+    expect(await page.locator('.calc__swap').count()).toBe(2);
+    await page.close();
+
+    // A provider's alias and a lower-case region code still find their way.
+    const { page: alias } = await open('/calculator#model=opus-5&region=fr');
+    // The dials arrive a tick after the server's render, so wait for the hash
+    // to be written back from them.
+    await alias.waitForFunction(() => window.location.hash.includes('region=FR'), undefined, {
+      timeout: 10000,
+    });
+    expect(await alias.locator('.calc__dials select').first().inputValue()).toBe('claude-opus-5');
+    expect(await alias.getByLabel('Electricity from').inputValue()).toBe('FR');
+    expect(await alias.locator('.calc__swap').count()).toBe(0);
+    await alias.close();
+  }, 60000);
+
   it('makes no request to any host', async () => {
     if (skip()) return;
     const page = await browser!.newPage();
