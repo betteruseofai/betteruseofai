@@ -290,6 +290,57 @@ describe('the calculator', () => {
     await page.close();
   }, 60000);
 
+  it('counts prompts a day, and multiplies by the period once', async () => {
+    if (skip()) return;
+    const figuresAt = async (hash: string): Promise<string[]> => {
+      const { page } = await open(`/calculator${hash}`);
+      await page.waitForSelector('.calc__out .buai-readout__figure');
+      const figures = await page.locator('.calc__out .buai-readout__figure').allTextContents();
+      await page.close();
+      return figures;
+    };
+    // Twenty a day over a month is 608 prompts, the same as 608 in one day.
+    const month = await figuresAt('#model=claude-opus-5&prompts=20&period=month');
+    const day = await figuresAt('#model=claude-opus-5&prompts=608&period=day');
+    expect(month).toEqual(day);
+
+    const { page } = await open('/calculator#model=claude-opus-5&prompts=20&period=month');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
+    expect((await page.textContent('.calc__dials')) ?? '').toContain('Prompts a day');
+    expect((await page.textContent('.calc__dials')) ?? '').toContain('About 608 prompts over the month');
+    await page.close();
+  }, 60000);
+
+  it('keeps nonsense out of the figures and the link', async () => {
+    if (skip()) return;
+    const { page } = await open('/calculator');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
+    const box = page.locator('.calc__dials input[type="number"]').first();
+
+    // Clearing the box to retype does not snap it to 1 first.
+    await box.fill('');
+    await box.pressSequentially('50');
+    await page.waitForFunction(() => window.location.hash.includes('prompts=50'), undefined, {
+      timeout: 10000,
+    });
+    expect(page.url()).not.toContain('prompts=150');
+
+    // A negative count never reaches the link.
+    await box.fill('-5');
+    await page.waitForTimeout(500);
+    expect(page.url()).toContain('prompts=50');
+    expect(page.url()).not.toContain('prompts=-5');
+    await page.close();
+
+    // A link holds whole numbers within the same limits the boxes use.
+    const { page: shared } = await open('/calculator#prompts=99999&in=2.6');
+    await shared.waitForSelector('.calc__out .buai-readout__figure');
+    const boxes = shared.locator('.calc__dials input[type="number"]');
+    expect(await boxes.nth(0).inputValue()).toBe('2000');
+    expect(await boxes.nth(1).inputValue()).toBe('3');
+    await shared.close();
+  }, 60000);
+
   it('makes no request to any host', async () => {
     if (skip()) return;
     const page = await browser!.newPage();
@@ -303,6 +354,71 @@ describe('the calculator', () => {
     await page.locator('.calc__dials input[type="number"]').first().fill('55');
     await page.waitForTimeout(1500);
     expect(outbound).toEqual([]);
+    await page.close();
+  }, 60000);
+});
+
+describe('the landing sentence', () => {
+  it('keeps every central figure between its own bounds', async () => {
+    if (skip()) return;
+    const { page } = await open('/');
+    const wrong: string[] = [];
+    // 500 prompts put a carbon figure over a thousand, where a whole number
+    // once lost its trailing zero and fell below its own low.
+    for (const prompts of ['1', '20', '137', '500']) {
+      await page.fill('[data-dial="prompts"]', prompts);
+      for (const slot of ['energy', 'water', 'carbon']) {
+        const box = page.locator(`[data-landing] [data-slot="${slot}"]`);
+        const figure = (await box.locator('.buai-readout__figure').textContent()) ?? '';
+        const bounds = (await box.locator('.buai-readout__bounds').textContent()) ?? '';
+        if (figure.trim() === 'unknown') continue;
+        const central = Number(figure.match(/[\d.e+-]+/)?.[0]);
+        const [low, high] = [...bounds.matchAll(/[\d.e+-]+/g)].map((m) => Number(m[0]));
+        if (!(low! <= central && central <= high!)) {
+          wrong.push(`${prompts} prompts, ${slot}: ${figure.trim()} ${bounds.trim()}`);
+        }
+      }
+    }
+    expect(wrong).toEqual([]);
+    await page.close();
+  }, 60000);
+});
+
+describe('the methodology table', () => {
+  it('names every method and boundary in words, and every row by its models', async () => {
+    if (skip()) return;
+    const schema = JSON.parse(
+      readFileSync(join(root, '..', '..', 'packages', 'dataset', 'schema', 'benchmarks.schema.json'), 'utf8'),
+    ) as unknown;
+    // Every enum value anywhere in the schema counts as a slug that must not show.
+    const slugs = new Set<string>();
+    const walk = (node: unknown): void => {
+      if (Array.isArray(node)) node.forEach(walk);
+      else if (node && typeof node === 'object') {
+        for (const [key, value] of Object.entries(node)) {
+          if (key === 'enum' && Array.isArray(value)) value.forEach((v) => slugs.add(String(v)));
+          else walk(value);
+        }
+      }
+    };
+    walk(schema);
+    expect(slugs.size).toBeGreaterThan(0);
+
+    const { page } = await open('/methodology');
+    // The first table is the benchmark rows; the second is the regions.
+    const cells = await page.locator('table.buai-table').first().locator('tbody tr').evaluateAll((rows) =>
+      rows
+        .filter((row) => row.querySelectorAll('td').length >= 2)
+        .map((row) => ({
+          head: row.querySelector('th')?.childNodes[0]?.textContent?.trim() ?? '',
+          method: row.querySelectorAll('td')[0]?.textContent?.trim() ?? '',
+          boundary: row.querySelectorAll('td')[1]?.textContent?.trim() ?? '',
+        })),
+    );
+    expect(cells.length).toBeGreaterThan(0);
+    const raw = cells.filter((cell) => slugs.has(cell.method) || slugs.has(cell.boundary));
+    expect(raw).toEqual([]);
+    expect(cells.filter((cell) => cell.head === '')).toEqual([]);
     await page.close();
   }, 60000);
 });

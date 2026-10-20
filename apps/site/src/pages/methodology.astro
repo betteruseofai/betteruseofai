@@ -28,8 +28,10 @@ const sections = [
 
 const rows = [...dataset.benchmarks].sort((a, b) => b.qualityScore - a.qualityScore);
 
+// Keyed by the values the dataset schema allows. A key the schema does not
+// use prints the raw slug, so these must follow benchmarks.schema.json.
 const boundaryWords: Record<string, string> = {
-  accelerator: 'Accelerator only',
+  'accelerator-only': 'Accelerator only',
   server: 'Whole server',
   datacenter: 'Data centre',
   lifecycle: 'Life cycle',
@@ -37,12 +39,17 @@ const boundaryWords: Record<string, string> = {
 
 const methodWords: Record<string, string> = {
   'provider-measured': 'Measured by the provider',
-  'third-party-measured': 'Measured by somebody else',
-  'lca': 'Life cycle assessment',
-  'parametric': 'From a formula',
+  'independent-benchmark': 'Measured by somebody else',
+  'parametric-model': 'From a formula',
   'proxy': 'Scaled from another model',
-  'statement': 'A statement, no working shown',
+  'provider-statement': 'A statement, no working shown',
 };
+
+/** The models a row prices, by name, so the table says what each row is for. */
+const servedBy = (modelIds: string[]): string =>
+  modelIds
+    .map((id) => dataset.models.find((model) => model.id === id)?.displayName ?? id)
+    .join(' · ');
 
 const num = (value: { central: number } | null | undefined): string =>
   value ? displayNumber(value.central) : 'unknown';
@@ -146,8 +153,10 @@ const pending = dataset.regions.filter(
               {
                 rows.map((row, i) => (
                   <tr>
-                    <th scope="row">
-                      {row.id}
+                    <th scope="row" class="row-name">
+                      {servedBy(row.modelIds)}
+                      <br />
+                      <code class="note">{row.id}</code>
                       <SourceChip
                         n={i + 1}
                         title={row.source.title}
@@ -387,3 +396,12 @@ const pending = dataset.regions.filter(
     </div>
   </div>
 </Base>
+
+<style>
+  /* Model names and ids keep their own case: in capitals o3 reads as zero three. */
+  .row-name,
+  .row-name code {
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+</style>

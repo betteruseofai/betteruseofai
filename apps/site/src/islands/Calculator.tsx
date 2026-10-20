@@ -44,6 +44,47 @@ const START: Dials = {
 
 const PERIODS: Record<Dials['period'], number> = { day: 1, month: 30.4, year: 365 };
 
+/** The largest values a dial accepts, the same whether typed or read from a link. */
+const LIMITS = { prompts: 2000, inputTokens: 200000 } as const;
+
+/**
+ * A number box that keeps what is being typed and commits only a whole number
+ * from one to its limit. Clearing the box to retype no longer snaps it to 1,
+ * and nothing negative or fractional reaches the figures or the link.
+ */
+const WholeNumber = ({
+  value,
+  max,
+  onCommit,
+}: {
+  value: number;
+  max: number;
+  onCommit: (next: number) => void;
+}) => {
+  const [text, setText] = useState(String(value));
+  useEffect(() => setText(String(value)), [value]);
+  return (
+    <input
+      type="number"
+      min="1"
+      max={String(max)}
+      step="1"
+      inputMode="numeric"
+      value={text}
+      onInput={(e) => {
+        const typed = e.currentTarget.value;
+        setText(typed);
+        const parsed = Number(typed);
+        if (typed.trim() !== '' && Number.isFinite(parsed) && parsed >= 1) {
+          onCommit(Math.min(Math.round(parsed), max));
+        }
+      }}
+      // Whatever was left half typed, the box shows the figure in use.
+      onBlur={() => setText(String(value))}
+    />
+  );
+};
+
 const REPLIES = [
   { label: 'a sentence', output: 60 },
   { label: 'a paragraph', output: 150 },
@@ -68,8 +109,8 @@ const readHash = (): Dials => {
     model: params.get('model') ?? START.model,
     local: params.get('local') ?? START.local,
     region: params.get('region') ?? START.region,
-    prompts: Math.min(number('prompts', START.prompts), 2000),
-    inputTokens: Math.min(number('in', START.inputTokens), 200000),
+    prompts: Math.min(Math.round(number('prompts', START.prompts)), LIMITS.prompts),
+    inputTokens: Math.min(Math.round(number('in', START.inputTokens)), LIMITS.inputTokens),
     outputTokens: Math.min(number('out', START.outputTokens), 200000),
     period: period === 'month' || period === 'year' ? period : 'day',
     scope:
@@ -282,7 +323,8 @@ export default function Calculator() {
       '='.repeat(72),
       `Model      ${dials.model}`,
       `Region     ${dials.region}`,
-      `Work       ${dials.prompts} prompts a ${dials.period}, ${dials.inputTokens} in, ${dials.outputTokens} out`,
+      `Work       ${dials.prompts} prompts a day over a ${dials.period}, ${show(factor)} in all`,
+      `Tokens     ${dials.inputTokens} in, ${dials.outputTokens} out, each`,
       `Water      ${dials.scope}`,
       '',
       line('Energy', energy, 'Wh'),
@@ -318,13 +360,11 @@ export default function Calculator() {
           </label>
 
           <label>
-            Prompts a {dials.period}
-            <input
-              type="number"
-              min="1"
-              max="2000"
+            Prompts a day
+            <WholeNumber
               value={dials.prompts}
-              onInput={(e) => set('prompts', Number(e.currentTarget.value) || 1)}
+              max={LIMITS.prompts}
+              onCommit={(next) => set('prompts', next)}
             />
           </label>
 
@@ -339,15 +379,18 @@ export default function Calculator() {
               <option value="year">a year</option>
             </select>
           </label>
+          {dials.period === 'day' ? null : (
+            <p class="note" aria-live="polite">
+              About {show(factor)} prompts over the {dials.period}.
+            </p>
+          )}
 
           <label>
             Tokens you send
-            <input
-              type="number"
-              min="1"
-              max="200000"
+            <WholeNumber
               value={dials.inputTokens}
-              onInput={(e) => set('inputTokens', Number(e.currentTarget.value) || 1)}
+              max={LIMITS.inputTokens}
+              onCommit={(next) => set('inputTokens', next)}
             />
           </label>
 

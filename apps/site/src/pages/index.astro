@@ -508,7 +508,10 @@ const sections = 7;
       const magnitude = Math.abs(value);
       if (magnitude >= 1e6 || magnitude < 1e-4) return value.toPrecision(3);
       const digits = Math.max(0, 3 - Math.floor(Math.log10(magnitude)) - 1);
-      return value.toFixed(Math.min(digits, 4)).replace(/\.?0+$/, '');
+      const fixed = value.toFixed(Math.min(digits, 4));
+      // Trailing zeros go only after a decimal point. Stripping them from a
+      // whole number turned 1210 into 121.
+      return fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
     };
 
     const scaleUp = (bounds: Bounds, times: number): Bounds =>
