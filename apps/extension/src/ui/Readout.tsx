@@ -1,4 +1,4 @@
-import { displayNumber, formatRange, scaleUnit } from '@betteruseofai/core';
+import { displayNumber, formatRange, isLowerBound, measureOfUnit, scaleUnit } from '@betteruseofai/core';
 import type { EstimateFlag, Range } from '@betteruseofai/core';
 
 /**
@@ -47,7 +47,8 @@ export const Readout = ({ label, value, unit, flags = [], lead = false }: Readou
 
   const scaled = scaleUnit(value.central, unit);
   const divisor = scaled.unit === unit ? 1 : value.central / scaled.value;
-  const lowerBound = flags.includes('thinking-unknown');
+  const measure = measureOfUnit(unit);
+  const lowerBound = measure ? isLowerBound(flags, measure) : flags.includes('thinking-unknown');
 
   return (
     <div class={lead ? 'buai-readout-group buai-readout-group--lead' : 'buai-readout-group'}>

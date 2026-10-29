@@ -8,6 +8,8 @@ import {
   displayNumber,
   equivalents,
   getModel,
+  isLowerBound,
+  measureOfUnit,
   saving as computeSaving,
   scaleUnit,
 } from '@betteruseofai/core';
@@ -49,7 +51,8 @@ interface Figure {
 /** The pieces of a readout, worked out the way formatRange does but kept apart for the page. */
 const figure = (range: Range | null, unit: string, flags: EstimateFlag[]): Figure | null => {
   if (range === null) return null;
-  const lowerBound = flags.includes('thinking-unknown');
+  const measure = measureOfUnit(unit);
+  const lowerBound = measure ? isLowerBound(flags, measure) : flags.includes('thinking-unknown');
   const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
   const scaled = scaleUnit(range.central, unit);
   const divisor = scaled.unit !== unit && scaled.value !== 0 ? range.central / scaled.value : 1;

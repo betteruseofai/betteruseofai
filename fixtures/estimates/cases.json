@@ -219,6 +219,62 @@
         "timestamp": "2026-09-01T12:00:00.000Z"
       },
       "options": { "regionCode": "IN" }
+    },
+    {
+      "name": "lifecycle-direct-narrower",
+      "why": "A life-cycle figure asked for at the default scope. It cannot be narrowed, so water and carbon are unknown.",
+      "event": {
+        "id": "case-mistral-default",
+        "surface": "api",
+        "hosting": "cloud",
+        "modelRaw": "mistral-large-2",
+        "modelId": null,
+        "tokens": { "input": 200, "output": 400, "thinking": 0, "estimated": false, "estimator": "provider" },
+        "timestamp": "2026-09-01T12:00:00.000Z"
+      },
+      "options": { "regionCode": "FR" }
+    },
+    {
+      "name": "direct-onsite-widened",
+      "why": "An on-site water figure at the default scope, widened with the power station's water from the row's energy.",
+      "event": {
+        "id": "case-gpt5-default",
+        "surface": "api",
+        "hosting": "cloud",
+        "modelRaw": "gpt-5",
+        "modelId": null,
+        "tokens": { "input": 200, "output": 300, "thinking": 0, "estimated": false, "estimator": "provider" },
+        "timestamp": "2026-09-01T12:00:00.000Z"
+      },
+      "options": { "regionCode": "US" }
+    },
+    {
+      "name": "direct-onsite-lifecycle",
+      "why": "The same figure under lifecycle. Nothing is known about making the hardware, so water and carbon are lower bounds.",
+      "event": {
+        "id": "case-gpt5-lifecycle",
+        "surface": "api",
+        "hosting": "cloud",
+        "modelRaw": "gpt-5",
+        "modelId": null,
+        "tokens": { "input": 200, "output": 300, "thinking": 0, "estimated": false, "estimator": "provider" },
+        "timestamp": "2026-09-01T12:00:00.000Z"
+      },
+      "options": { "regionCode": "US", "waterScope": "lifecycle" }
+    },
+    {
+      "name": "lifecycle-no-embodied-share",
+      "why": "A row derived from energy under lifecycle, with no embodied share, so water and carbon are lower bounds.",
+      "event": {
+        "id": "case-sonnet-lifecycle",
+        "surface": "api",
+        "hosting": "cloud",
+        "modelRaw": "claude-3.7-sonnet",
+        "modelId": null,
+        "tokens": { "input": 1000, "output": 500, "thinking": 0, "estimated": false, "estimator": "provider" },
+        "timestamp": "2026-09-01T12:00:00.000Z"
+      },
+      "options": { "regionCode": "DE", "waterScope": "lifecycle" }
     }
   ]
 }

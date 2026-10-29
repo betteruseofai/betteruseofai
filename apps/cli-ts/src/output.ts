@@ -160,6 +160,9 @@ export const caveats = (context: Context, totals: Aggregate): string[] => {
   if (totals.flags.includes('thinking-unknown')) {
     lines.push('  Some turns hid their reasoning tokens, so the figures are a lower bound.');
   }
+  if (totals.flags.includes('embodied-missing')) {
+    lines.push("  Making the hardware isn't counted for some models, so water and carbon are lower bounds.");
+  }
   if (totals.flags.includes('proxy-row')) {
     lines.push('  Some models have never been measured, so their share is scaled from one that has.');
   }

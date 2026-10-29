@@ -29,7 +29,7 @@ from .engine import (
     load_tokens,
     select_benchmark,
 )
-from .estimate import Estimate, UsageEvent, estimate
+from .estimate import MEASURE_OF_UNIT, Estimate, UsageEvent, estimate, is_lower_bound
 from .log import (
     LOG_WARN_BYTES,
     append_log,
@@ -84,7 +84,8 @@ OPTIONS
   --source <names>        claude-code, codex, or both separated by a comma
   --dir <path>            Read transcripts from here instead of the usual place
   --region <code>         Grid to price the carbon against. Run "models --all" for the list
-  --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle
+  --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle,
+                          which adds making the hardware to water and carbon both
   --carbon-basis <basis>  location-based (the default) or provider-reported
   --format <format>       table, json or csv, depending on the command
   --log <path>            Read and write the event log here instead of the usual place
@@ -466,7 +467,8 @@ def format_range(
     if value is None:
         return "unknown"
     flags = flags or []
-    lower_bound = "thinking-unknown" in flags
+    measure = MEASURE_OF_UNIT.get(unit)
+    lower_bound = is_lower_bound(flags, measure) if measure else "thinking-unknown" in flags
     estimated = "tokens-estimated" in flags or "derived-rate" in flags
     prefix = (">= " if ascii_only else "≥ ") if lower_bound else ("~" if estimated else "")
 
@@ -549,6 +551,11 @@ def caveats(context: Context, totals: Aggregate) -> list[str]:
         )
     if "thinking-unknown" in totals.flags:
         lines.append("  Some turns hid their reasoning tokens, so the figures are a lower bound.")
+    if "embodied-missing" in totals.flags:
+        lines.append(
+            "  Making the hardware isn't counted for some models, so water and carbon are lower "
+            "bounds."
+        )
     if "proxy-row" in totals.flags:
         lines.append(
             "  Some models have never been measured, so their share is scaled from one that has."
@@ -584,6 +591,14 @@ EXPLAIN = {
     ),
     "local-row-missing": (
         "No measurement exists for this model on your own machine, so a hosted row was used."
+    ),
+    "embodied-missing": (
+        "Nobody has published what making the hardware adds for this model, so water and "
+        "carbon are lower bounds."
+    ),
+    "direct-scope-wider": (
+        "The source counted more than you asked for and didn't say how it splits, so that "
+        "part is unknown."
     ),
 }
 
@@ -1363,7 +1378,8 @@ def _figure(value: Range | None, unit: str, flags: list[str]) -> dict[str, str] 
     """The pieces of a readout, worked out the way format_range does but kept apart."""
     if value is None:
         return None
-    lower_bound = "thinking-unknown" in flags
+    measure = MEASURE_OF_UNIT.get(unit)
+    lower_bound = is_lower_bound(flags, measure) if measure else "thinking-unknown" in flags
     estimated = "tokens-estimated" in flags or "derived-rate" in flags
     scaled, scaled_unit = scale_unit(value.central, unit)
     divisor = value.central / scaled if scaled_unit != unit and scaled else 1.0

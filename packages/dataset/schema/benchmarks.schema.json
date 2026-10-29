@@ -298,6 +298,14 @@
           "$ref": "common.schema.json#/$defs/nonNegativeRange",
           "description": "Carbon published directly rather than derived from energy."
         },
+        "directScope": {
+          "enum": [
+            "on-site",
+            "on-site + off-site",
+            "lifecycle"
+          ],
+          "description": "What the direct water and carbon figures count, in the engine's own scopes. A wider scope than this adds what is missing where it can; a narrower one cannot be taken out of a published total, so it gives unknown."
+        },
         "referenceInputTokens": {
           "$ref": "common.schema.json#/$defs/nonNegativeRange"
         },
@@ -308,6 +316,14 @@
           "type": "boolean",
           "description": "False when we had to assume the reference token counts. The engine widens the result further when false."
         }
+      },
+      "dependentRequired": {
+        "directWaterMl": [
+          "directScope"
+        ],
+        "directCarbonG": [
+          "directScope"
+        ]
       },
       "anyOf": [
         {

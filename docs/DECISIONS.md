@@ -201,6 +201,23 @@ against. The decisions taken on it, on 2026-09-13:
     prices as heavier. On the owner's fortnight of Claude Code the figures fell from 129.4 kWh and
     646 L to 106.9 kWh and 531 L, and no turn is marked a lower bound.
 
+52. **The water scope setting reaches every figure, from the audit of 2026-10-19 (S3).** Dataset
+    3.0.0, a major bump by the rule in 48, because a row with `directWaterMl` or `directCarbonG`
+    must now carry `directScope`. Decided with the owner on 2026-10-20, three choices, each the
+    recommended option. First, lifecycle stays an option for rows with no embodied share; the
+    running figure is shown as a lower bound under a new `embodied-missing` flag, for water and
+    carbon and not energy. Second, the Altman and Oviedo rows are recorded as on-site, an
+    assumption argued in their notes, and Mistral as lifecycle; a wider scope adds off-site water
+    from the row's energy and a narrower one gives unknown under a new `direct-scope-wider` flag.
+    Third, the one setting covers water and carbon both. The calculator labels it "What we count"
+    and the extension's options "What counts as water and carbon"; the CLI flag keeps its name,
+    `--water-scope`, and its help says what lifecycle adds. Carbon has two scopes, since the
+    grid's carbon is always counted. Core
+    exports `isLowerBound(flags, measure)` so the CLIs, extension and site agree on when a figure
+    reads "at least", and Python mirrors it. What moved: GPT-5 water at the default scope rises
+    because off-site is now added (0.32 to 1.39 mL central for 200 in and 300 out in the United
+    States), and Mistral Large 2's water and carbon are unknown unless lifecycle is chosen.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 - What the nudge should do inside Claude Code, given that it cannot fire at its current bar and

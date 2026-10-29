@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "2.0.0",
-  "datasetSha256": "9417767a42b2c1d2a2f5f967bb8fcdcc219395b4558478461ba4e02151ce26af",
+  "datasetVersion": "3.0.0",
+  "datasetSha256": "5ba2e7e318cbe1c7491b0d54002a019462ed52b2287077d0a35073f19c39b1b8",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -555,6 +555,160 @@
           "https://arxiv.org/abs/2505.09598",
           "https://cea.nic.in/cdm-co2-baseline-database/",
           "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
+        ]
+      }
+    },
+    "lifecycle-direct-narrower": {
+      "modelId": "mistral-large-2",
+      "energyWh": null,
+      "waterMl": null,
+      "carbonG": null,
+      "basis": {
+        "benchmarkRowId": "mistral.large-2.lca.2025",
+        "benchmarkParentId": null,
+        "methodology": "provider-measured",
+        "boundary": "lifecycle",
+        "regionCode": "FR",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 5,
+        "flags": [
+          "direct-scope-wider",
+          "no-energy-figure"
+        ],
+        "sourceUrls": [
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+          "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai",
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
+        ]
+      }
+    },
+    "direct-onsite-widened": {
+      "modelId": "gpt-5",
+      "energyWh": {
+        "low": "0.035",
+        "central": "0.34",
+        "high": "9"
+      },
+      "waterMl": {
+        "low": "0.177",
+        "central": "1.3876",
+        "high": "45.39"
+      },
+      "carbonG": {
+        "low": "0.0104405",
+        "central": "0.118898",
+        "high": "3.5658"
+      },
+      "basis": {
+        "benchmarkRowId": "openai.altman-statement.2025",
+        "benchmarkParentId": null,
+        "methodology": "provider-statement",
+        "boundary": "datacenter",
+        "regionCode": "US",
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "assumed-token-counts",
+          "derived-rate",
+          "scaled-direct-figure"
+        ],
+        "sourceUrls": [
+          "https://blog.samaltman.com/the-gentle-singularity",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
+        ]
+      }
+    },
+    "direct-onsite-lifecycle": {
+      "modelId": "gpt-5",
+      "energyWh": {
+        "low": "0.035",
+        "central": "0.34",
+        "high": "9"
+      },
+      "waterMl": {
+        "low": "0.177",
+        "central": "1.3876",
+        "high": "45.39"
+      },
+      "carbonG": {
+        "low": "0.0104405",
+        "central": "0.118898",
+        "high": "3.5658"
+      },
+      "basis": {
+        "benchmarkRowId": "openai.altman-statement.2025",
+        "benchmarkParentId": null,
+        "methodology": "provider-statement",
+        "boundary": "datacenter",
+        "regionCode": "US",
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
+        "waterScope": "lifecycle",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "assumed-token-counts",
+          "derived-rate",
+          "embodied-missing",
+          "scaled-direct-figure"
+        ],
+        "sourceUrls": [
+          "https://blog.samaltman.com/the-gentle-singularity",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+          "https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.xlsx"
+        ]
+      }
+    },
+    "lifecycle-no-embodied-share": {
+      "modelId": "claude-3.7-sonnet",
+      "energyWh": {
+        "low": "0.813423",
+        "central": "1.62685",
+        "high": "3.25369"
+      },
+      "waterMl": {
+        "low": "1.22656",
+        "central": "3.39668",
+        "high": "9.94945"
+      },
+      "carbonG": {
+        "low": "0.120143",
+        "central": "0.536208",
+        "high": "1.68248"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.claude-3.7-sonnet",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "DE",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "lifecycle",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [
+          "embodied-missing"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
     }

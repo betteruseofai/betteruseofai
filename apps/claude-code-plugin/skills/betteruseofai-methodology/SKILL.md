@@ -44,6 +44,12 @@ explanation.
   per token. The range is widened to say so.
 - **`input-partial`** The app hides its system prompt, so the counted input is a lower bound.
 - **`region-default`** No region was given, so the world average grid was used.
+- **`embodied-missing`** The lifecycle scope was asked for and nobody has published what making the
+  hardware adds for this model. Water and carbon are lower bounds and render with the "greater than
+  or equal to" marker. Energy is unaffected.
+- **`direct-scope-wider`** The source published water or carbon only at a wider scope than the one
+  asked for, as Mistral did with its life cycle figures. The narrower part can't be taken out of a
+  published total, so it reads "unknown".
 - **`model-unknown`** We do not recognise the model. There are no numbers at all, and the figure
   reads "unknown". It is never zero.
 

@@ -166,6 +166,9 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           Some turns hid their reasoning tokens, so these are lower bounds.
         </p>
       ) : null}
+      {flags.includes('embodied-missing') ? (
+        <p class="buai-popup__note">Making the hardware isn't counted for some models, so water and carbon are lower bounds.</p>
+      ) : null}
 
       <MetaStrip
         items={[

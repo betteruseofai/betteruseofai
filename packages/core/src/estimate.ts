@@ -12,6 +12,7 @@ import type {
   Source,
   TokenCounts,
   UsageEvent,
+  WaterScope,
 } from './types.js';
 
 /**
@@ -100,6 +101,9 @@ const thinkingTokensFor = (
   }
   return { range: ZERO, handling: 'not-applicable', flag: null };
 };
+
+/** Narrowest first, so a scope can be compared with the one a figure was published at. */
+const SCOPE_RANK: Record<WaterScope, number> = { 'on-site': 0, 'on-site + off-site': 1, lifecycle: 2 };
 
 const collectSources = (row: BenchmarkRow, parent: BenchmarkRow | null, region: Region): Source[] => {
   const sources: Source[] = [row.source];
@@ -244,13 +248,60 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
     return scale(work, 1 / referenceWork);
   };
 
+  // ------------------------------------------------------------------- scope
+
+  /*
+   * A figure published at one scope can be widened by adding what it leaves
+   * out, where we can work that out, but it cannot be narrowed: nobody can take
+   * the on-site part back out of a lifecycle total. Making the hardware is
+   * added from the row's embodied share. Without one, a lifecycle figure is
+   * the running figure and no more, so it is flagged as a lower bound.
+   */
+  const directScope = row.perPrompt?.directScope ?? 'lifecycle';
+  const wantsEmbodied = waterScope === 'lifecycle';
+  const embodiedUplift: Range | null =
+    wantsEmbodied && row.embodiedShareOfTotal && options.includeEmbodied !== false
+      ? {
+          low: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.low),
+          central: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.central),
+          high: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.high),
+        }
+      : null;
+  let embodiedMissing = false;
+  const flagOnce = (flag: EstimateFlag): void => {
+    if (!flags.includes(flag)) flags.push(flag);
+  };
+  /** Adds making the hardware to a running figure, or marks it a lower bound. */
+  const withEmbodied = (running: Range): Range => {
+    if (!wantsEmbodied) return running;
+    if (embodiedUplift) return order(mul(running, embodiedUplift));
+    embodiedMissing = true;
+    return running;
+  };
+
   // ------------------------------------------------------------------- water
 
   let waterMl: Range | null = null;
   const directWater = row.perPrompt?.directWaterMl;
   if (directWater) {
-    waterMl = clampNonNegative(order(mul(directWater, directScale())));
-    if (!flags.includes('scaled-direct-figure')) flags.push('scaled-direct-figure');
+    if (SCOPE_RANK[waterScope] < SCOPE_RANK[directScope]) {
+      flagOnce('direct-scope-wider');
+    } else {
+      flagOnce('scaled-direct-figure');
+      const published = clampNonNegative(order(mul(directWater, directScale())));
+      if (directScope === 'lifecycle') {
+        waterMl = published;
+      } else if (directScope === 'on-site' && waterScope !== 'on-site') {
+        // The power station's water follows the electricity, so it needs the
+        // energy. Without it the wider figure is unknown, not the narrow one.
+        if (energyKwh) {
+          const offSite = scale(mul(energyKwh, region.waterOffsiteLPerKwh), 1000);
+          waterMl = withEmbodied(clampNonNegative(order(add(published, offSite))));
+        }
+      } else {
+        waterMl = withEmbodied(published);
+      }
+    }
   } else if (energyKwh && itEnergyWh && row.waterOnsiteLPerKwh) {
     // Litres per kilowatt hour, times kilowatt hours, times a thousand for millilitres.
     // WUE is defined against the servers' energy, so on-site water is charged on that,
@@ -259,15 +310,7 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
     if (waterScope !== 'on-site') {
       litres = add(litres, mul(energyKwh, region.waterOffsiteLPerKwh));
     }
-    waterMl = clampNonNegative(order(scale(litres, 1000)));
-    if (waterScope === 'lifecycle' && row.embodiedShareOfTotal && options.includeEmbodied !== false) {
-      const uplift: Range = {
-        low: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.low),
-        central: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.central),
-        high: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.high),
-      };
-      waterMl = order(mul(waterMl, uplift));
-    }
+    waterMl = withEmbodied(clampNonNegative(order(scale(litres, 1000))));
   }
 
   // ------------------------------------------------------------------ carbon
@@ -275,24 +318,24 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
   let carbonG: Range | null = null;
   const directCarbon = row.perPrompt?.directCarbonG;
   if (directCarbon) {
-    carbonG = clampNonNegative(order(mul(directCarbon, directScale())));
-    if (!flags.includes('scaled-direct-figure')) flags.push('scaled-direct-figure');
+    // Carbon has two scopes, running and lifecycle, since the grid is always counted.
+    if (directScope === 'lifecycle' && !wantsEmbodied) {
+      flagOnce('direct-scope-wider');
+    } else {
+      flagOnce('scaled-direct-figure');
+      const published = clampNonNegative(order(mul(directCarbon, directScale())));
+      carbonG = directScope === 'lifecycle' ? published : withEmbodied(published);
+    }
   } else if (energyKwh) {
     // Location-based by default. A provider's market-based factor is a claim about
     // what it bought, not about the electrons it burned, and it flatters the number
     // by three or four times, so it is opt in.
     const intensity =
       carbonBasis === 'provider-reported' && row.carbonGPerKwh ? row.carbonGPerKwh : region.gridGco2PerKwh;
-    carbonG = clampNonNegative(order(mul(energyKwh, intensity)));
-    if (waterScope === 'lifecycle' && row.embodiedShareOfTotal && options.includeEmbodied !== false) {
-      const uplift: Range = {
-        low: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.low),
-        central: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.central),
-        high: 1 / Math.max(1e-9, 1 - row.embodiedShareOfTotal.high),
-      };
-      carbonG = order(mul(carbonG, uplift));
-    }
+    carbonG = withEmbodied(clampNonNegative(order(mul(energyKwh, intensity))));
   }
+
+  if (embodiedMissing) flagOnce('embodied-missing');
 
   return {
     eventId: event.id,

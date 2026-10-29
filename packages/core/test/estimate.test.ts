@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { estimate } from '../src/estimate.js';
+import { formatRange, isLowerBound } from '../src/format.js';
 import { fitQuerySet, normalizeToPerToken } from '../src/normalize.js';
 import { downgradeTarget, getModel, resolveModel, selectBenchmark } from '../src/resolve.js';
 import { event, loadDataset, tokens } from './helpers.js';
@@ -220,13 +221,71 @@ describe('water', () => {
   });
 
   it('uses a directly published life-cycle figure rather than deriving one', () => {
-    const result = estimate(event({ modelRaw: 'mistral-large-2', tokens: shape }), { dataset });
+    const result = estimate(event({ modelRaw: 'mistral-large-2', tokens: shape }), {
+      dataset,
+      waterScope: 'lifecycle',
+    });
     expect(result.basis.benchmarkRowId).toBe('mistral.large-2.lca.2025');
     expect(result.basis.flags).toContain('scaled-direct-figure');
     expect(result.basis.flags).toContain('no-energy-figure');
+    // It already counts making the hardware, so it is not a lower bound.
+    expect(result.basis.flags).not.toContain('embodied-missing');
     expect(result.energyWh).toBeNull();
     expect(result.waterMl?.central).toBeGreaterThan(0);
     expect(result.carbonG?.central).toBeGreaterThan(0);
+  });
+
+  it('cannot narrow a life-cycle figure, so a narrower scope gives unknown', () => {
+    for (const waterScope of ['on-site', 'on-site + off-site'] as const) {
+      const result = estimate(event({ modelRaw: 'mistral-large-2', tokens: shape }), {
+        dataset,
+        waterScope,
+      });
+      expect(result.waterMl).toBeNull();
+      expect(result.carbonG).toBeNull();
+      expect(result.basis.flags).toContain('direct-scope-wider');
+    }
+  });
+
+  it('widens an on-site figure by adding the power station from the energy', () => {
+    const at = (waterScope: 'on-site' | 'on-site + off-site' | 'lifecycle') =>
+      estimate(event({ modelRaw: 'gpt-5', tokens: shape }), { dataset, waterScope });
+    const onsite = at('on-site');
+    const both = at('on-site + off-site');
+    expect(onsite.basis.benchmarkRowId).toBe('openai.altman-statement.2025');
+    const world = dataset.regions.find((region) => region.code === 'WORLD')!;
+    const offSite = (onsite.energyWh!.central / 1000) * world.waterOffsiteLPerKwh.central * 1000;
+    expect(both.waterMl!.central).toBeCloseTo(onsite.waterMl!.central + offSite, 6);
+    // Lifecycle adds nothing it knows, so it is the same figure marked as a lower bound.
+    const lifecycle = at('lifecycle');
+    expect(lifecycle.waterMl).toEqual(both.waterMl);
+    expect(lifecycle.basis.flags).toContain('embodied-missing');
+    expect(both.basis.flags).not.toContain('embodied-missing');
+  });
+
+  it('marks water and carbon, not energy, as lower bounds when making the hardware is missing', () => {
+    const plain = estimate(event({ modelRaw: 'claude-opus-5', tokens: shape }), { dataset });
+    const lifecycle = estimate(event({ modelRaw: 'claude-opus-5', tokens: shape }), {
+      dataset,
+      waterScope: 'lifecycle',
+    });
+    expect(lifecycle.waterMl).toEqual(plain.waterMl);
+    expect(lifecycle.carbonG).toEqual(plain.carbonG);
+    const flags = lifecycle.basis.flags;
+    expect(flags).toContain('embodied-missing');
+    expect(isLowerBound(flags, 'energy')).toBe(false);
+    expect(isLowerBound(flags, 'water')).toBe(true);
+    expect(isLowerBound(flags, 'carbon')).toBe(true);
+    expect(formatRange(lifecycle.energyWh, { unit: 'Wh', flags })).not.toMatch(/^≥/);
+    expect(formatRange(lifecycle.waterMl, { unit: 'mL', flags })).toMatch(/^≥ /);
+    expect(formatRange(lifecycle.carbonG, { unit: 'g', flags })).toMatch(/^≥ /);
+  });
+
+  it('asks every row that publishes water or carbon directly what it counts', () => {
+    for (const row of dataset.benchmarks) {
+      const direct = row.perPrompt?.directWaterMl ?? row.perPrompt?.directCarbonG;
+      if (direct) expect(row.perPrompt?.directScope, row.id).toBeDefined();
+    }
   });
 
   it('a model on your own machine uses no cooling water in your kitchen', () => {

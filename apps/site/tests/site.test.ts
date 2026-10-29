@@ -389,6 +389,46 @@ describe('the calculator', () => {
     await alias.close();
   }, 60000);
 
+  it('carries what we count into water and carbon, and says when a source counts more', async () => {
+    if (skip()) return;
+    const read = async (hash: string): Promise<{ figures: string[]; bounds: string[] }> => {
+      const { page } = await open(`/calculator${hash}`);
+      await page.waitForSelector('.calc__out .buai-readout__figure');
+      // Energy, water and carbon, in that order, before any comparison below them.
+      const figures = (await page.locator('.calc__out .buai-readout__figure').allTextContents())
+        .slice(0, 3)
+        .map((text) => text.trim());
+      const bounds = (await page.locator('.calc__out .buai-readout__bounds').allTextContents()).slice(0, 3);
+      if (hash.includes('scope=lifecycle')) {
+        expect(await page.getByLabel('What we count').inputValue()).toBe('lifecycle');
+      }
+      await page.close();
+      return { figures, bounds };
+    };
+
+    // Nobody publishes the share that making the hardware adds for this model,
+    // so under lifecycle water and carbon are the running figures and no more.
+    // A model that doesn't reason, so hidden thinking can't make it a lower bound.
+    const running = await read('#model=gpt-4o');
+    const lifecycle = await read('#model=gpt-4o&scope=lifecycle');
+    expect(running.figures[1]).not.toMatch(/^≥/);
+    expect(running.figures[2]).not.toMatch(/^≥/);
+    expect(lifecycle.figures[1]).toMatch(/^≥/);
+    expect(lifecycle.figures[2]).toMatch(/^≥/);
+    expect(lifecycle.figures[0]).not.toMatch(/^≥/);
+    expect(lifecycle.figures[0]).toBe(running.figures[0]);
+
+    // Mistral publishes a lifecycle total, which cannot be cut down to the
+    // default scope, so it is unknown there and says why.
+    const narrower = await read('#model=mistral-large-2');
+    expect(narrower.figures[1]).toBe('unknown');
+    expect(narrower.figures[2]).toBe('unknown');
+    expect(narrower.bounds[1]).toContain('wider figure');
+    const whole = await read('#model=mistral-large-2&scope=lifecycle');
+    expect(whole.figures[1]).not.toBe('unknown');
+    expect(whole.figures[2]).not.toBe('unknown');
+  }, 60000);
+
   it('makes no request to any host', async () => {
     if (skip()) return;
     const page = await browser!.newPage();

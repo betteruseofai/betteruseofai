@@ -26,9 +26,11 @@ export {
   canonicalNumber,
   roundSignificant,
   explainFlags,
+  isLowerBound,
+  measureOfUnit,
   SIGNIFICANT_DIGITS,
 } from './format.js';
-export type { FormatRangeOptions } from './format.js';
+export type { FormatRangeOptions, Measure } from './format.js';
 
 export {
   createRecommender,

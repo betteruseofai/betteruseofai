@@ -18,6 +18,7 @@ import {
   estimate,
   displayNumber,
   explainFlags,
+  isLowerBound,
   resolveModel,
   scaleUnit,
 } from '@betteruseofai/core';
@@ -348,7 +349,13 @@ export default function Calculator() {
   );
 
   const factor = dials.prompts * PERIODS[dials.period];
-  const atLeast = cloud.basis.flags.includes('thinking-unknown');
+  // Leaving out making the hardware makes water and carbon lower bounds, not energy.
+  const atLeast = (measure: 'energy' | 'water' | 'carbon'): boolean =>
+    isLowerBound(cloud.basis.flags, measure);
+  // A figure published for a wider scope can't be narrowed, so say why it's missing.
+  const wider = cloud.basis.flags.includes('direct-scope-wider')
+    ? 'the source only gives a wider figure than this'
+    : undefined;
 
   const energy = times(cloud.energyWh, factor);
   const water = times(cloud.waterMl, factor);
@@ -386,7 +393,7 @@ export default function Calculator() {
       `Region     ${dials.region}`,
       `Work       ${dials.prompts} prompts a day over a ${dials.period}, ${show(factor)} in all`,
       `Tokens     ${dials.inputTokens} in, ${dials.outputTokens} out, each`,
-      `Water      ${dials.scope}`,
+      `Counting   ${dials.scope}`,
       '',
       line('Energy', energy, 'Wh'),
       line('Water', water, 'mL'),
@@ -498,14 +505,14 @@ export default function Calculator() {
           <Substituted what="a region called" asked={dropped.region} used={regionName(dials.region)} />
 
           <label>
-            Water counted as
+            What we count
             <select
               value={dials.scope}
               onInput={(e) => set('scope', e.currentTarget.value as WaterScope)}
             >
-              <option value="on-site">on site only</option>
-              <option value="on-site + off-site">on site and at the power station</option>
-              <option value="lifecycle">the whole life of the hardware</option>
+              <option value="on-site">running it, water on site only</option>
+              <option value="on-site + off-site">running it, water at the power station too</option>
+              <option value="lifecycle">running it and making the hardware</option>
             </select>
           </label>
 
@@ -543,14 +550,26 @@ export default function Calculator() {
 
       <div class="calc__out">
         <div class="cols">
-          <Figure label={`Energy a ${dials.period}`} range={energy} unit="Wh" atLeast={atLeast} />
+          <Figure
+            label={`Energy a ${dials.period}`}
+            range={energy}
+            unit="Wh"
+            atLeast={atLeast('energy')}
+          />
           <Figure
             label={`Water a ${dials.period}, ${dials.scope}`}
             range={water}
             unit="mL"
-            atLeast={atLeast}
+            atLeast={atLeast('water')}
+            note={wider}
           />
-          <Figure label={`Carbon a ${dials.period}`} range={carbon} unit="g" atLeast={atLeast} />
+          <Figure
+            label={`Carbon a ${dials.period}${dials.scope === 'lifecycle' ? ', lifecycle' : ''}`}
+            range={carbon}
+            unit="g"
+            atLeast={atLeast('carbon')}
+            note={wider}
+          />
         </div>
 
         {energyLike.length + waterLike.length + carbonLike.length > 0 ? (

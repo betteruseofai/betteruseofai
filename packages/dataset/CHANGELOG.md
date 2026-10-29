@@ -1,5 +1,24 @@
 # @betteruseofai/dataset
 
+## 3.0.0
+
+A schema change, so a major bump: a benchmark row that publishes water or carbon directly must now
+say what that figure counts, in `perPrompt.directScope`, using the engine's own three scopes. Found
+in the audit of 19 October 2026 (`docs/AUDIT-2026-10.md`, S3).
+
+- **Direct figures follow the water scope setting.** Before, a row's published water was shown
+  whatever the setting said. A wider scope than the row's now adds what the row leaves out where
+  we can work it out, and a narrower one gives unknown, because nobody can take the on-site part
+  back out of a lifecycle total.
+- **The Altman statement and the Oviedo et al. row are recorded as on-site.** Neither source says.
+  Both figures are far too small to hold the power station's water for the same energy at the world
+  average (about a fifth and a fiftieth of it), so we take them as cooling only; the reasoning is in
+  each row's notes. At the default scope the off-site water is now added from the row's energy, so
+  a GPT-5 prompt of 200 tokens in and 300 out in the United States reads 1.39 mL central where it
+  read 0.32.
+- **Mistral Large 2 is recorded as lifecycle.** Its water and carbon show only under the lifecycle
+  setting and are unknown under the other two, where before they showed under all three.
+
 ## 2.0.0
 
 A schema change, so a major bump: a benchmark row may now carry `includesThinking`, true when the

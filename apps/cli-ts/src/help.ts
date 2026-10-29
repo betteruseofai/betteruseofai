@@ -33,7 +33,8 @@ OPTIONS
   --source <names>        claude-code, codex, or both separated by a comma
   --dir <path>            Read transcripts from here instead of the usual place
   --region <code>         Grid to price the carbon against. Run "models --all" for the list
-  --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle
+  --water-scope <scope>   on-site, "on-site + off-site" (the default), or lifecycle,
+                          which adds making the hardware to water and carbon both
   --carbon-basis <basis>  location-based (the default) or provider-reported
   --format <format>       table, json or csv, depending on the command
   --log <path>            Read and write the event log here instead of the usual place

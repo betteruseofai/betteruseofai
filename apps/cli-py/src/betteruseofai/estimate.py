@@ -22,6 +22,17 @@ from .engine import (
 )
 
 WATER_SCOPES = ("on-site", "on-site + off-site", "lifecycle")
+# Narrowest first, so a scope can be compared with the one a figure was published at.
+SCOPE_RANK = {scope: rank for rank, scope in enumerate(WATER_SCOPES)}
+
+# The measure a base unit belongs to, so a caller that gives the unit need not say it twice.
+MEASURE_OF_UNIT = {"Wh": "energy", "mL": "water", "g": "carbon"}
+
+
+def is_lower_bound(flags: list[str], measure: str) -> bool:
+    """Undisclosed thinking makes all three a lower bound. Leaving out making the
+    hardware under the lifecycle scope makes water and carbon one, not energy."""
+    return "thinking-unknown" in flags or (measure != "energy" and "embodied-missing" in flags)
 
 
 @dataclass
@@ -298,24 +309,59 @@ def estimate(
         )
         return scale(work, 1 / reference)
 
-    def embodied_uplift() -> Range | None:
-        share = to_range(row.get("embodiedShareOfTotal"))
-        if share is None or water_scope != "lifecycle" or not include_embodied:
-            return None
-        return Range(
+    # -------------------------------------------------------------- scope
+
+    # A figure published at one scope can be widened by adding what it leaves
+    # out, where we can work that out, but it cannot be narrowed. Making the
+    # hardware is added from the row's embodied share; without one, a lifecycle
+    # figure is the running figure and no more, flagged as a lower bound.
+    direct_scope = (row.get("perPrompt") or {}).get("directScope") or "lifecycle"
+    wants_embodied = water_scope == "lifecycle"
+    share = to_range(row.get("embodiedShareOfTotal"))
+    embodied_uplift = (
+        Range(
             1 / max(1e-9, 1 - share.low),
             1 / max(1e-9, 1 - share.central),
             1 / max(1e-9, 1 - share.high),
         )
+        if wants_embodied and share is not None and include_embodied
+        else None
+    )
+    embodied_missing = False
+
+    def flag_once(flag: str) -> None:
+        if flag not in flags:
+            flags.append(flag)
+
+    def with_embodied(running: Range) -> Range:
+        nonlocal embodied_missing
+        if not wants_embodied:
+            return running
+        if embodied_uplift is not None:
+            return order(mul(running, embodied_uplift))
+        embodied_missing = True
+        return running
 
     # -------------------------------------------------------------- water
 
     water_ml: Range | None = None
     direct_water = to_range((row.get("perPrompt") or {}).get("directWaterMl"))
     if direct_water is not None:
-        water_ml = clamp_non_negative(order(mul(direct_water, direct_scale())))
-        if "scaled-direct-figure" not in flags:
-            flags.append("scaled-direct-figure")
+        if SCOPE_RANK[water_scope] < SCOPE_RANK[direct_scope]:
+            flag_once("direct-scope-wider")
+        else:
+            flag_once("scaled-direct-figure")
+            published = clamp_non_negative(order(mul(direct_water, direct_scale())))
+            if direct_scope == "lifecycle":
+                water_ml = published
+            elif direct_scope == "on-site" and water_scope != "on-site":
+                # The power station's water follows the electricity, so it needs the
+                # energy. Without it the wider figure is unknown, not the narrow one.
+                if energy_kwh is not None:
+                    off_site = scale(mul(energy_kwh, to_range(region["waterOffsiteLPerKwh"])), 1000)
+                    water_ml = with_embodied(clamp_non_negative(order(add(published, off_site))))
+            else:
+                water_ml = with_embodied(published)
     elif (
         energy_kwh is not None
         and it_energy_wh is not None
@@ -326,19 +372,20 @@ def estimate(
         litres = mul(scale(it_energy_wh, 1 / 1000), to_range(row["waterOnsiteLPerKwh"]))
         if water_scope != "on-site":
             litres = add(litres, mul(energy_kwh, to_range(region["waterOffsiteLPerKwh"])))
-        water_ml = clamp_non_negative(order(scale(litres, 1000)))
-        uplift = embodied_uplift()
-        if uplift is not None:
-            water_ml = order(mul(water_ml, uplift))
+        water_ml = with_embodied(clamp_non_negative(order(scale(litres, 1000))))
 
     # ------------------------------------------------------------- carbon
 
     carbon_g: Range | None = None
     direct_carbon = to_range((row.get("perPrompt") or {}).get("directCarbonG"))
     if direct_carbon is not None:
-        carbon_g = clamp_non_negative(order(mul(direct_carbon, direct_scale())))
-        if "scaled-direct-figure" not in flags:
-            flags.append("scaled-direct-figure")
+        # Carbon has two scopes, running and lifecycle, since the grid is always counted.
+        if direct_scope == "lifecycle" and not wants_embodied:
+            flag_once("direct-scope-wider")
+        else:
+            flag_once("scaled-direct-figure")
+            published = clamp_non_negative(order(mul(direct_carbon, direct_scale())))
+            carbon_g = published if direct_scope == "lifecycle" else with_embodied(published)
     elif energy_kwh is not None:
         # Location-based by default. A market-based factor is a claim about what
         # the provider bought, not about the electrons it burned.
@@ -348,10 +395,10 @@ def estimate(
             if carbon_basis == "provider-reported" and row_intensity is not None
             else to_range(region["gridGco2PerKwh"])
         )
-        carbon_g = clamp_non_negative(order(mul(energy_kwh, intensity)))
-        uplift = embodied_uplift()
-        if uplift is not None:
-            carbon_g = order(mul(carbon_g, uplift))
+        carbon_g = with_embodied(clamp_non_negative(order(mul(energy_kwh, intensity))))
+
+    if embodied_missing:
+        flag_once("embodied-missing")
 
     return Estimate(
         event_id=event.id,

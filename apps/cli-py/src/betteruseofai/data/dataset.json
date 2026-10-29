@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0",
-  "sha256": "9417767a42b2c1d2a2f5f967bb8fcdcc219395b4558478461ba4e02151ce26af",
+  "version": "3.0.0",
+  "sha256": "5ba2e7e318cbe1c7491b0d54002a019462ed52b2287077d0a35073f19c39b1b8",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -919,7 +919,8 @@
           "central": 300,
           "high": 1000
         },
-        "tokenCountsPublished": false
+        "tokenCountsPublished": false,
+        "directScope": "on-site"
       },
       "pue": {
         "low": 1,
@@ -943,7 +944,7 @@
       },
       "validFrom": "2025-06-01",
       "qualityScore": 2,
-      "notes": "A blog sentence, not a measurement. No model, no boundary, no date, no method, and no audit. The range is wide on purpose and the quality score is low on purpose. We keep the row because it is the only first-party OpenAI number that exists, and because readers will have seen it quoted. The boundary is recorded as datacenter only so the engine has something to work with; the source did not say.",
+      "notes": "A blog sentence, not a measurement. No model, no boundary, no date, no method, and no audit. The range is wide on purpose and the quality score is low on purpose. We keep the row because it is the only first-party OpenAI number that exists, and because readers will have seen it quoted. The boundary is recorded as datacenter only so the engine has something to work with; the source did not say. The water figure is taken as on-site cooling. The source did not say, but 0.32 mL is about a fifth of what the power station alone would use for 0.34 Wh at the world average, so it cannot include that; wider scopes add it from the energy figure.",
       "hosting": "cloud"
     },
     {
@@ -973,7 +974,8 @@
           "central": 400,
           "high": 400
         },
-        "tokenCountsPublished": false
+        "tokenCountsPublished": false,
+        "directScope": "lifecycle"
       },
       "pue": {
         "low": 1,
@@ -1705,7 +1707,8 @@
           "central": 300,
           "high": 700
         },
-        "tokenCountsPublished": false
+        "tokenCountsPublished": false,
+        "directScope": "on-site"
       },
       "pue": {
         "low": 1.12,
@@ -1729,7 +1732,7 @@
       },
       "validFrom": "2025-09-24",
       "qualityScore": 3,
-      "notes": "Median 0.31 Wh per query with an interquartile range of 0.16 to 0.60. Simulation rather than fleet telemetry, and written by people at the vendor whose cloud is being measured, so it is corroboration rather than independent evidence. The same paper puts test-time scaling with fifteen times longer output at 3.91 Wh, which is the number to reach for when a reasoning model is in play.",
+      "notes": "Median 0.31 Wh per query with an interquartile range of 0.16 to 0.60. Simulation rather than fleet telemetry, and written by people at the vendor whose cloud is being measured, so it is corroboration rather than independent evidence. The same paper puts test-time scaling with fifteen times longer output at 3.91 Wh, which is the number to reach for when a reasoning model is in play. The water figure is taken as on-site cooling. At 0.03 mL it is about a fiftieth of what the power station alone would use for 0.31 Wh at the world average, so it cannot include that; wider scopes add it from the energy figure.",
       "hosting": "cloud"
     },
     {
@@ -3431,7 +3434,7 @@
     }
   ],
   "calibration": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

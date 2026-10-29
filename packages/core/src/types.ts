@@ -101,6 +101,8 @@ export interface BenchmarkRow {
     energyWh?: Range;
     directWaterMl?: Range;
     directCarbonG?: Range;
+    /** What the direct water and carbon count. Required whenever either is present. */
+    directScope?: WaterScope;
     referenceInputTokens: Range;
     referenceOutputTokens: Range;
     tokenCountsPublished: boolean;
@@ -296,8 +298,18 @@ export type EstimateFlag =
   /** Water or carbon was published directly and scaled to this exchange. */
   | 'scaled-direct-figure'
   /** A local model was estimated from a row measured in somebody else's data centre. */
-  | 'local-row-missing';
+  | 'local-row-missing'
+  /** Lifecycle was asked for and making the hardware is not counted, so water and carbon are lower bounds. */
+  | 'embodied-missing'
+  /** The source published water or carbon only for a wider scope than the one asked for. */
+  | 'direct-scope-wider';
 
+/**
+ * What water and carbon count. On site is the data centre's cooling; off site
+ * adds the water used generating its electricity; lifecycle adds making the
+ * hardware, to water and to carbon both. Carbon is the same under the first
+ * two, since the grid's carbon is always counted.
+ */
 export type WaterScope = 'on-site' | 'on-site + off-site' | 'lifecycle';
 export type CarbonBasis = 'location-based' | 'provider-reported';
 
@@ -345,7 +357,10 @@ export interface EstimateOptions {
   regionCode?: string;
   waterScope?: WaterScope;
   carbonBasis?: CarbonBasis;
-  /** Only meaningful when the row has an embodied share and the scope is lifecycle. */
+  /**
+   * Only meaningful when the scope is lifecycle. False leaves making the
+   * hardware out, which makes water and carbon lower bounds.
+   */
   includeEmbodied?: boolean;
   /** Date used to pick a benchmark row. Defaults to the event timestamp. */
   at?: string;

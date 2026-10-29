@@ -85,12 +85,13 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       </section>
 
       <section class="buai-options__section">
-        <h2>What counts as water</h2>
+        <h2>What counts as water and carbon</h2>
         <p>
           Published water figures differ by more than a hundred times, almost entirely over where
           the boundary is drawn. Google counts the water its cooling towers evaporate. Mistral
           counts that, plus the water used generating the electricity, plus the water embedded in
-          building the hardware.
+          building the hardware. The last choice adds making the hardware to carbon too. Nobody has
+          published that share for most models, so there water and carbon show as lower bounds.
         </p>
         {(['on-site', 'on-site + off-site', 'lifecycle'] as const).map((scope) => (
           <label class="buai-options__radio" key={scope}>
@@ -107,7 +108,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
                   ? 'Cooling at the building, and nothing else.'
                   : scope === 'on-site + off-site'
                     ? 'Adds the water used generating the electricity. This is the default.'
-                    : 'Adds manufacturing and training, where a source provides it.'}
+                    : 'Adds making the hardware, to water and carbon both, where a source provides it.'}
               </span>
             </span>
           </label>

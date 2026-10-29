@@ -23,7 +23,7 @@ from betteruseofai.engine import (
     resolve_model,
     select_benchmark,
 )
-from betteruseofai.estimate import TokenCounts, UsageEvent, estimate
+from betteruseofai.estimate import TokenCounts, UsageEvent, estimate, is_lower_bound
 
 REPO = Path(__file__).resolve().parents[3]
 LOGS = REPO / "fixtures" / "logs"
@@ -193,12 +193,39 @@ def test_carbon_follows_the_grid():
 
 def test_a_directly_published_lifecycle_figure_is_used_as_published():
     result = estimate(
-        event(model_raw="mistral-large-2", tokens=TokenCounts(input=200, output=400)), DATASET
+        event(model_raw="mistral-large-2", tokens=TokenCounts(input=200, output=400)),
+        DATASET,
+        water_scope="lifecycle",
     )
     assert result.benchmark_row_id == "mistral.large-2.lca.2025"
     assert result.energy_wh is None
     assert "no-energy-figure" in result.flags
+    assert "embodied-missing" not in result.flags
     assert result.water_ml.central > 0
+
+
+def test_a_lifecycle_figure_cannot_be_narrowed():
+    for scope in ("on-site", "on-site + off-site"):
+        result = estimate(
+            event(model_raw="mistral-large-2", tokens=TokenCounts(input=200, output=400)),
+            DATASET,
+            water_scope=scope,
+        )
+        assert result.water_ml is None
+        assert result.carbon_g is None
+        assert "direct-scope-wider" in result.flags
+
+
+def test_lifecycle_without_an_embodied_share_is_a_lower_bound_for_water_and_carbon():
+    turn = event(model_raw="claude-opus-5", tokens=TokenCounts(input=1000, output=1000, thinking=0))
+    plain = estimate(turn, DATASET)
+    lifecycle = estimate(turn, DATASET, water_scope="lifecycle")
+    assert lifecycle.water_ml == plain.water_ml
+    assert lifecycle.carbon_g == plain.carbon_g
+    assert "embodied-missing" in lifecycle.flags
+    assert not is_lower_bound(lifecycle.flags, "energy")
+    assert is_lower_bound(lifecycle.flags, "water")
+    assert is_lower_bound(lifecycle.flags, "carbon")
 
 
 # ------------------------------------------------------------ equivalents

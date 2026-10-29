@@ -75,8 +75,26 @@ export const scaleUnit = (value: number, unit: string): { value: number; unit: s
   return { value, unit };
 };
 
+export type Measure = 'energy' | 'water' | 'carbon';
+
+/**
+ * Whether a figure is a lower bound. Undisclosed thinking makes all three one.
+ * Leaving out making the hardware under the lifecycle scope makes water and
+ * carbon one, and leaves energy as it is, since the hardware's manufacture
+ * is not counted in energy at all.
+ */
+export const isLowerBound = (flags: readonly EstimateFlag[], measure: Measure): boolean =>
+  flags.includes('thinking-unknown') || (measure !== 'energy' && flags.includes('embodied-missing'));
+
+const MEASURE_OF_UNIT: Record<string, Measure> = { Wh: 'energy', mL: 'water', g: 'carbon' };
+
+/** The measure a base unit belongs to, so a caller that gives the unit need not say it twice. */
+export const measureOfUnit = (unit: string): Measure | undefined => MEASURE_OF_UNIT[unit];
+
 export interface FormatRangeOptions {
   unit?: string;
+  /** Which figure this is. Worked out from a base unit when not given. */
+  measure?: Measure;
   /** Flags from the estimate, so a lower bound renders as one. */
   flags?: EstimateFlag[];
   /** Set false to leave off the bracketed bounds. */
@@ -97,12 +115,15 @@ export const formatRange = (
   options: FormatRangeOptions = {},
 ): string => {
   const { unit, flags = [], bounds = true, ascii = false } = options;
+  const measure = options.measure ?? (unit ? measureOfUnit(unit) : undefined);
   // Both shapes of absence. Null is a figure we could not work out; undefined
   // is a field that is not there at all, which stored data from an older
   // version can produce. A crash on the second is how this was found.
   if (range === null || range === undefined) return 'unknown';
 
-  const lowerBound = flags.includes('thinking-unknown');
+  const lowerBound = measure
+    ? isLowerBound(flags, measure)
+    : flags.includes('thinking-unknown');
   const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
   const prefix = lowerBound ? (ascii ? '>= ' : '≥ ') : estimated ? '~' : '';
 
@@ -164,6 +185,16 @@ export const explainFlags = (flags: EstimateFlag[]): string[] => {
         break;
       case 'local-row-missing':
         lines.push('No measurement exists for this model on your own machine, so a hosted row was used.');
+        break;
+      case 'embodied-missing':
+        lines.push(
+          "Nobody has published what making the hardware adds for this model, so water and carbon are lower bounds.",
+        );
+        break;
+      case 'direct-scope-wider':
+        lines.push(
+          "The source counted more than you asked for and didn't say how it splits, so that part is unknown.",
+        );
         break;
     }
   }
