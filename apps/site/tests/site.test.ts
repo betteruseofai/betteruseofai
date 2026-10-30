@@ -174,9 +174,43 @@ describe('every page', () => {
     await page.goto(`${base}/`);
     const figure = (await page.textContent('.buai-readout__figure')) ?? '';
     if (!/\d/.test(figure)) missing.push('landing: no figure without script');
+    // The calculator can't follow a link or a dial without script, and says so.
+    await page.goto(`${base}/calculator#model=gpt-4o`);
+    const notice = (await page.textContent('.calc__noscript').catch(() => null)) ?? '';
+    if (!notice.includes('JavaScript is off')) missing.push('calculator: no word that it needs script');
     expect(missing).toEqual([]);
     await context.close();
   }, 120000);
+
+  it('fits a phone without scrolling sideways', async () => {
+    if (skip()) return;
+    const context = await browser!.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await context.newPage();
+    const wide: string[] = [];
+    for (const path of PAGES) {
+      await page.goto(`${base}${path}`, { waitUntil: 'networkidle' });
+      const extra = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      if (extra > 0) wide.push(`${path}: ${extra}px`);
+    }
+    expect(wide).toEqual([]);
+    await context.close();
+  }, 120000);
+
+  it('gives a shared link a picture, and keeps crawlers out until launch', async () => {
+    if (skip()) return;
+    const { page } = await open('/');
+    const image = (await page.getAttribute('meta[property="og:image"]', 'content')) ?? '';
+    await page.close();
+    expect(image).toMatch(/^https:\/\/.+\/og\.png$/);
+    // A PNG keeps its size in the IHDR chunk, 16 bytes in.
+    const png = readFileSync(join(dist, 'og.png'));
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630]);
+
+    const robots = await fetch(`${base}/robots.txt`).then((response) => response.text());
+    expect(robots).toMatch(/^Disallow: \/$/m);
+  }, 60000);
 });
 
 describe('the content security policy', () => {
@@ -448,6 +482,80 @@ describe('the calculator', () => {
     expect(why).toContain('On your own machine');
     expect(why).toContain('a hosted row was used');
     await hosted.close();
+  }, 60000);
+
+  it('copies text that reads well pasted somewhere else, and finds its way back', async () => {
+    if (skip()) return;
+    const page = await browser!.newPage();
+    // Keep what was copied rather than asking the headless browser for clipboard access.
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          writeText: (text: string) => {
+            (window as unknown as { copied: string }).copied = text;
+            return Promise.resolve();
+          },
+        },
+      });
+    });
+    const hash = '#model=gpt-4o&region=FR&prompts=20&period=month&compare=1&local=deepseek-r1';
+    await page.goto(`${base}/calculator${hash}`, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => window.location.hash.includes('region=FR'), undefined, {
+      timeout: 10000,
+    });
+    await page.getByRole('button', { name: 'Copy as text' }).click();
+    await page.waitForFunction(() => 'copied' in window, undefined, { timeout: 10000 });
+    const text = await page.evaluate(() => (window as unknown as { copied: string }).copied);
+    await page.close();
+    // Wrapping can break a phrase across lines, so search the words alone.
+    const flat = text.replace(/\s+/g, ' ');
+
+    // Names rather than ids, and a date.
+    expect(text).toMatch(/^Model\s+GPT-4o$/m);
+    expect(text).toMatch(/^Electricity\s+France$/m);
+    expect(text).toMatch(/^Worked out\s+\d{4}-\d{2}-\d{2}, UTC$/m);
+    expect(text).toContain('over a month');
+    // Typed counts are not described as our tokenizer's.
+    expect(flat).not.toContain('tokenizer');
+    expect(flat).toContain('typed into the calculator');
+    // The local side comes along with its own caveats.
+    expect(flat).toContain('On your own machine, DeepSeek-R1');
+    expect(flat).toContain('a hosted row was used');
+    // Short lines, apart from addresses, which can't be broken.
+    const long = text.split('\n').filter((line) => line.length > 72 && !/^\s*https?:\/\//.test(line));
+    expect(long).toEqual([]);
+    // The last line brings the same figures back.
+    const last = text.trim().split('\n').pop() ?? '';
+    expect(last).toContain('/calculator#');
+    expect(last).toContain('model=gpt-4o');
+    expect(last).toContain('local=deepseek-r1');
+  }, 60000);
+
+  it('gives the results headings, and reads them out when they change', async () => {
+    if (skip()) return;
+    const { page } = await open('/calculator');
+    await page.waitForSelector('.calc__out .buai-readout__figure');
+    expect(await page.locator('.calc h2').count()).toBeGreaterThanOrEqual(2);
+    expect(await page.locator('.calc__out [aria-live="polite"] .buai-readout__figure').count()).toBe(3);
+    await page.close();
+  }, 60000);
+
+  it('follows a new link pasted into the same tab', async () => {
+    if (skip()) return;
+    const { page } = await open('/calculator#model=gpt-4o');
+    await page.waitForFunction(() => window.location.hash.includes('model=gpt-4o'), undefined, {
+      timeout: 10000,
+    });
+    // A change of hash alone is not a new page load.
+    await page.evaluate(() => {
+      window.location.hash = '#model=mistral-large-2';
+    });
+    await page.waitForFunction(
+      () => (document.querySelector('.calc__dials select') as HTMLSelectElement | null)?.value === 'mistral-large-2',
+      undefined,
+      { timeout: 10000 },
+    );
+    await page.close();
   }, 60000);
 
   it('makes no request to any host', async () => {

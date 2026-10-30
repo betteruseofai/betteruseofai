@@ -4966,11 +4966,11 @@ var doctor = async (context, args) => {
     ok: codexThere,
     detail: codexThere ? codexDir : `Nothing at ${codexDir}. Set CODEX_HOME if yours lives somewhere else. Rollouts written before 6 September 2025 carry no token counts.`
   });
-  const nodeOk = Number.parseInt(process.versions.node.split(".")[0] ?? "0", 10) >= 20;
+  const nodeOk = Number.parseInt(process.versions.node.split(".")[0] ?? "0", 10) >= 22;
   checks.push({
     name: "Node version",
     ok: nodeOk,
-    detail: nodeOk ? process.versions.node : `${process.versions.node}, and we need 20 or newer.`
+    detail: nodeOk ? process.versions.node : `${process.versions.node}, and we need 22 or newer.`
   });
   checks.push({
     name: "Dataset",

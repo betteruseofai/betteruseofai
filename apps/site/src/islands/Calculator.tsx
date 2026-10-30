@@ -101,6 +101,13 @@ const REPLIES = [
   { label: 'a long document', output: 2000 },
 ];
 
+/** What each scope counts, in the words the dropdown and the copied text both use. */
+const SCOPES: Record<WaterScope, string> = {
+  'on-site': 'running it, water on site only',
+  'on-site + off-site': 'running it, water at the power station too',
+  lifecycle: 'running it and making the hardware',
+};
+
 /** What a link asked for that the dataset doesn't have, by dial, as the link wrote it. */
 type Dropped = Partial<Record<'model' | 'local' | 'region', string>>;
 
@@ -153,7 +160,8 @@ const readHash = (): { dials: Dials; dropped: Dropped } => {
   return { dials, dropped };
 };
 
-const writeHash = (dials: Dials): void => {
+/** The part of the address after the hash that brings these dials back. */
+const hashFor = (dials: Dials): string => {
   const params = new URLSearchParams({
     model: dials.model,
     region: dials.region,
@@ -167,7 +175,11 @@ const writeHash = (dials: Dials): void => {
     params.set('compare', '1');
     params.set('local', dials.local);
   }
-  const next = `#${params.toString()}`;
+  return `#${params.toString()}`;
+};
+
+const writeHash = (dials: Dials): void => {
+  const next = hashFor(dials);
   if (window.location.hash !== next) {
     window.history.replaceState(null, '', next);
   }
@@ -213,6 +225,40 @@ const inOneUnit = (range: Range, unit: string): { range: Range; unit: string } =
 // --------------------------------------------------------------- rendering
 
 const show = (value: number): string => displayNumber(value);
+
+const LOCAL_CAVEAT =
+  'The local figure comes from a formula, not a measurement, and it assumes your accelerator is kept busy. One case we checked against a real card came out about a third low. Read it as the bottom of a range.';
+
+/**
+ * The engine's reasons for a range, in the calculator's terms. Its line for
+ * estimated tokens is about our tokenizer, and here nobody counted anything:
+ * the numbers are the ones typed into the boxes.
+ */
+const reasons = (flags: EstimateFlag[]): string[] =>
+  flags.includes('tokens-estimated')
+    ? [
+        'The token counts are the ones typed into the calculator.',
+        ...explainFlags(flags.filter((flag) => flag !== 'tokens-estimated')),
+      ]
+    : explainFlags(flags);
+
+/** Breaks text into lines of at most 72 characters, for the copied text. */
+const wrap = (text: string, first: string, rest: string, width = 72): string[] => {
+  const lines: string[] = [];
+  let line = first;
+  let empty = true;
+  for (const word of text.split(' ')) {
+    if (!empty && line.length + 1 + word.length > width) {
+      lines.push(line);
+      line = rest + word;
+    } else {
+      line = empty ? line + word : `${line} ${word}`;
+    }
+    empty = false;
+  }
+  if (!empty) lines.push(line);
+  return lines;
+};
 
 /**
  * Says what a link asked for that we don't have, and what we used instead, so
@@ -298,12 +344,20 @@ export default function Calculator() {
   const [ready, setReady] = useState(false);
 
   // The address is only readable in the browser, so the first render matches
-  // what the server sent and the dials arrive a tick later.
+  // what the server sent and the dials arrive a tick later. A link pasted into
+  // the same tab changes only the hash, which is not a new load, so read it
+  // again then too. Writing the hash back uses replaceState, which fires no
+  // event, so this can't loop.
   useEffect(() => {
-    const read = readHash();
-    setDials(read.dials);
-    setDropped(read.dropped);
+    const apply = (): void => {
+      const read = readHash();
+      setDials(read.dials);
+      setDropped(read.dropped);
+    };
+    apply();
     setReady(true);
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
   }, []);
 
   useEffect(() => {
@@ -380,32 +434,74 @@ export default function Calculator() {
     return 'The two land close enough together that the ranges overlap. Neither is clearly better.';
   })();
 
+  /** Text that reads well pasted into an email: names, short lines, and a way back. */
   const plain = (): string => {
-    const line = (label: string, range: Range | null, unit: string): string => {
-      if (!range) return `${label.padEnd(10)} unknown`;
+    const label = (name: string): string => name.padEnd(12);
+    const figure = (
+      name: string,
+      range: Range | null,
+      unit: string,
+      flags: EstimateFlag[],
+      measure: 'energy' | 'water' | 'carbon',
+    ): string => {
+      if (!range) return `${label(name)}unknown`;
       const scaled = inOneUnit(range, unit);
-      return `${label.padEnd(10)} ${show(scaled.range.central)} ${scaled.unit}  [ ${show(scaled.range.low)} to ${show(scaled.range.high)} ]`;
+      const least = atLeast(flags, measure) ? 'at least ' : '';
+      return `${label(name)}${least}${show(scaled.range.central)} ${scaled.unit}  [ ${show(scaled.range.low)} to ${show(scaled.range.high)} ]`;
     };
-    return [
-      'Better Use of AI, estimate',
+    const figures = (estimate: Estimate): string[] => [
+      figure('Energy', times(estimate.energyWh, factor), 'Wh', estimate.basis.flags, 'energy'),
+      figure('Water', times(estimate.waterMl, factor), 'mL', estimate.basis.flags, 'water'),
+      figure('Carbon', times(estimate.carbonG, factor), 'g', estimate.basis.flags, 'carbon'),
+    ];
+    const bullets = (flags: EstimateFlag[]): string[] =>
+      reasons(flags).flatMap((reason) => wrap(reason, '  - ', '    '));
+    const sources = (list: Estimate['basis']['sources']): string[] =>
+      list.flatMap((source) => [
+        ...wrap(`${source.title}, ${source.publisher}, ${source.date}`, '  ', '  '),
+        // An address can't be broken, so it gets a line of its own.
+        `    ${source.url}`,
+      ]);
+    const lines = [
+      'Better Use of AI, an estimate',
       '='.repeat(72),
-      `Model      ${dials.model}`,
-      `Region     ${dials.region}`,
-      `Work       ${dials.prompts} prompts a day over a ${dials.period}, ${show(factor)} in all`,
-      `Tokens     ${dials.inputTokens} in, ${dials.outputTokens} out, each`,
-      `Counting   ${dials.scope}`,
+      `${label('Worked out')}${new Date().toISOString().slice(0, 10)}, UTC`,
+      `${label('Model')}${nameOf(dials.model)}`,
+      `${label('Electricity')}${regionName(dials.region)}`,
+      `${label('Work')}${dials.prompts} prompts a day over a ${dials.period}, ${show(factor)} in all`,
+      `${label('Tokens')}${dials.inputTokens} in and ${dials.outputTokens} out a prompt, as typed`,
+      ...wrap(SCOPES[dials.scope], label('Counting'), ' '.repeat(12)),
       '',
-      line('Energy', energy, 'Wh'),
-      line('Water', water, 'mL'),
-      line('Carbon', carbon, 'g'),
+      ...figures(cloud),
       '',
       'This is an estimate, not a measurement.',
-      ...cloud.basis.flags.map((flag) => `  - ${explainFlags([flag])[0] ?? flag}`),
+      ...bullets(cloud.basis.flags),
       '',
-      ...cloud.basis.sources.map((source) => `  ${source.title}, ${source.publisher}, ${source.url}`),
+      'Sources',
+      ...sources(cloud.basis.sources),
+    ];
+    if (local) {
+      // Only the ones the hosted side didn't already name.
+      const named = new Set(cloud.basis.sources.map((source) => source.url));
+      const more = local.basis.sources.filter((source) => !named.has(source.url));
+      lines.push(
+        '',
+        `On your own machine, ${nameOf(dials.local)}`,
+        '-'.repeat(72),
+        ...figures(local),
+        ...(verdict ? ['', ...wrap(verdict, '', '')] : []),
+        '',
+        ...wrap(LOCAL_CAVEAT, '  - ', '    '),
+        ...bullets(localFlags),
+        ...(more.length > 0 ? ['', 'More sources', ...sources(more)] : []),
+      );
+    }
+    lines.push(
       '',
-      `Dataset ${dataset.version}`,
-    ].join('\n');
+      `Dataset ${dataset.version}. Open these figures again at`,
+      `${window.location.origin}${window.location.pathname}${hashFor(dials)}`,
+    );
+    return lines.join('\n');
   };
 
   const [copied, setCopied] = useState(false);
@@ -413,6 +509,7 @@ export default function Calculator() {
   return (
     <div class="calc">
       <form class="calc__dials" onSubmit={(event) => event.preventDefault()}>
+        <h2 class="buai-visually-hidden">What you put in</h2>
         <fieldset>
           <legend class="note">The work</legend>
 
@@ -510,9 +607,11 @@ export default function Calculator() {
               value={dials.scope}
               onInput={(e) => set('scope', e.currentTarget.value as WaterScope)}
             >
-              <option value="on-site">running it, water on site only</option>
-              <option value="on-site + off-site">running it, water at the power station too</option>
-              <option value="lifecycle">running it and making the hardware</option>
+              {(Object.keys(SCOPES) as WaterScope[]).map((scope) => (
+                <option value={scope} key={scope}>
+                  {SCOPES[scope]}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -549,7 +648,9 @@ export default function Calculator() {
       </form>
 
       <div class="calc__out">
-        <div class="cols">
+        <h2 class="buai-visually-hidden">What it comes to</h2>
+        {/* Read out when a dial changes, so a screen reader hears the new figures. */}
+        <div class="cols" aria-live="polite">
           <Figure
             label={`Energy a ${dials.period}`}
             range={energy}
@@ -574,7 +675,7 @@ export default function Calculator() {
 
         {energyLike.length + waterLike.length + carbonLike.length > 0 ? (
           <div class="calc__like stack">
-            <p class="note">About the same as</p>
+            <h3 class="note">About the same as</h3>
             {/*
               Grouped, because an energy comparison and a water comparison read
               as contradictory when they sit in one list. A kettle of water
@@ -606,7 +707,7 @@ export default function Calculator() {
 
         {local ? (
           <div class="calc__local stack">
-            <p class="note">On your own machine</p>
+            <h3 class="note">On your own machine</h3>
             <div class="cols">
               <Figure
                 label="Energy"
@@ -632,15 +733,11 @@ export default function Calculator() {
             {verdict ? <p class="measure">{verdict}</p> : null}
             <div class="buai-hazard measure calc__local-caveats">
               <span class="buai-hazard__label">Before you act on that</span>
-              <p style="margin-bottom: 0">
-                The local figure comes from a formula, not a measurement, and it assumes your
-                accelerator is kept busy. One case we checked against a real card came out about a
-                third low. Read it as the bottom of a range.
-              </p>
+              <p style="margin-bottom: 0">{LOCAL_CAVEAT}</p>
               {/* The local side's own reasons, which the cloud side's list below can't show. */}
-              {explainFlags(localFlags).length > 0 ? (
+              {reasons(localFlags).length > 0 ? (
                 <ul style="margin-bottom: 0">
-                  {explainFlags(localFlags).map((line) => (
+                  {reasons(localFlags).map((line) => (
                     <li key={line}>{line}</li>
                   ))}
                 </ul>
@@ -653,7 +750,7 @@ export default function Calculator() {
           <summary>Where this range comes from</summary>
           <span class="buai-source__body">
             <ul>
-              {explainFlags(cloud.basis.flags).map((line) => (
+              {reasons(cloud.basis.flags).map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>
@@ -671,7 +768,7 @@ export default function Calculator() {
               <>
                 <p class="note">On your own machine</p>
                 <ul>
-                  {explainFlags(localFlags).map((line) => (
+                  {reasons(localFlags).map((line) => (
                     <li key={line}>{line}</li>
                   ))}
                 </ul>

@@ -1,0 +1,7 @@
+# Closed until launch. On launch day this becomes:
+#   User-agent: *
+#   Allow: /
+#   Sitemap: https://betteruseofai.org/sitemap-index.xml
+# See docs/DEPLOY.md.
+User-agent: *
+Disallow: /

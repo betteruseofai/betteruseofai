@@ -55,6 +55,12 @@ const full = `${title} · Better Use of AI`;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical.href} />
+    {/* Made by packages/tokens/logo/og.mjs. Absolute, because a link preview can't resolve a path. */}
+    <meta property="og:image" content={new URL('/og.png', Astro.site ?? 'https://betteruseofai.org').href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Better Use of AI mark and name on a ruled grid" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <meta name="theme-color" content="#eeece9" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121412" media="(prefers-color-scheme: dark)" />

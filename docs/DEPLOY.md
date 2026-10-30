@@ -98,6 +98,8 @@ From `PLAN.md` section 8.7, still current.
 - [ ] Full (strict) TLS, Always HTTPS, DNSSEC. HSTS after a stable week.
 - [ ] Check the preview URL on `*.pages.dev` carries `noindex` (the `_headers` file does this) and
       that production loads only self-hosted assets plus the one disclosed beacon.
+- [ ] Open `apps/site/public/robots.txt`, which turns every crawler away until launch, and replace
+      it with the three lines its comment gives, so search engines get in and find the sitemap.
 
 ## 5. The first release
 

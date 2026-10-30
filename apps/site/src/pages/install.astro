@@ -176,8 +176,11 @@ const routes = [
         <summary>How do I get rid of it?</summary>
         <p>
           Remove the extension the way you remove any extension, which deletes its storage with it.
-          The command line tools keep a small cache directory that <code>betteruseofai doctor</code>{' '}
-          will name and remove.
+          For the plugin, run <code>/plugin uninstall betteruseofai</code>, and if{' '}
+          <code>/betteruseofai:setup</code> put us on your status line, take the{' '}
+          <code>statusLine</code> entry out of <code>~/.claude/settings.json</code>. The command line
+          tools and the plugin keep an event log and the status line's running totals in{' '}
+          <code>~/.claude/betteruseofai</code>. Delete that folder and nothing of ours is left.
         </p>
       </details>
     </Faq>

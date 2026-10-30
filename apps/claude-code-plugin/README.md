@@ -82,4 +82,4 @@ The `betteruseofai-methodology` skill has the full account, including what we do
 
 ## Requirements
 
-Node 20 or newer, which Claude Code already needs. Nothing else, and no network.
+Node 22 or newer, the oldest we test on. Nothing else, and no network.
