@@ -429,6 +429,27 @@ describe('the calculator', () => {
     expect(whole.figures[2]).not.toBe('unknown');
   }, 60000);
 
+  it('shows the local comparison its own caveats', async () => {
+    if (skip()) return;
+    // A reasoning model with no thinking count typed in: every local figure is a lower bound.
+    const { page } = await open('/calculator#model=gpt-4o&compare=1&local=deepseek-r1-distill-llama-70b');
+    await page.waitForSelector('.calc__local .buai-readout__figure');
+    const local = await page.locator('.calc__local .buai-readout__figure').allTextContents();
+    expect(local).toHaveLength(3);
+    for (const figure of local) expect(figure.trim()).toMatch(/^≥/);
+    await page.close();
+
+    // A model nobody has measured on a desk is priced from a data centre row, and says so.
+    const { page: hosted } = await open('/calculator#model=gpt-4o&compare=1&local=deepseek-r1');
+    await hosted.waitForSelector('.calc__local');
+    const caveats = (await hosted.textContent('.calc__local-caveats')) ?? '';
+    expect(caveats).toContain('a hosted row was used');
+    const why = (await hosted.textContent('.calc__why')) ?? '';
+    expect(why).toContain('On your own machine');
+    expect(why).toContain('a hosted row was used');
+    await hosted.close();
+  }, 60000);
+
   it('makes no request to any host', async () => {
     if (skip()) return;
     const page = await browser!.newPage();

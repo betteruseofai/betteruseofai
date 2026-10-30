@@ -22,7 +22,7 @@ import {
   resolveModel,
   scaleUnit,
 } from '@betteruseofai/core';
-import type { Estimate, Range, UsageEvent, WaterScope } from '@betteruseofai/core';
+import type { Estimate, EstimateFlag, Range, UsageEvent, WaterScope } from '@betteruseofai/core';
 
 // ------------------------------------------------------------------- state
 
@@ -350,12 +350,12 @@ export default function Calculator() {
 
   const factor = dials.prompts * PERIODS[dials.period];
   // Leaving out making the hardware makes water and carbon lower bounds, not energy.
-  const atLeast = (measure: 'energy' | 'water' | 'carbon'): boolean =>
-    isLowerBound(cloud.basis.flags, measure);
+  const atLeast = (flags: EstimateFlag[], measure: 'energy' | 'water' | 'carbon'): boolean =>
+    isLowerBound(flags, measure);
   // A figure published for a wider scope can't be narrowed, so say why it's missing.
-  const wider = cloud.basis.flags.includes('direct-scope-wider')
-    ? 'the source only gives a wider figure than this'
-    : undefined;
+  const wider = (flags: EstimateFlag[]): string | undefined =>
+    flags.includes('direct-scope-wider') ? 'the source only gives a wider figure than this' : undefined;
+  const localFlags = local?.basis.flags ?? [];
 
   const energy = times(cloud.energyWh, factor);
   const water = times(cloud.waterMl, factor);
@@ -554,21 +554,21 @@ export default function Calculator() {
             label={`Energy a ${dials.period}`}
             range={energy}
             unit="Wh"
-            atLeast={atLeast('energy')}
+            atLeast={atLeast(cloud.basis.flags, 'energy')}
           />
           <Figure
             label={`Water a ${dials.period}, ${dials.scope}`}
             range={water}
             unit="mL"
-            atLeast={atLeast('water')}
-            note={wider}
+            atLeast={atLeast(cloud.basis.flags, 'water')}
+            note={wider(cloud.basis.flags)}
           />
           <Figure
             label={`Carbon a ${dials.period}${dials.scope === 'lifecycle' ? ', lifecycle' : ''}`}
             range={carbon}
             unit="g"
-            atLeast={atLeast('carbon')}
-            note={wider}
+            atLeast={atLeast(cloud.basis.flags, 'carbon')}
+            note={wider(cloud.basis.flags)}
           />
         </div>
 
@@ -612,19 +612,39 @@ export default function Calculator() {
                 label="Energy"
                 range={times(local.energyWh, factor)}
                 unit="Wh"
-                atLeast={false}
+                atLeast={atLeast(localFlags, 'energy')}
               />
-              <Figure label="Water" range={times(local.waterMl, factor)} unit="mL" atLeast={false} />
-              <Figure label="Carbon" range={times(local.carbonG, factor)} unit="g" atLeast={false} />
+              <Figure
+                label="Water"
+                range={times(local.waterMl, factor)}
+                unit="mL"
+                atLeast={atLeast(localFlags, 'water')}
+                note={wider(localFlags)}
+              />
+              <Figure
+                label="Carbon"
+                range={times(local.carbonG, factor)}
+                unit="g"
+                atLeast={atLeast(localFlags, 'carbon')}
+                note={wider(localFlags)}
+              />
             </div>
             {verdict ? <p class="measure">{verdict}</p> : null}
-            <div class="buai-hazard measure">
+            <div class="buai-hazard measure calc__local-caveats">
               <span class="buai-hazard__label">Before you act on that</span>
               <p style="margin-bottom: 0">
                 The local figure comes from a formula, not a measurement, and it assumes your
                 accelerator is kept busy. One case we checked against a real card came out about a
                 third low. Read it as the bottom of a range.
               </p>
+              {/* The local side's own reasons, which the cloud side's list below can't show. */}
+              {explainFlags(localFlags).length > 0 ? (
+                <ul style="margin-bottom: 0">
+                  {explainFlags(localFlags).map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -647,6 +667,26 @@ export default function Calculator() {
                 </li>
               ))}
             </ul>
+            {local ? (
+              <>
+                <p class="note">On your own machine</p>
+                <ul>
+                  {explainFlags(localFlags).map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                <ul>
+                  {local.basis.sources.map((source) => (
+                    <li key={source.url}>
+                      <a href={source.url}>{source.title}</a>
+                      <span class="buai-source__meta">
+                        {source.publisher} · {source.date}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </span>
         </details>
 
