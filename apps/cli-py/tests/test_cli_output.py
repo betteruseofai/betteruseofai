@@ -35,6 +35,18 @@ def test_brief_is_six_lines_or_fewer_and_counts_the_caveats() -> None:
     assert "[ " in stdout
 
 
+def test_session_says_each_caveat_once() -> None:
+    stdout, _, _ = cli("session", "session-alpha")
+    why = stdout.split("WHY THE FIGURES ARE UNCERTAIN")[1]
+    # The caveats under the tables already said these, in their own words.
+    assert "No region given" in stdout
+    assert "No region was given" not in why
+    assert "nobody has measured this one" not in why
+    assert "We do not recognise this model" not in why
+    # What the caveats don't cover still gets its line.
+    assert "system prompt" in why
+
+
 def test_brief_falls_back_to_ascii() -> None:
     stdout, _, _ = cli("session", "session-alpha", "--brief", "--ascii")
     assert "#" in stdout

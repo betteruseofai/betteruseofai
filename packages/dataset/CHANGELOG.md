@@ -1,5 +1,14 @@
 # @betteruseofai/dataset
 
+## 3.1.0
+
+Data only, so a minor bump.
+
+- **Litres of petrol burned, a carbon comparison.** 2,347.7 g of CO2 a litre, from the US EPA's
+  8,887 g a gallon, read from its page on 30 October 2026. The largest carbon comparison before
+  was a kilometre driven, which runs out at 24 kg, so a month of agent sessions had none and the
+  dashboard's "Put another way" left carbon out (audit P8). This one covers up to 235 kg.
+
 ## 3.0.0
 
 A schema change, so a major bump: a benchmark row that publishes water or carbon directly must now

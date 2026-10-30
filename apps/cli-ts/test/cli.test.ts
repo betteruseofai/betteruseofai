@@ -163,6 +163,18 @@ describe('sessions and the session report', () => {
     expect(result.stdout).toContain('WHY THE FIGURES ARE UNCERTAIN');
   });
 
+  it('says each caveat once', async () => {
+    const result = await cli(['session', 'session-alpha']);
+    const why = result.stdout.split('WHY THE FIGURES ARE UNCERTAIN')[1] ?? '';
+    // The caveats under the tables already said these, in their own words.
+    expect(result.stdout).toContain('No region given');
+    expect(why).not.toContain('No region was given');
+    expect(why).not.toContain('nobody has measured this one');
+    expect(why).not.toContain('We do not recognise this model');
+    // What the caveats don't cover still gets its line.
+    expect(why).toContain('system prompt');
+  });
+
   it('says which session it could not find', async () => {
     const result = await cli(['session', 'nope']);
     expect(result.code).toBe(1);
@@ -621,6 +633,40 @@ describe('the dashboard', () => {
     const parsed = JSON.parse(block![1]!.replace(/<\\\//g, '</'));
     expect(parsed.command).toBe('dashboard');
   });
+
+  it('opens a chart wider than the window on its newest bars, and says so', async () => {
+    const { chromium } = await import('@playwright/test');
+    const { renderDashboard } = await import('../src/commands/dashboard.js');
+    // The fixtures hold two days. Thirty, as a month of use gives, is wider than 1440 pixels.
+    const body = JSON.parse((await cli(['dashboard', '--json', '--no-log'])).stdout);
+    const day = body.byDay[0];
+    body.byDay = Array.from({ length: 30 }, (_, index) => ({
+      ...day,
+      key: `2026-08-${String(index + 1).padStart(2, '0')}`,
+    }));
+    const browser = await chromium.launch();
+    try {
+      const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+      await page.setContent(renderDashboard(JSON.stringify(body)));
+      // A string, because this package is typed for Node and has no DOM types.
+      const charts = await page.evaluate(`[...document.querySelectorAll('.buai-dash__bars')].map((chart) => {
+        const cue = chart.nextElementSibling;
+        return {
+          bars: chart.children.length,
+          wider: chart.scrollWidth > chart.clientWidth + 1,
+          atNewest: chart.scrollLeft + chart.clientWidth >= chart.scrollWidth - 1,
+          cue: Boolean(cue && cue.classList.contains('buai-dash__cue') && !cue.hidden),
+        };
+      })`);
+      // The week chart has one bar and fits; the day chart has thirty and doesn't.
+      expect(charts).toEqual([
+        { bars: 1, wider: false, atNewest: true, cue: false },
+        { bars: 30, wider: true, atNewest: true, cue: true },
+      ]);
+    } finally {
+      await browser.close();
+    }
+  }, 60000);
 
   it('escapes anything that could end the script element', async () => {
     const { renderDashboard } = await import('../src/commands/dashboard.js');

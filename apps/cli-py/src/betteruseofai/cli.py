@@ -567,6 +567,18 @@ def caveats(context: Context, totals: Aggregate) -> list[str]:
     return lines
 
 
+def caveat_flags(totals: Aggregate) -> list[str]:
+    """The flags caveats() has already put into words, so a report doesn't say them twice."""
+    return [
+        *(["model-unknown"] if totals.unknown_model_count > 0 else []),
+        *(["no-benchmark"] if totals.no_benchmark_count > 0 else []),
+        "thinking-unknown",
+        "embodied-missing",
+        "proxy-row",
+        "region-default",
+    ]
+
+
 EXPLAIN = {
     "model-unknown": "We do not recognise this model, so there is no figure to show.",
     "no-benchmark": "We know this model but nobody has published a measurement for it.",
@@ -954,7 +966,9 @@ def cmd_session(context: Context, args: dict[str, Any]) -> str:
         lines.append("")
         lines.extend(notes)
 
-    why = [EXPLAIN[flag] for flag in totals.flags if flag in EXPLAIN]
+    # Only what the caveats above haven't already said.
+    said = caveat_flags(totals)
+    why = [EXPLAIN[flag] for flag in totals.flags if flag in EXPLAIN and flag not in said]
     if why:
         lines.append("")
         lines.append(paint(context, "dim", "WHY THE FIGURES ARE UNCERTAIN"))

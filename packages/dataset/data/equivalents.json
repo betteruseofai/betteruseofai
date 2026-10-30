@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "notes": "Everyday comparisons, each with a source. The engine picks the one or two whose count lands between 0.1 and 100, so a figure is never described as 0.0004 of a car journey.",
   "equivalents": [
     {
@@ -304,6 +304,28 @@
         "recorded": "2026-09-10",
         "note": "The same factor as car-metre, a thousand times over, so the pair covers both a single prompt and a week of sessions."
       }
+    },
+    {
+      "id": "petrol-litre",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 2347.7,
+      "singular": "litre of petrol burned",
+      "plural": "litres of petrol burned",
+      "source": {
+        "title": "Greenhouse Gas Emissions from a Typical Passenger Vehicle",
+        "url": "https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2026-06-03",
+        "retrieved": "2026-10-30",
+        "licence": "public domain"
+      },
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-30",
+        "note": "The page gives 8,887 g of CO2 a US gallon; a gallon is 3.785411784 litres. Carbon dioxide from the tailpipe only, not from refining or shipping the fuel."
+      },
+      "notes": "The comparison that lands in range for a month of agent sessions, where a kilometre driven does not."
     }
   ]
 }

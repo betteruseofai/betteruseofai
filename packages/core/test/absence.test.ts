@@ -200,6 +200,14 @@ describe('equivalents', () => {
     expect(water[0]?.id).toBe('shower-minute');
   });
 
+  it('give carbon a comparison for a month of agent sessions too', () => {
+    // About 50 kg, a fortnight of heavy Claude Code use. A kilometre driven
+    // tops out at 24 kg, so before litres of petrol carbon had nothing at all.
+    const found = equivalents(50000, 'carbon', dataset);
+    expect(found[0]?.id).toBe('petrol-litre');
+    expect(found[0]?.count).toBeCloseTo(21.3, 1);
+  });
+
   it('leave the stale search figure until nothing else fits', () => {
     // 4 Wh is a fifth of a phone charge or thirteen searches. The search figure
     // is seventeen years old, so the phone charge wins even though its count is

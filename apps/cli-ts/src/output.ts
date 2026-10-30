@@ -172,6 +172,16 @@ export const caveats = (context: Context, totals: Aggregate): string[] => {
   return lines;
 };
 
+/** The flags caveats() has already put into words, so a report doesn't say them twice. */
+export const caveatFlags = (totals: Aggregate): EstimateFlag[] => [
+  ...(totals.unknownModelCount > 0 ? (['model-unknown'] as const) : []),
+  ...(totals.noBenchmarkCount > 0 ? (['no-benchmark'] as const) : []),
+  'thinking-unknown',
+  'embodied-missing',
+  'proxy-row',
+  'region-default',
+];
+
 export const flagList = (flags: EstimateFlag[]): string => (flags.length === 0 ? '' : flags.join(' '));
 
 export const short = (range: Range | null, unit: string): string => {

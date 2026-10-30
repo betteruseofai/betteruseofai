@@ -424,4 +424,26 @@
       '. Written ' + data.header.generatedAt.slice(0, 16).replace('T', ' ') + ' UTC.',
     ])
   );
+
+  /*
+   * The charts run oldest to newest, left to right. One wider than the window
+   * would open on its oldest bars with the newest out of sight, so it opens
+   * scrolled to the newest and says the older ones are to the left. A resize
+   * only shows or hides that line; it never moves a chart somebody scrolled.
+   */
+  var charts = app.querySelectorAll('.buai-dash__bars');
+  var cues = [];
+  for (var index = 0; index < charts.length; index += 1) {
+    var cue = el('p', { class: 'buai-dash__note buai-dash__cue' }, ['Newest on the right. Scroll left for older ones.']);
+    charts[index].parentNode.insertBefore(cue, charts[index].nextSibling);
+    cues.push(cue);
+    charts[index].scrollLeft = charts[index].scrollWidth;
+  }
+  function showCues() {
+    for (var index = 0; index < charts.length; index += 1) {
+      cues[index].hidden = charts[index].scrollWidth <= charts[index].clientWidth + 1;
+    }
+  }
+  showCues();
+  window.addEventListener('resize', showCues);
 })();

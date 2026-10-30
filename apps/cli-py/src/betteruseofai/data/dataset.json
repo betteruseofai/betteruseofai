@@ -1,6 +1,6 @@
 {
-  "version": "3.0.0",
-  "sha256": "5ba2e7e318cbe1c7491b0d54002a019462ed52b2287077d0a35073f19c39b1b8",
+  "version": "3.1.0",
+  "sha256": "4ecb918f41b81571226168c67255cec1e869c3f0b0256b83ca98817e9a52db07",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -3431,10 +3431,32 @@
         "recorded": "2026-09-10",
         "note": "The same factor as car-metre, a thousand times over, so the pair covers both a single prompt and a week of sessions."
       }
+    },
+    {
+      "id": "petrol-litre",
+      "quantity": "carbon",
+      "unitPer": "g",
+      "amount": 2347.7,
+      "singular": "litre of petrol burned",
+      "plural": "litres of petrol burned",
+      "source": {
+        "title": "Greenhouse Gas Emissions from a Typical Passenger Vehicle",
+        "url": "https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2026-06-03",
+        "retrieved": "2026-10-30",
+        "licence": "public domain"
+      },
+      "provenance": {
+        "method": "fetched",
+        "recorded": "2026-10-30",
+        "note": "The page gives 8,887 g of CO2 a US gallon; a gallon is 3.785411784 litres. Carbon dioxide from the tailpipe only, not from refining or shipping the fuel."
+      },
+      "notes": "The comparison that lands in range for a month of agent sessions, where a kilometre driven does not."
     }
   ],
   "calibration": {
-    "version": "3.0.0",
+    "version": "3.1.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

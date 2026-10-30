@@ -4,7 +4,7 @@ import { flagBool } from '../args.js';
 import type { ParsedArgs } from '../args.js';
 import type { Context } from '../context.js';
 import { loadEvents } from '../context.js';
-import { caveats, emitJson, meter, paint, rangeOut, readout, short, table } from '../output.js';
+import { caveatFlags, caveats, emitJson, meter, paint, rangeOut, readout, short, table } from '../output.js';
 
 /** Every session, newest last, with what each one cost. */
 export const sessions = async (context: Context, args: ParsedArgs): Promise<string> => {
@@ -225,7 +225,9 @@ export const session = async (context: Context, args: ParsedArgs): Promise<strin
     lines.push(...notes);
   }
 
-  const why = explainFlags(totals.flags);
+  // Only what the caveats above haven't already said.
+  const said = caveatFlags(totals);
+  const why = explainFlags(totals.flags.filter((flag) => !said.includes(flag)));
   if (why.length > 0) {
     lines.push('');
     lines.push(paint(context, 'dim', 'WHY THE FIGURES ARE UNCERTAIN'));
