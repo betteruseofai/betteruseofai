@@ -92,8 +92,17 @@ ${body}
 
 // ------------------------------------------------------------- a server
 
+// Pages are served from here too, not set as content: a page set as content is
+// on about:blank, fonts fetched from another origin need CORS headers, and
+// without them the browser quietly falls back. The lockups were drawn in a
+// fallback face, and measured in one, until 2026-10-30.
 const TYPES = { '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2' };
+let current = '';
 const server = createServer((request, response) => {
+  if (request.url === '/page.html') {
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(current);
+    return;
+  }
   const path = join(pkg, normalize(decodeURIComponent((request.url ?? '/').split('?')[0])).replace(/^[/\\]+/, ''));
   if (!path.startsWith(pkg) || !existsSync(path) || statSync(path).isDirectory()) {
     response.writeHead(404).end();
@@ -104,18 +113,28 @@ const server = createServer((request, response) => {
 });
 const port = await new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server.address().port)));
 
-const head = `<link rel="stylesheet" href="http://127.0.0.1:${port}/fonts.css">`;
+const head = `<link rel="stylesheet" href="/fonts.css">`;
 const browser = await chromium.launch();
 const written = [];
+
+/** Loads a page from the local server, with its fonts, and refuses to go on without them. */
+const load = async (page, html) => {
+  current = html;
+  await page.goto(`http://127.0.0.1:${port}/page.html`, { waitUntil: 'load' });
+  // A face is fetched only when something asks for it, so ask.
+  await page.evaluate(() => document.fonts.load('800 27px "Big Shoulders"'));
+  if (!(await page.evaluate(() => document.fonts.check('800 27px "Big Shoulders"')))) {
+    throw new Error('Big Shoulders did not load, so the wordmark would be in a fallback face.');
+  }
+};
 
 /** Renders one fragment to a PNG at the given device scale, transparent unless given a background. */
 const shoot = async (fragment, out, { scale = 1, background = null } = {}) => {
   const page = await browser.newPage({ viewport: { width: 1000, height: 600 }, deviceScaleFactor: scale });
-  await page.setContent(
+  await load(
+    page,
     `<!doctype html><html><head>${head}</head><body style="margin:0;background:transparent"><div id="t" style="display:inline-block;line-height:0;background:${background ?? 'transparent'}">${fragment}</div></body></html>`,
-    { waitUntil: 'load' },
   );
-  await page.evaluate(() => document.fonts.ready);
   mkdirSync(dirname(out), { recursive: true });
   await page.locator('#t').screenshot({ path: out, omitBackground: background === null });
   await page.close();
@@ -127,11 +146,10 @@ const sized = (svg, px, colour) =>
 
 // The wordmark's width in the real face, then the lockups written to fit.
 const probe = await browser.newPage();
-await probe.setContent(
+await load(
+  probe,
   `<!doctype html><html><head>${head}</head><body style="margin:0"><svg xmlns="http://www.w3.org/2000/svg" width="800" height="60"><text id="w" x="0" y="40" font-family="${FONT}" font-weight="800" font-size="27" letter-spacing="0.5">BETTER USE OF AI</text></svg></body></html>`,
-  { waitUntil: 'load' },
 );
-await probe.evaluate(() => document.fonts.ready);
 const textWidth = await probe.evaluate(() => document.getElementById('w').getBBox().width);
 await probe.close();
 const { horizontal, stacked } = lockups(textWidth);
