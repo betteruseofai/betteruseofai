@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { aggregate } from '../src/aggregate.js';
 import { estimate } from '../src/estimate.js';
 import { formatRange, isLowerBound } from '../src/format.js';
 import { fitQuerySet, normalizeToPerToken } from '../src/normalize.js';
@@ -279,6 +280,20 @@ describe('water', () => {
     expect(formatRange(lifecycle.energyWh, { unit: 'Wh', flags })).not.toMatch(/^≥/);
     expect(formatRange(lifecycle.waterMl, { unit: 'mL', flags })).toMatch(/^≥ /);
     expect(formatRange(lifecycle.carbonG, { unit: 'g', flags })).toMatch(/^≥ /);
+  });
+
+  it('marks a total that left out turns it could not price as a lower bound', () => {
+    const known = event({ id: 'a', modelRaw: 'claude-opus-5', tokens: shape });
+    const unknown = event({ id: 'b', modelRaw: 'not-a-model', tokens: shape });
+    const total = aggregate(
+      [known, unknown].map((one) => ({ event: one, estimate: estimate(one, { dataset }) })),
+      'all',
+    )[0];
+    expect(total?.flags).toContain('model-unknown');
+    for (const measure of ['energy', 'water', 'carbon'] as const) {
+      expect(isLowerBound(total?.flags ?? [], measure)).toBe(true);
+    }
+    expect(formatRange(total?.energyWh ?? null, { unit: 'Wh', flags: total?.flags ?? [] })).toMatch(/^≥ /);
   });
 
   it('asks every row that publishes water or carbon directly what it counts', () => {

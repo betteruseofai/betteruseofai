@@ -14,7 +14,8 @@ import type { Surface } from '@betteruseofai/core';
  * count tokens and identify a model, and the text is dropped.
  */
 
-export type AdapterHealth = 'ok' | 'degraded' | 'unsupported';
+/** signed-out is a sign-in page, which has no composer and is nothing to fix. */
+export type AdapterHealth = 'ok' | 'degraded' | 'unsupported' | 'signed-out';
 
 export interface CapturedTurn {
   /** Stable within a conversation, so a repeat does not double count. */
@@ -35,6 +36,8 @@ export interface CapturedTurn {
   };
   /** True when the site can hide reasoning and did not disclose the count. */
   thinkingUndisclosed: boolean;
+  /** True when an image or file went with the prompt and its content could not be read. */
+  attachmentsUncounted?: boolean;
   at: string;
 }
 
@@ -43,7 +46,38 @@ export interface ParsedRequest {
   modelRaw: string | null;
   modelSource: CapturedTurn['modelSource'];
   inputText: string;
+  /** True when an image or file went with the prompt and its content could not be read. */
+  attachmentsUncounted?: boolean;
 }
+
+/** What the page shows of a conversation, for the fallback. */
+export interface PageExchange {
+  /** Answers on the page, so a new one can be told from one already there. */
+  answers: number;
+  /** True while an answer is still being written. */
+  answering: boolean;
+  input: string;
+  output: string;
+}
+
+/**
+ * The newest question and answer, from the lists of each on the page. Shared
+ * by the adapters, which differ only in their selectors.
+ */
+export const lastExchangeFrom = (
+  document: Pick<Document, 'querySelectorAll'>,
+  selectors: { question: string; answer: string; answering: string },
+): PageExchange | null => {
+  const answers = document.querySelectorAll(selectors.answer);
+  if (answers.length === 0) return null;
+  const questions = document.querySelectorAll(selectors.question);
+  return {
+    answers: answers.length,
+    answering: document.querySelectorAll(selectors.answering).length > 0,
+    input: questions[questions.length - 1]?.textContent?.trim() ?? '',
+    output: answers[answers.length - 1]?.textContent?.trim() ?? '',
+  };
+};
 
 export interface ParsedStream {
   modelRaw: string | null;
@@ -91,6 +125,14 @@ export interface SiteAdapter {
   /** Where the composer hint attaches, and what is in the box. */
   findComposer(document: Document): HTMLElement | null;
   readDraft(document: Document): string;
+
+  /**
+   * The page fallback: how many answers the page shows, and the text of the
+   * newest question and answer. Used only when the network read missed a
+   * turn, and its counts are always estimates. Null where the adapter has no
+   * way to read the page, or the page shows no conversation.
+   */
+  readLastExchange(document: Document): PageExchange | null;
 
   /**
    * Checks the page still looks the way this adapter expects.

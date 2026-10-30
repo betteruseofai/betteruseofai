@@ -111,6 +111,15 @@ export const getEvents = async (since?: string): Promise<StoredEvent[]> => {
 
 export const countEvents = async (): Promise<number> => (await db()).count('events');
 
+/** Removes the events with these ids. */
+export const deleteEvents = async (ids: string[]): Promise<void> => {
+  if (ids.length === 0) return;
+  const instance = await db();
+  const transaction = instance.transaction('events', 'readwrite');
+  await Promise.all(ids.map((id) => transaction.store.delete(id)));
+  await transaction.done;
+};
+
 /** Removes anything older than the retention setting. Zero means keep everything. */
 export const prune = async (retentionDays: number, now: Date): Promise<number> => {
   if (retentionDays <= 0) return 0;

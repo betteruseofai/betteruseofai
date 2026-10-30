@@ -275,6 +275,20 @@
         "timestamp": "2026-09-01T12:00:00.000Z"
       },
       "options": { "regionCode": "DE", "waterScope": "lifecycle" }
+    },
+    {
+      "name": "attachments-uncounted",
+      "why": "A claude.ai turn that carried an image the extension couldn't count, so the input is a lower bound for a second reason.",
+      "event": {
+        "id": "case-claude-web-image",
+        "surface": "claude-web",
+        "hosting": "cloud",
+        "modelRaw": "claude-3.7-sonnet",
+        "modelId": null,
+        "tokens": { "input": 40, "output": 300, "thinking": 0, "attachmentsUncounted": true, "estimated": true, "estimator": "tokenizer" },
+        "timestamp": "2026-09-01T12:00:00.000Z"
+      },
+      "options": { "regionCode": "GB" }
     }
   ]
 }

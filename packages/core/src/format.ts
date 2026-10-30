@@ -78,13 +78,17 @@ export const scaleUnit = (value: number, unit: string): { value: number; unit: s
 export type Measure = 'energy' | 'water' | 'carbon';
 
 /**
- * Whether a figure is a lower bound. Undisclosed thinking makes all three one.
- * Leaving out making the hardware under the lifecycle scope makes water and
- * carbon one, and leaves energy as it is, since the hardware's manufacture
- * is not counted in energy at all.
+ * Whether a figure is a lower bound. Undisclosed thinking makes all three one,
+ * and so does a total that leaves out turns we couldn't price, from a model we
+ * don't recognise or one nobody has measured. Leaving out making the hardware
+ * under the lifecycle scope makes water and carbon one, and leaves energy as
+ * it is, since the hardware's manufacture is not counted in energy at all.
  */
 export const isLowerBound = (flags: readonly EstimateFlag[], measure: Measure): boolean =>
-  flags.includes('thinking-unknown') || (measure !== 'energy' && flags.includes('embodied-missing'));
+  flags.includes('thinking-unknown') ||
+  flags.includes('model-unknown') ||
+  flags.includes('no-benchmark') ||
+  (measure !== 'energy' && flags.includes('embodied-missing'));
 
 const MEASURE_OF_UNIT: Record<string, Measure> = { Wh: 'energy', mL: 'water', g: 'carbon' };
 
@@ -167,6 +171,9 @@ export const explainFlags = (flags: EstimateFlag[]): string[] => {
         break;
       case 'input-partial':
         lines.push('The app hides its system prompt, so the input count is a lower bound.');
+        break;
+      case 'attachments-uncounted':
+        lines.push("An image or file went with the prompt and we couldn't count it, so the input is a lower bound.");
         break;
       case 'derived-rate':
         lines.push('The rate was worked out from a single published figure for one exchange.');

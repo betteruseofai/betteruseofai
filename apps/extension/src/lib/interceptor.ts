@@ -105,15 +105,21 @@ export const installInterceptor = (config: InterceptorConfig): (() => void) => {
           const decoder = new TextDecoder();
           let text = '';
           let bytes = 0;
-          for (;;) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            bytes += value.byteLength;
-            if (bytes > config.maxBodyBytes) {
-              // Too large to hold. Drain the rest so the branch closes cleanly.
-              continue;
+          try {
+            for (;;) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              bytes += value.byteLength;
+              if (bytes > config.maxBodyBytes) {
+                // Too large to hold. Drain the rest so the branch closes cleanly.
+                continue;
+              }
+              text += decoder.decode(value, { stream: true });
             }
-            text += decoder.decode(value, { stream: true });
+          } catch {
+            // Stopped part way, usually by the stop button. The model did the
+            // work up to here, so what arrived is still a turn worth counting,
+            // and an error thrown here would land in the page's console.
           }
           text += decoder.decode();
           publish({

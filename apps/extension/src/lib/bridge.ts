@@ -82,6 +82,7 @@ export const turnFromExchange = (
     outputText: stream.outputText,
     ...(stream.reportedTokens ? { reportedTokens: stream.reportedTokens } : {}),
     thinkingUndisclosed: stream.thinkingUndisclosed,
+    ...(request?.attachmentsUncounted ? { attachmentsUncounted: true } : {}),
     at: exchange.at,
   };
 };

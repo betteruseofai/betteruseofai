@@ -183,6 +183,9 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
   if (event.tokens.input === undefined && event.tokens.output !== undefined) {
     if (!flags.includes('input-partial')) flags.push('input-partial');
   }
+  // An image or a file we couldn't read is input we didn't count, so the
+  // input is a lower bound for a reason the system prompt doesn't cover.
+  if (event.tokens.attachmentsUncounted) flags.push('attachments-uncounted');
 
   const countedInput = event.tokens.input ?? 0;
   const cachedRead = event.tokens.cachedRead ?? 0;

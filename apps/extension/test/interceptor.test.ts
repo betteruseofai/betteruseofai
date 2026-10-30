@@ -114,6 +114,48 @@ describe('what it reads', () => {
     expect(seen[0]?.exchange.responseBody).toContain('"b":2');
   });
 
+  it('keeps what arrived before a stream was stopped, and throws nothing of its own', async () => {
+    // The stop button aborts the stream part way. Install over a fetch whose
+    // body fails after the first chunk.
+    restore();
+    const encoder = new TextEncoder();
+    fakeWindow.fetch = (async () =>
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue(encoder.encode('data: {"a":1}\n'));
+            // Later, as a real abort is: erroring at once would empty the
+            // queue before the first chunk was ever read.
+            setTimeout(() => controller.error(new Error('The user aborted a request.')), 10);
+          },
+        }),
+        { status: 200 },
+      )) as typeof fetch;
+    restore = installInterceptor(CONFIG);
+
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown): void => {
+      unhandled.push(reason);
+    };
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      const response = await fakeWindow.fetch(
+        'https://claude.ai/api/organizations/org-1/chat_conversations/conv-1/completion',
+        { method: 'POST', body: '{"prompt":"hello"}' },
+      );
+      // The page's own branch fails as the page would expect.
+      await response.text().catch(() => undefined);
+      await settle(1);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+    }
+
+    expect(seen).toHaveLength(1);
+    expect(seen[0]?.exchange.responseBody).toContain('"a":1');
+    expect(unhandled).toEqual([]);
+  });
+
   it('leaves the page its own response, whole', async () => {
     const response = await fakeWindow.fetch(
       'https://claude.ai/api/organizations/org-1/chat_conversations/conv-1/completion',

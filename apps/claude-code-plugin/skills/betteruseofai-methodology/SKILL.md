@@ -43,6 +43,8 @@ explanation.
 - **`derived-rate`** The source published one figure for one exchange, and we split it into a rate
   per token. The range is widened to say so.
 - **`input-partial`** The app hides its system prompt, so the counted input is a lower bound.
+- **`attachments-uncounted`** An image or file went with the prompt and the extension couldn't read
+  it, so the input is a lower bound for that reason too.
 - **`region-default`** No region was given, so the world average grid was used.
 - **`embodied-missing`** The lifecycle scope was asked for and nobody has published what making the
   hardware adds for this model. Water and carbon are lower bounds and render with the "greater than

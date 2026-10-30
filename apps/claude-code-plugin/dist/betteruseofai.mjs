@@ -586,6 +586,8 @@ var init_estimate = __esm({
         if (!flags.includes("input-partial"))
           flags.push("input-partial");
       }
+      if (event.tokens.attachmentsUncounted)
+        flags.push("attachments-uncounted");
       const countedInput = event.tokens.input ?? 0;
       const cachedRead = event.tokens.cachedRead ?? 0;
       const cachedWrite = event.tokens.cachedWrite ?? 0;
@@ -958,7 +960,7 @@ var init_format = __esm({
       }
       return { value, unit };
     };
-    isLowerBound = (flags, measure) => flags.includes("thinking-unknown") || measure !== "energy" && flags.includes("embodied-missing");
+    isLowerBound = (flags, measure) => flags.includes("thinking-unknown") || flags.includes("model-unknown") || flags.includes("no-benchmark") || measure !== "energy" && flags.includes("embodied-missing");
     MEASURE_OF_UNIT = { Wh: "energy", mL: "water", g: "carbon" };
     measureOfUnit = (unit) => MEASURE_OF_UNIT[unit];
     formatRange = (range, options = {}) => {
@@ -1003,6 +1005,9 @@ var init_format = __esm({
             break;
           case "input-partial":
             lines.push("The app hides its system prompt, so the input count is a lower bound.");
+            break;
+          case "attachments-uncounted":
+            lines.push("An image or file went with the prompt and we couldn't count it, so the input is a lower bound.");
             break;
           case "derived-rate":
             lines.push("The rate was worked out from a single published figure for one exchange.");

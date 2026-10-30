@@ -83,9 +83,13 @@ describe('summary', () => {
     const result = await cli(['summary']);
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('8 turns');
-    // Not a lower bound: Anthropic's output count already holds the thinking, so a
-    // turn that gave no split has nothing missing from it.
-    expect(result.stdout).toMatch(/energy\s+[\d.]+ Wh/);
+    // Anthropic's output count already holds the thinking, so a turn that gave
+    // no split has nothing missing from it and says nothing about reasoning.
+    expect(result.stdout).not.toContain('hid their reasoning');
+    // It is a lower bound all the same, because one fixture turn used a model
+    // we do not recognise and is left out of the total.
+    expect(result.stdout).toMatch(/energy\s+≥ [\d.]+ Wh/);
+    expect(result.stdout).toContain('model we do not recognise');
   });
 
   it('names what it could not price rather than quietly dropping it', async () => {

@@ -1,3 +1,4 @@
+import { lastExchangeFrom } from './types.js';
 import type { AdapterHealth, ParsedRequest, ParsedStream, SiteAdapter } from './types.js';
 
 /**
@@ -144,6 +145,16 @@ export const geminiAdapter: SiteAdapter = {
 
   readDraft(document) {
     return geminiAdapter.findComposer(document)?.textContent ?? '';
+  },
+
+  readLastExchange(document) {
+    // Gemini's own elements, one per question and one per answer. A stop
+    // button replaces the send button while an answer is being written.
+    return lastExchangeFrom(document, {
+      question: 'user-query',
+      answer: 'model-response',
+      answering: 'button[aria-label*="Stop"]',
+    });
   },
 
   healthProbe(document): AdapterHealth {

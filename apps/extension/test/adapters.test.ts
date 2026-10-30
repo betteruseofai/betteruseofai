@@ -109,6 +109,51 @@ describe('claude.ai', () => {
     expect(claudeAdapter.parseRequest('not json', {}, 'https://claude.ai/x')).toBeNull();
     expect(claudeAdapter.parseStream('nothing here')).toBeNull();
   });
+
+  it('captures a regeneration as well as a first answer', () => {
+    const retry =
+      'https://claude.ai/api/organizations/org-1/chat_conversations/conv-1/retry_completion';
+    expect(claudeAdapter.shouldCapture(retry, 'POST')).toBe(true);
+    expect(claudeAdapter.parseRequest('{}', {}, retry)?.conversationId).toBe('conv-1');
+  });
+
+  it('counts the text of an attached document, and flags an image it cannot count', () => {
+    const url = 'https://claude.ai/api/organizations/org-1/chat_conversations/conv-1/completion';
+    const document = claudeAdapter.parseRequest(
+      JSON.stringify({
+        prompt: 'Summarise this',
+        attachments: [{ file_name: 'notes.txt', extracted_content: 'Forty pages of minutes' }],
+        files: [],
+      }),
+      {},
+      url,
+    );
+    expect(document?.inputText).toContain('Forty pages of minutes');
+    expect(document?.attachmentsUncounted).toBeUndefined();
+
+    const image = claudeAdapter.parseRequest(
+      JSON.stringify({ prompt: 'What is in this picture', attachments: [], files: ['file-1'] }),
+      {},
+      url,
+    );
+    expect(image?.attachmentsUncounted).toBe(true);
+  });
+
+  it('ignores the placeholder output count at the start of a message', () => {
+    const start = (output: number) =>
+      `data: ${JSON.stringify({ type: 'message_start', message: { model: 'claude-opus-5', usage: { input_tokens: 40, output_tokens: output } } })}`;
+    const text = `data: ${JSON.stringify({ type: 'content_block_delta', delta: { type: 'text_delta', text: 'Hello there' } })}`;
+    const end = `data: ${JSON.stringify({ type: 'message_delta', usage: { output_tokens: 120 } })}`;
+
+    // Cut short before message_delta: the 1 is not a count, so output is left to the text.
+    const cut = claudeAdapter.parseStream([start(1), text].join('\n'));
+    expect(cut?.reportedTokens?.input).toBe(40);
+    expect(cut?.reportedTokens?.output).toBeUndefined();
+
+    // A finished stream takes the real figure from message_delta.
+    const whole = claudeAdapter.parseStream([start(1), text, end].join('\n'));
+    expect(whole?.reportedTokens?.output).toBe(120);
+  });
 });
 
 describe('chatgpt.com', () => {
@@ -141,6 +186,18 @@ describe('chatgpt.com', () => {
     expect(parsed?.thinkingUndisclosed).toBe(true);
     expect(parsed?.outputText).toContain('The answer, after some thought');
     expect(parsed?.outputText).not.toContain('Working through it');
+  });
+
+  it('finds the plain textarea composer and reads what is typed in it', () => {
+    // Signed out, the composer is textarea#mobile-composer-prompt, and a
+    // textarea's text content is always empty: what is typed is in value.
+    const textarea = { tagName: 'TEXTAREA', value: 'Name three rivers', textContent: '' };
+    const page = {
+      querySelector: (selector: string) =>
+        selector === 'textarea#mobile-composer-prompt' ? textarea : null,
+    } as unknown as Document;
+    expect(chatgptAdapter.findComposer(page)).toBe(textarea);
+    expect(chatgptAdapter.readDraft(page)).toBe('Name three rivers');
   });
 
   it('captures the conversation endpoint under either path', () => {

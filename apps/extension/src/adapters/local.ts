@@ -152,6 +152,12 @@ export const localAdapter: SiteAdapter = {
     return composer?.textContent ?? '';
   },
 
+  readLastExchange() {
+    // Every front end lays out its conversation differently, and these report
+    // exact counts over the network anyway, so there is no page fallback.
+    return null;
+  },
+
   healthProbe(document): AdapterHealth {
     return localAdapter.findComposer(document) !== null ? 'ok' : 'degraded';
   },

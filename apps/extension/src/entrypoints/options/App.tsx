@@ -27,6 +27,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [count, setCount] = useState(0);
   const [forgotten, setForgotten] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const load = (): void => {
     void browser.runtime
@@ -210,8 +211,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         <p>
           It opens no connection. There is no backend, no account and no telemetry, and the
           benchmark figures ship inside the extension rather than being fetched. The only addresses
-          it reads are the three chat sites and, if you turn that on, a model running on this
-          machine.
+          it reads are the three chat sites.
         </p>
         <p style="margin-bottom:0">
           You can check that claim. Open the network panel and watch the extension: it makes no
@@ -225,18 +225,42 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           {count} turns are stored. This deletes all of them at once, and there is nothing to
           recover afterwards, here or anywhere else.
         </p>
-        <button
-          class="buai-button"
-          type="button"
-          onClick={() => {
-            void browser.runtime.sendMessage({ type: 'events:forget' }).then(() => {
-              setForgotten(true);
-              setCount(0);
-            });
-          }}
-        >
-          Delete everything stored
-        </button>
+        {/* Two presses, because one slip of the mouse would lose every turn for good. */}
+        {confirming ? (
+          <div class="buai-options__confirm" role="alertdialog" aria-label="Delete every stored turn">
+            <p>
+              Delete all {count} turns? There is no undo.
+            </p>
+            <button
+              class="buai-button"
+              type="button"
+              onClick={() => {
+                void browser.runtime.sendMessage({ type: 'events:forget' }).then(() => {
+                  setConfirming(false);
+                  setForgotten(true);
+                  setCount(0);
+                });
+              }}
+            >
+              Yes, delete them
+            </button>{' '}
+            <button class="buai-button buai-button--quiet" type="button" onClick={() => setConfirming(false)}>
+              Keep them
+            </button>
+          </div>
+        ) : (
+          <button
+            class="buai-button"
+            type="button"
+            disabled={count === 0}
+            onClick={() => {
+              setForgotten(false);
+              setConfirming(true);
+            }}
+          >
+            Delete everything stored
+          </button>
+        )}
         {forgotten ? <p class="buai-options__hint">Gone.</p> : null}
       </section>
 

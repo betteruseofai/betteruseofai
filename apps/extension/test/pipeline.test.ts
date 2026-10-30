@@ -126,6 +126,13 @@ describe('pricing a turn', () => {
     expect(stored.estimate.basis.flags).toContain('input-partial');
   });
 
+  it('says when an image or file went uncounted', async () => {
+    const plain = await priceTurn(turn(), claudeAdapter, dataset, DEFAULT_SETTINGS);
+    const image = await priceTurn(turn({ attachmentsUncounted: true }), claudeAdapter, dataset, DEFAULT_SETTINGS);
+    expect(plain.estimate.basis.flags).not.toContain('attachments-uncounted');
+    expect(image.estimate.basis.flags).toContain('attachments-uncounted');
+  });
+
   it('follows the region and water scope from settings', async () => {
     const india = await priceTurn(turn(), claudeAdapter, dataset, {
       ...DEFAULT_SETTINGS,

@@ -45,6 +45,7 @@ describe('golden estimates', () => {
       'proxy-row',
       'region-default',
       'input-partial',
+      'attachments-uncounted',
       'derived-rate',
       'assumed-token-counts',
       'parametric-rate',

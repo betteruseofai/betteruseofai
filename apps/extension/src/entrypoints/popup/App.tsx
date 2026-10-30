@@ -3,6 +3,8 @@ import type { Aggregate, Dataset } from '@betteruseofai/core';
 import { useEffect, useState } from 'preact/hooks';
 
 import { Hazard, MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
+import { healthNotes } from '../../lib/health.js';
+import type { HealthStore } from '../../lib/health.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
 
@@ -26,7 +28,7 @@ interface Summary {
   total: Aggregate | null;
   byDay: Aggregate[];
   byModel: Aggregate[];
-  health: Record<string, { state: string; version: number; at: string }>;
+  health: HealthStore;
   count: number;
 }
 
@@ -102,7 +104,6 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   }
 
   const energyEquivalent = equivalents(total.energyWh?.central ?? null, 'energy', dataset, 1)[0];
-  const degraded = Object.entries(summary.health).filter(([, one]) => one.state !== 'ok');
 
   const caveats: string[] = [];
   if (total.unknownModelCount > 0) {
@@ -110,11 +111,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       `${total.unknownModelCount} of ${total.count} turns used a model we do not recognise. They are counted but not priced, because a guess would be worse than a gap.`,
     );
   }
-  if (degraded.length > 0) {
-    caveats.push(
-      `${degraded.map(([id]) => id).join(', ')} no longer looks the way we expect, so it has stopped counting. We would rather show nothing than a figure we cannot stand behind.`,
-    );
-  }
+  caveats.push(...healthNotes(summary.health));
 
   return (
     <main class="buai-popup">

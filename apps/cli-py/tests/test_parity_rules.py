@@ -507,6 +507,25 @@ def test_a_row_that_ran_the_reasoning_gets_none_added():
     assert undisclosed.energy_wh == none.energy_wh
 
 
+def test_a_total_that_left_out_turns_is_a_lower_bound():
+    known = event(id="a", tokens=TokenCounts(input=100, output=100, thinking=0))
+    unknown = event(id="b", model_raw="not-a-model")
+    rolled = aggregate(
+        [(known, estimate(known, DATASET)), (unknown, estimate(unknown, DATASET))], "all"
+    )[0]
+    assert "model-unknown" in rolled.flags
+    for measure in ("energy", "water", "carbon"):
+        assert is_lower_bound(rolled.flags, measure)
+
+
+def test_an_uncounted_attachment_is_flagged():
+    shape = {"input": 200, "output": 300, "thinking": 0}
+    with_image = estimate(event(tokens=TokenCounts(**shape, attachments_uncounted=True)), DATASET)
+    without = estimate(event(tokens=TokenCounts(**shape)), DATASET)
+    assert "attachments-uncounted" in with_image.flags
+    assert "attachments-uncounted" not in without.flags
+
+
 def test_missing_on_site_water_reads_unknown_not_zero():
     result = estimate(
         event(model_raw="deepseek-r1-distill-llama-70b", tokens=TokenCounts(input=200, output=300)),

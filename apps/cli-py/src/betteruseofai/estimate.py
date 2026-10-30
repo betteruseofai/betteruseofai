@@ -30,9 +30,15 @@ MEASURE_OF_UNIT = {"Wh": "energy", "mL": "water", "g": "carbon"}
 
 
 def is_lower_bound(flags: list[str], measure: str) -> bool:
-    """Undisclosed thinking makes all three a lower bound. Leaving out making the
-    hardware under the lifecycle scope makes water and carbon one, not energy."""
-    return "thinking-unknown" in flags or (measure != "energy" and "embodied-missing" in flags)
+    """Undisclosed thinking makes all three a lower bound, and so does a total that
+    leaves out turns we couldn't price. Leaving out making the hardware under the
+    lifecycle scope makes water and carbon one, not energy."""
+    return (
+        "thinking-unknown" in flags
+        or "model-unknown" in flags
+        or "no-benchmark" in flags
+        or (measure != "energy" and "embodied-missing" in flags)
+    )
 
 
 @dataclass
@@ -50,6 +56,8 @@ class TokenCounts:
     # means the split was not given, not that the thinking is missing.
     thinking_in_output: bool = False
     tool: int = 0
+    # True when the turn carried an image or file whose content we could not count.
+    attachments_uncounted: bool = False
     estimated: bool = False
     estimator: str = "provider"
 
@@ -244,6 +252,10 @@ def estimate(
         and "input-partial" not in flags
     ):
         flags.append("input-partial")
+    # An image or a file we couldn't read is input we didn't count, so the
+    # input is a lower bound for a reason the system prompt doesn't cover.
+    if event.tokens.attachments_uncounted:
+        flags.append("attachments-uncounted")
 
     counted_input = float(event.tokens.input or 0)
     cached_read = float(event.tokens.cached_read or 0)

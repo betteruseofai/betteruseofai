@@ -59,6 +59,7 @@ export const countTokens = async (
     cachedRead: reported.cachedRead ?? 0,
     cachedWrite: 0,
     thinking,
+    ...(turn.attachmentsUncounted ? { attachmentsUncounted: true } : {}),
     estimated,
     estimator: estimated ? (input ?? output)?.estimator ?? 'tokenizer' : 'provider',
   };

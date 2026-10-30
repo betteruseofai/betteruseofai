@@ -590,6 +590,10 @@ EXPLAIN = {
     "proxy-row": "Scaled from a different model, because nobody has measured this one.",
     "region-default": "No region was given, so this uses the world average grid.",
     "input-partial": "The app hides its system prompt, so the input count is a lower bound.",
+    "attachments-uncounted": (
+        "An image or file went with the prompt and we couldn't count it, so the input is a "
+        "lower bound."
+    ),
     "derived-rate": "The rate was worked out from a single published figure for one exchange.",
     "assumed-token-counts": (
         "The source did not say how long its reference exchange was, so we assumed it."

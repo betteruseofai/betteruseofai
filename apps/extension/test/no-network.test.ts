@@ -184,12 +184,15 @@ describe('the built extension', () => {
     expect(manifest.host_permissions.every((one: string) => !one.includes('*://*'))).toBe(true);
   });
 
-  it('keeps localhost optional, so it is asked for rather than assumed', () => {
+  it('asks for localhost nowhere, not even optionally, until local models have a switch', () => {
     const manifest = JSON.parse(readFileSync(join(built, 'manifest.json'), 'utf8'));
-    expect(manifest.host_permissions.some((one: string) => one.includes('localhost'))).toBe(false);
-    expect(manifest.optional_host_permissions.some((one: string) => one.includes('localhost'))).toBe(
-      true,
-    );
+    const anywhere = JSON.stringify({
+      host: manifest.host_permissions,
+      optional: manifest.optional_host_permissions ?? [],
+      resources: manifest.web_accessible_resources,
+    });
+    expect(anywhere).not.toContain('localhost');
+    expect(anywhere).not.toContain('127.0.0.1');
   });
 
   it('ships the rank table as a file rather than inside the worker', () => {

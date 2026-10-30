@@ -711,6 +711,50 @@
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
+    },
+    "attachments-uncounted": {
+      "modelId": "claude-3.7-sonnet",
+      "energyWh": {
+        "low": "0.470601",
+        "central": "0.943547",
+        "high": "1.9"
+      },
+      "waterMl": {
+        "low": "0.850796",
+        "central": "2.36632",
+        "high": "7.007"
+      },
+      "carbonG": {
+        "low": "0.0459306",
+        "central": "0.205127",
+        "high": "0.67488"
+      },
+      "basis": {
+        "benchmarkRowId": "jegham.claude-3.7-sonnet",
+        "benchmarkParentId": null,
+        "methodology": "independent-benchmark",
+        "boundary": "server",
+        "regionCode": "GB",
+        "thinkingHandling": "reported",
+        "thinkingTokens": {
+          "low": "0",
+          "central": "0",
+          "high": "0"
+        },
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 3,
+        "flags": [
+          "attachments-uncounted",
+          "input-partial",
+          "tokens-estimated"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2505.09598",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf",
+          "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
+        ]
+      }
     }
   }
 }

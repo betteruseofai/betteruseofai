@@ -234,6 +234,8 @@ export interface TokenCounts {
    */
   thinkingInOutput?: boolean;
   tool?: number;
+  /** True when the turn carried an image or file whose content we could not count. */
+  attachmentsUncounted?: boolean;
   /** True when any count came from a tokenizer estimate rather than the provider. */
   estimated: boolean;
   /** Which estimator produced the counts, for the tooltip. */
@@ -287,6 +289,8 @@ export type EstimateFlag =
   | 'region-default'
   /** Input tokens are a lower bound, because the surface hides its system prompt. */
   | 'input-partial'
+  /** An image or file went with the prompt and is not in the input count. */
+  | 'attachments-uncounted'
   /** The per token rate was derived from a per prompt figure rather than measured. */
   | 'derived-rate'
   /** The source did not publish the token counts behind its figure, so we assumed them. */

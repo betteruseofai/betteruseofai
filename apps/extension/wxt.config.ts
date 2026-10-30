@@ -9,9 +9,8 @@ import { defineConfig } from 'wxt';
  * The permissions list is the most important thing in this file, so it is
  * worth reading it as a claim rather than as configuration. We ask for
  * storage, unlimited storage and alarms, and for the three sites the adapters
- * handle. We do not ask for tabs, webRequest, scripting, or any-url access,
- * and there is no host permission for localhost until somebody switches local
- * detection on, at which point it is requested rather than assumed.
+ * handle. We do not ask for tabs, webRequest, scripting, localhost, or
+ * any-url access.
  *
  * Nothing here declares a remote script, a content security policy exception,
  * or an externally connectable page. The extension talks to nothing.
@@ -52,9 +51,12 @@ export default defineConfig({
       'https://gemini.google.com/*',
     ],
 
-    // Asked for only when somebody turns local model detection on. A tool that
-    // promises to stay local should not help itself to localhost by default.
-    optional_host_permissions: ['http://localhost/*', 'http://127.0.0.1/*'],
+    /*
+     * No localhost, not even as an optional permission. Watching a model on
+     * your own machine is written (adapters/local.ts) but has no switch, and
+     * turning it on would need the scripting permission as well; decided on
+     * 2026-10-30 to ask for neither until it ships.
+     */
 
     // The page-world script has to be listed, or the browser will not let the
     // content script inject it.
@@ -66,8 +68,6 @@ export default defineConfig({
           'https://chatgpt.com/*',
           'https://chat.openai.com/*',
           'https://gemini.google.com/*',
-          'http://localhost/*',
-          'http://127.0.0.1/*',
         ],
       },
     ],

@@ -1,7 +1,7 @@
 # Better Use of AI, the browser extension
 
 What your chat costs in energy, water and carbon, counted on your own machine. Works on claude.ai,
-chatgpt.com, gemini.google.com, and a model running on your own hardware.
+chatgpt.com and gemini.google.com.
 
 ## Building it
 
@@ -21,8 +21,8 @@ Load `.output/chrome-mv3` as an unpacked extension to try it.
 | `alarms` | A daily job that deletes anything past your retention setting |
 | The four site hosts | The adapters read those pages and nothing else |
 
-Not asked for: `tabs`, `webRequest`, `scripting`, `cookies`, `history`, or any-url access. Localhost
-is an **optional** permission, requested only if you turn local model detection on.
+Not asked for: `tabs`, `webRequest`, `scripting`, `cookies`, `history`, localhost, or any-url
+access.
 
 ## The claim, and how to check it
 
@@ -57,7 +57,10 @@ Errors: zero. Notices: zero.
 | claude.ai | The model is sometimes absent from the stream, and it can think without disclosing how much |
 | chatgpt.com | Auto-routing means the requested model is not the answering model; only `resolved_model_slug` is honest |
 | gemini.google.com | The body is a nested array with no field names, so the model comes from a header |
-| Local front ends | The happy case: exact counts, nothing estimated |
 
 Every adapter carries a version and a health probe. When a site changes shape the popup says the
 adapter needs an update rather than showing a figure nobody should trust.
+
+An adapter for local front ends (Ollama, LM Studio, Open WebUI) is written and tested in
+`src/adapters/local.ts`, but nothing switches it on: that would need localhost and the `scripting`
+permission, and we ask for neither until it ships.

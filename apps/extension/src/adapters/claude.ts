@@ -1,3 +1,4 @@
+import { lastExchangeFrom } from './types.js';
 import type { AdapterHealth, ParsedRequest, ParsedStream, SiteAdapter } from './types.js';
 
 /**
@@ -17,7 +18,9 @@ import type { AdapterHealth, ParsedRequest, ParsedStream, SiteAdapter } from './
  * into a range from zero with a flag rather than into nothing.
  */
 
-const COMPLETION = /\/api\/organizations\/[^/]+\/chat_conversations\/([^/]+)\/completion/;
+// A regeneration posts to retry_completion. It carries no new prompt, so its
+// input counts as nothing typed, which the input-partial flag already covers.
+const COMPLETION = /\/api\/organizations\/[^/]+\/chat_conversations\/([^/]+)\/(?:retry_)?completion/;
 const CONVERSATION_IN_URL = /\/chat\/([0-9a-f-]{16,})/i;
 
 /** Pulls the data lines out of a server-sent event stream. */
@@ -44,6 +47,8 @@ const textOf = (value: unknown): string => {
   if (value && typeof value === 'object') {
     const record = value as Record<string, unknown>;
     if (typeof record['text'] === 'string') return record['text'];
+    // A pasted or uploaded document arrives with its text already pulled out.
+    if (typeof record['extracted_content'] === 'string') return record['extracted_content'];
     if (record['content'] !== undefined) return textOf(record['content']);
   }
   return '';
@@ -73,9 +78,12 @@ export const claudeAdapter: SiteAdapter = {
     const model = typeof parsed['model'] === 'string' ? parsed['model'] : null;
 
     const prompt = typeof parsed['prompt'] === 'string' ? parsed['prompt'] : '';
-    const attachments = Array.isArray(parsed['attachments'])
-      ? (parsed['attachments'] as unknown[]).map(textOf).join('\n')
-      : '';
+    const attached = Array.isArray(parsed['attachments']) ? (parsed['attachments'] as unknown[]) : [];
+    const attachments = attached.map(textOf);
+    // Images and uploaded files go up as ids in `files`, with no text we can
+    // count, and an attachment that came without its text is the same.
+    const files = Array.isArray(parsed['files']) ? parsed['files'].length : 0;
+    const unread = files > 0 || attachments.some((text) => text === '');
 
     return {
       conversationId,
@@ -83,7 +91,8 @@ export const claudeAdapter: SiteAdapter = {
       // Absent from the body more often than you would expect, and the caller
       // falls back to the picker when this says unknown.
       modelSource: model ? 'request' : 'unknown',
-      inputText: [prompt, attachments].filter(Boolean).join('\n'),
+      inputText: [prompt, ...attachments].filter(Boolean).join('\n'),
+      ...(unread ? { attachmentsUncounted: true } : {}),
     };
   },
 
@@ -118,9 +127,15 @@ export const claudeAdapter: SiteAdapter = {
       if (block?.['type'] === 'thinking') thinkingSeen = true;
 
       const usage = (message?.['usage'] ?? record['usage']) as Record<string, unknown> | undefined;
+      // message_start carries an output count before any output exists, often
+      // 1. The real one comes in message_delta, so a stream that ends without
+      // it keeps output unreported and the text is counted instead.
+      const starting = record['type'] === 'message_start';
       if (usage) {
         if (typeof usage['input_tokens'] === 'number') reported.input = usage['input_tokens'];
-        if (typeof usage['output_tokens'] === 'number') reported.output = usage['output_tokens'];
+        if (!starting && typeof usage['output_tokens'] === 'number') {
+          reported.output = usage['output_tokens'];
+        }
         if (typeof usage['cache_read_input_tokens'] === 'number') {
           reported.cachedRead = usage['cache_read_input_tokens'];
         }
@@ -161,6 +176,15 @@ export const claudeAdapter: SiteAdapter = {
 
   readDraft(document) {
     return claudeAdapter.findComposer(document)?.textContent ?? '';
+  },
+
+  readLastExchange(document) {
+    // Every answer carries data-is-streaming, true while it is being written.
+    return lastExchangeFrom(document, {
+      question: '[data-testid="user-message"]',
+      answer: '[data-is-streaming]',
+      answering: '[data-is-streaming="true"]',
+    });
   },
 
   healthProbe(document): AdapterHealth {

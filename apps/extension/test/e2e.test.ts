@@ -242,4 +242,59 @@ describe('the extension in a browser', () => {
     expect(outbound).toEqual([]);
     await page.close();
   }, 30000);
+
+  // Last, because it stores a turn, and the tests above expect none.
+  it('asks before deleting every stored turn', async () => {
+    if (skipIfUnavailable() || !context) return;
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await page.waitForSelector('.buai-options', { timeout: 10000 });
+
+    // One turn, sent the way the content script sends it.
+    await page.evaluate(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).chrome.runtime.sendMessage({
+        type: 'turn:captured',
+        adapterId: 'claude-web',
+        adapterVersion: 1,
+        turn: {
+          key: 'e2e:1',
+          conversationId: 'e2e',
+          modelRaw: 'claude-opus-5',
+          modelSource: 'response',
+          inputText: 'A question long enough to count.',
+          outputText: 'An answer long enough to count as well.',
+          thinkingUndisclosed: false,
+          at: '2026-10-30T10:00:00.000Z',
+        },
+      }),
+    );
+    await page.waitForTimeout(1000);
+    await page.reload();
+    await page.waitForSelector('.buai-options', { timeout: 10000 });
+
+    // The first press only asks. Nothing is gone yet.
+    await page.getByRole('button', { name: 'Delete everything stored' }).click();
+    await page.waitForSelector('.buai-options__confirm', { timeout: 5000 });
+    const before = await page.evaluate(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).chrome.runtime.sendMessage({ type: 'summary:get' }),
+    );
+    expect((before as { count: number }).count).toBe(1);
+
+    // Keep them, and nothing happens.
+    await page.getByRole('button', { name: 'Keep them' }).click();
+    expect(await page.locator('.buai-options__confirm').count()).toBe(0);
+
+    // The second press deletes.
+    await page.getByRole('button', { name: 'Delete everything stored' }).click();
+    await page.getByRole('button', { name: 'Yes, delete them' }).click();
+    await page.waitForSelector('text=Gone.', { timeout: 5000 });
+    const after = await page.evaluate(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).chrome.runtime.sendMessage({ type: 'summary:get' }),
+    );
+    expect((after as { count: number }).count).toBe(0);
+    await page.close();
+  }, 30000);
 });

@@ -2,13 +2,17 @@ import datasetBundle from '@betteruseofai/dataset';
 import { aggregate, createRecommender, displayNumber, scaleUnit, saving as computeSaving } from '@betteruseofai/core';
 import type { Dataset } from '@betteruseofai/core';
 
-import { adapterById } from '../adapters/index.js';
+import { ADAPTERS, adapterById } from '../adapters/index.js';
 import type { ExtensionMessage } from '../adapters/types.js';
 import { setRanksLoader } from '@betteruseofai/tokenizers';
 
+import { alreadyCounted, replacedBy } from '../lib/fallback.js';
+import { HEALTH_KEY, currentHealth, recordHealth } from '../lib/health.js';
+import type { HealthStore } from '../lib/health.js';
 import { priceTurn, reprice } from '../lib/pipeline.js';
 import {
   DEFAULT_SETTINGS,
+  deleteEvents,
   getEvents,
   prune,
   putEvent,
@@ -58,8 +62,9 @@ const settings = settingsStore({
   set: (items) => browser.storage.local.set(items) as Promise<void>,
 });
 
-/** Adapter health, so the popup can say an adapter needs updating. */
-const health = new Map<string, { state: string; version: number; at: string }>();
+/** Adapter health, so the popup can say an adapter needs updating. In storage, see lib/health.ts. */
+const readHealth = async (): Promise<HealthStore> =>
+  ((await browser.storage.local.get([HEALTH_KEY]))[HEALTH_KEY] as HealthStore | undefined) ?? {};
 
 const broadcast = (message: unknown): void => {
   // A popup that is not open is not an error, so the rejection is swallowed.
@@ -82,13 +87,16 @@ const handleTurn = async (message: Extract<ExtensionMessage, { type: 'turn:captu
 
   /*
    * The same turn can arrive twice, once from the network and once from the
-   * fallback that watches the page. The id is the adapter's stable key, so the
-   * second write replaces the first rather than doubling the total. The
-   * network one is written last where both arrive, because it knows more.
+   * fallback that reads the page. The page one carries its own key, so it is
+   * dropped when a network turn for the same conversation is already stored
+   * within a minute of it: the network one knows more.
    */
+  const existing = await getEvents();
   if (message.type === 'turn:dom') {
-    const existing = await getEvents();
-    if (existing.some((one) => one.id === stored.id)) return;
+    if (alreadyCounted(existing, { ...stored.event, id: stored.id })) return;
+  } else {
+    // A network turn that arrives after the page one replaces it.
+    await deleteEvents(replacedBy(existing, stored.event));
   }
 
   await putEvent(stored);
@@ -105,11 +113,16 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
 
   if (message.type === 'adapter:health') {
     const one = message as Extract<ExtensionMessage, { type: 'adapter:health' }>;
-    health.set(one.adapterId, {
-      state: one.health,
-      version: one.adapterVersion,
-      at: new Date().toISOString(),
-    });
+    void (async () => {
+      const next = recordHealth(
+        await readHealth(),
+        one.adapterId,
+        one.adapterVersion,
+        one.health,
+        new Date().toISOString(),
+      );
+      await browser.storage.local.set({ [HEALTH_KEY]: next });
+    })();
     return false;
   }
 
@@ -135,7 +148,7 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
                 carbonBasis: current.carbonBasis,
               })
             : null,
-        health: Object.fromEntries(health),
+        health: currentHealth(await readHealth(), ADAPTERS),
         count: events.length,
       });
     })();

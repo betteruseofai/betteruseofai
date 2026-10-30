@@ -1,3 +1,4 @@
+import { lastExchangeFrom } from './types.js';
 import type { AdapterHealth, ParsedRequest, ParsedStream, SiteAdapter } from './types.js';
 import { sseEvents } from './claude.js';
 
@@ -148,12 +149,28 @@ export const chatgptAdapter: SiteAdapter = {
   findComposer(document) {
     return (
       document.querySelector<HTMLElement>('#prompt-textarea') ??
-      document.querySelector<HTMLElement>('div[contenteditable="true"]')
+      // Signed out, and on narrow windows, the composer is a plain textarea.
+      document.querySelector<HTMLElement>('textarea#mobile-composer-prompt') ??
+      document.querySelector<HTMLElement>('div[contenteditable="true"]') ??
+      document.querySelector<HTMLElement>('form textarea')
     );
   },
 
   readDraft(document) {
-    return chatgptAdapter.findComposer(document)?.textContent ?? '';
+    const composer = chatgptAdapter.findComposer(document);
+    // A textarea keeps what is typed in value; its text content stays empty.
+    if (composer?.tagName === 'TEXTAREA') return (composer as HTMLTextAreaElement).value;
+    return composer?.textContent ?? '';
+  },
+
+  readLastExchange(document) {
+    // The role attribute has outlasted every redesign so far. The stop
+    // button is only there while an answer is being written.
+    return lastExchangeFrom(document, {
+      question: '[data-message-author-role="user"]',
+      answer: '[data-message-author-role="assistant"]',
+      answering: '[data-testid="stop-button"]',
+    });
   },
 
   healthProbe(document): AdapterHealth {
