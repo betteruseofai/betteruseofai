@@ -57,6 +57,31 @@ def _key_for(bucket: str, event: UsageEvent, estimate: Estimate) -> str:
     return "all"
 
 
+GRID_HOURS_AVERAGE_SECONDS = 24 * 60 * 60
+
+
+def _at_year_average(est: Estimate) -> Range | None:
+    """One turn's carbon at the grid's central intensity, keeping its energy range.
+
+    A turn's range carries the grid's hourly spread, which is right for one turn.
+    Summed over turns spread across days it says every turn ran in the dirtiest
+    hour. A turn with no energy figure published its carbon directly and keeps it.
+    """
+    if est.carbon_g is None:
+        return None
+    if est.energy_wh is None or est.energy_wh.central <= 0:
+        return est.carbon_g
+    intensity = est.carbon_g.central / est.energy_wh.central
+    return Range(
+        est.energy_wh.low * intensity, est.carbon_g.central, est.energy_wh.high * intensity
+    )
+
+
+def _seconds_between(start: str, end: str) -> float:
+    parse = lambda stamp: datetime.fromisoformat(stamp.replace("Z", "+00:00"))  # noqa: E731
+    return (parse(end) - parse(start)).total_seconds()
+
+
 def aggregate(pairs: list[tuple[UsageEvent, Estimate]], bucket: str = "all") -> list[Aggregate]:
     """Group and total.
 
@@ -74,6 +99,7 @@ def aggregate(pairs: list[tuple[UsageEvent, Estimate]], bucket: str = "all") -> 
         energy: Range | None = None
         water: Range | None = None
         carbon: Range | None = None
+        carbon_averaged: Range | None = None
         unknown = 0
         no_benchmark = 0
         by_surface: dict[str, int] = {}
@@ -99,17 +125,26 @@ def aggregate(pairs: list[tuple[UsageEvent, Estimate]], bucket: str = "all") -> 
                 water = add(water, est.water_ml) if water else est.water_ml
             if est.carbon_g is not None:
                 carbon = add(carbon, est.carbon_g) if carbon else est.carbon_g
+            averaged = _at_year_average(est)
+            if averaged is not None:
+                carbon_averaged = add(carbon_averaged, averaged) if carbon_averaged else averaged
+
+        start = timestamps[0] if timestamps else ""
+        end = timestamps[-1] if timestamps else ""
+        # Turns within a day can share an hour and its grid; across days the hours
+        # average out.
+        spans_days = start != "" and _seconds_between(start, end) >= GRID_HOURS_AVERAGE_SECONDS
 
         result.append(
             Aggregate(
                 key=key,
                 bucket=bucket,
-                from_=timestamps[0] if timestamps else "",
-                to=timestamps[-1] if timestamps else "",
+                from_=start,
+                to=end,
                 count=len(group),
                 energy_wh=energy,
                 water_ml=water,
-                carbon_g=carbon,
+                carbon_g=carbon_averaged if spans_days else carbon,
                 by_surface=by_surface,
                 by_hosting=by_hosting,
                 by_model=by_model,

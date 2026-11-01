@@ -29,16 +29,21 @@ SCOPE_RANK = {scope: rank for rank, scope in enumerate(WATER_SCOPES)}
 MEASURE_OF_UNIT = {"Wh": "energy", "mL": "water", "g": "carbon"}
 
 
+MISSING_FROM_ALL = ("model-unknown", "no-benchmark", "attachments-uncounted")
+MISSING_FROM = {
+    "energy": ("no-energy-figure",),
+    "water": ("embodied-missing", "direct-scope-wider", "no-water-figure"),
+    "carbon": ("embodied-missing", "direct-scope-wider"),
+}
+
+
 def is_lower_bound(flags: list[str], measure: str) -> bool:
-    """Undisclosed thinking makes all three a lower bound, and so does a total that
-    leaves out turns we couldn't price. Leaving out making the hardware under the
-    lifecycle scope makes water and carbon one, not energy."""
-    return (
-        "thinking-unknown" in flags
-        or "model-unknown" in flags
-        or "no-benchmark" in flags
-        or (measure != "energy" and "embodied-missing" in flags)
-    )
+    """Whether something known is missing from the figure. Turns we couldn't price
+    and attachments we couldn't count are missing from all three; a turn with no
+    energy figure from energy, and no water or a scope we couldn't narrow from
+    water or carbon; making the hardware, under lifecycle, from water and carbon.
+    Undisclosed thinking is not missing: its range already spans it."""
+    return any(flag in MISSING_FROM_ALL or flag in MISSING_FROM[measure] for flag in flags)
 
 
 @dataclass
@@ -209,7 +214,9 @@ def estimate(
             "unknown-model",
             model["id"],
         )
-    if event.hosting == "local" and row["pue"]["high"] > 1:
+    # Rows say where they were measured; the facility overhead used to stand in
+    # for that, and missed the Mistral assessment, whose PUE is one.
+    if event.hosting == "local" and (row.get("hosting") or "cloud") != "local":
         flags.append("local-row-missing")
 
     parent = (
@@ -385,10 +392,17 @@ def estimate(
         if water_scope != "on-site":
             litres = add(litres, mul(energy_kwh, to_range(region["waterOffsiteLPerKwh"])))
         water_ml = with_embodied(clamp_non_negative(order(scale(litres, 1000))))
+    # Energy known and water not, for no reason already given: the row has no
+    # water figure. Said, so a total over such turns reads as a lower bound.
+    if water_ml is None and energy_kwh is not None and "direct-scope-wider" not in flags:
+        flag_once("no-water-figure")
 
     # ------------------------------------------------------------- carbon
 
     carbon_g: Range | None = None
+    # What the carbon figure actually rests on. Where a row has no provider
+    # factor the grid is used, and the basis says so.
+    carbon_basis_used = carbon_basis
     direct_carbon = to_range((row.get("perPrompt") or {}).get("directCarbonG"))
     if direct_carbon is not None:
         # Carbon has two scopes, running and lifecycle, since the grid is always counted.
@@ -402,11 +416,14 @@ def estimate(
         # Location-based by default. A market-based factor is a claim about what
         # the provider bought, not about the electrons it burned.
         row_intensity = to_range(row.get("carbonGPerKwh"))
-        intensity = (
+        provider = (
             row_intensity
             if carbon_basis == "provider-reported" and row_intensity is not None
-            else to_range(region["gridGco2PerKwh"])
+            else None
         )
+        if provider is None:
+            carbon_basis_used = "location-based"
+        intensity = provider if provider is not None else to_range(region["gridGco2PerKwh"])
         carbon_g = with_embodied(clamp_non_negative(order(mul(energy_kwh, intensity))))
 
     if embodied_missing:
@@ -431,7 +448,7 @@ def estimate(
             else thinking_range
         ),
         water_scope=water_scope,
-        carbon_basis=carbon_basis,
+        carbon_basis=carbon_basis_used,
         quality_score=row["qualityScore"],
         flags=flags,
         sources=_collect_sources(row, parent, region),

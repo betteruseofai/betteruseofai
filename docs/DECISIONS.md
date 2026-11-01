@@ -218,6 +218,26 @@ against. The decisions taken on it, on 2026-09-13:
     because off-site is now added (0.32 to 1.39 mL central for 200 in and 300 out in the United
     States), and Mistral Large 2's water and carbon are unknown unless lifecycle is chosen.
 
+53. **What "≥" means, and four ranges that were wrong, from the audit of 2026-10-19.** Decided
+    with the owner on 2026-10-30, each the recommended option. "≥" now means something known is
+    missing from the figure: turns we couldn't price, an attachment we couldn't count, a turn
+    with no energy figure (energy only) or no water figure (water only, a new `no-water-figure`
+    flag), or the hardware under lifecycle. Undisclosed thinking no longer carries it, because
+    its range already runs from none to a lot and the mark called the middle of that a floor
+    (E5). This rewrites hard rule 3 in `CLAUDE.md`. Savings subtract bound from bound, since both
+    sides come from the same rows (E4): a small model's saving no longer starts at nothing. A
+    per-prompt row divides each energy bound by the matching reference length (E6); the central
+    stays central over central and the bounds are the lowest and highest of the three paired
+    rates, because a published low can be measurement doubt rather than a short exchange, and
+    pairing it naively moved the GPT-5 central from 0.34 to 0.50 Wh. A 200 in, 300 out reply on
+    the R1 distill now reads 0.027 to 2.59 Wh, where it read 0.011 to 208. A total whose turns
+    span a day or more takes carbon at each turn's central grid intensity, keeping the energy
+    range, because the grid's hours average out over days; a shorter total keeps the hourly
+    spread, since its turns can share an hour (E12). Also: a local model on a hosted row is
+    flagged by the row's hosting, not its overhead (E7); the carbon basis records the grid when a
+    row has no provider factor (E8); and dataset 3.2.0 sets Claude Code's and Codex CLI's hidden
+    context factor to one, since both report the provider's own input count (E16).
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 - What the nudge should do inside Claude Code, given that it cannot fire at its current bar and

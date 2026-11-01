@@ -296,6 +296,75 @@ describe('water', () => {
     expect(formatRange(total?.energyWh ?? null, { unit: 'Wh', flags: total?.flags ?? [] })).toMatch(/^≥ /);
   });
 
+  it('pairs a per-prompt row with its own reference lengths (E6)', () => {
+    // A 200 in, 300 out reply on the R1 distill read 0.011 to 208 Wh, because a
+    // long reference exchange's energy was divided by the typical length.
+    const r1 = estimate(event({ modelRaw: 'deepseek-r1-distill-llama-70b', tokens: shape }), { dataset });
+    expect(r1.energyWh?.high).toBeLessThan(10);
+    // The central does not move.
+    const gpt5 = estimate(event({ modelRaw: 'gpt-5', tokens: tokens({ input: 200, output: 300, thinking: 0 }) }), {
+      dataset,
+    });
+    expect(gpt5.energyWh?.central).toBeCloseTo(0.34, 6);
+    expect(gpt5.energyWh?.high).toBeLessThan(3);
+  });
+
+  it('says a local model was priced from a hosted row whatever the row overhead (E7)', () => {
+    const local = estimate(event({ modelRaw: 'mistral-large-2', hosting: 'local', tokens: shape }), {
+      dataset,
+      waterScope: 'lifecycle',
+    });
+    expect(local.basis.flags).toContain('local-row-missing');
+  });
+
+  it('records the carbon basis it actually used (E8)', () => {
+    // No proxy row carries a provider factor, so the grid is what was used.
+    const proxied = estimate(event({ modelRaw: 'claude-opus-5', tokens: shape }), {
+      dataset,
+      carbonBasis: 'provider-reported',
+    });
+    expect(proxied.basis.carbonBasis).toBe('location-based');
+  });
+
+  it('marks a total that left out a turn with no water figure as a lower bound on water (E9)', () => {
+    const noWater = estimate(event({ modelRaw: 'deepseek-r1-distill-llama-70b', tokens: shape }), {
+      dataset,
+      waterScope: 'on-site',
+    });
+    expect(noWater.waterMl).toBeNull();
+    expect(noWater.basis.flags).toContain('no-water-figure');
+    const total = aggregate(
+      [
+        { event: event({ id: 'a', modelRaw: 'claude-opus-5', tokens: shape }), estimate: estimate(event({ id: 'a', modelRaw: 'claude-opus-5', tokens: shape }), { dataset, waterScope: 'on-site' }) },
+        { event: event({ id: 'b', modelRaw: 'deepseek-r1-distill-llama-70b', tokens: shape }), estimate: noWater },
+      ],
+      'all',
+    )[0];
+    expect(isLowerBound(total?.flags ?? [], 'water')).toBe(true);
+    expect(isLowerBound(total?.flags ?? [], 'energy')).toBe(false);
+  });
+
+  it('lets the grid hours average out over a total spread across days (E12)', () => {
+    const turn = (day: number) =>
+      event({
+        id: `t${day}`,
+        modelRaw: 'claude-opus-5',
+        tokens: shape,
+        timestamp: `2026-09-${String(day).padStart(2, '0')}T12:00:00.000Z`,
+      });
+    const priced = (days: number[]) =>
+      days.map((day) => ({ event: turn(day), estimate: estimate(turn(day), { dataset, regionCode: 'GB' }) }));
+    const spread = (range: { low: number; high: number } | null | undefined) =>
+      range ? range.high / range.low : Infinity;
+
+    // Ten days apart: carbon spreads no more than energy does.
+    const month = aggregate(priced([1, 4, 7, 10, 13, 16, 19, 22, 25, 28]), 'all')[0];
+    expect(spread(month?.carbonG)).toBeCloseTo(spread(month?.energyWh), 6);
+    // Within one day the turns can share an hour, so the hourly spread stays.
+    const day = aggregate(priced([1]), 'all')[0];
+    expect(spread(day?.carbonG)).toBeGreaterThan(spread(day?.energyWh) * 1.5);
+  });
+
   it('asks every row that publishes water or carbon directly what it counts', () => {
     for (const row of dataset.benchmarks) {
       const direct = row.perPrompt?.directWaterMl ?? row.perPrompt?.directCarbonG;

@@ -11,7 +11,7 @@
  */
 
 import dataset from './dataset';
-import { estimate } from '@betteruseofai/core';
+import { estimate, isLowerBound } from '@betteruseofai/core';
 import type { Range, UsageEvent } from '@betteruseofai/core';
 
 /** The choices the sentence offers, in the order they appear in the dropdown. */
@@ -73,7 +73,8 @@ const cellFor = (modelId: string, regionCode: string): Cell => {
     energyWh: result.energyWh,
     waterMl: result.waterMl,
     carbonG: result.carbonG,
-    atLeast: result.basis.flags.includes('thinking-unknown'),
+    // The landing sentence leads with energy, so it is energy's lower bound that counts.
+    atLeast: isLowerBound(result.basis.flags, 'energy'),
     flags: result.basis.flags,
     rowId: result.basis.benchmarkRowId ?? null,
   };

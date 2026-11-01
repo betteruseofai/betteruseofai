@@ -162,21 +162,22 @@ describe('sessions and the session report', () => {
     expect(result.stdout).toContain('CACHE WRITE');
   });
 
-  it('explains why the figures are uncertain', async () => {
+  it('leaves the uncertainty section out when the caveats already said it all', async () => {
+    // Every flag on the alpha session has a caveat line under the tables.
     const result = await cli(['session', 'session-alpha']);
-    expect(result.stdout).toContain('WHY THE FIGURES ARE UNCERTAIN');
+    expect(result.stdout).toContain('No region given');
+    expect(result.stdout).not.toContain('WHY THE FIGURES ARE UNCERTAIN');
   });
 
   it('says each caveat once', async () => {
     const result = await cli(['session', 'session-alpha']);
+    // The section is left out altogether when the caveats said everything.
     const why = result.stdout.split('WHY THE FIGURES ARE UNCERTAIN')[1] ?? '';
     // The caveats under the tables already said these, in their own words.
     expect(result.stdout).toContain('No region given');
     expect(why).not.toContain('No region was given');
     expect(why).not.toContain('nobody has measured this one');
     expect(why).not.toContain('We do not recognise this model');
-    // What the caveats don't cover still gets its line.
-    expect(why).toContain('system prompt');
   });
 
   it('says which session it could not find', async () => {

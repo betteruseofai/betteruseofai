@@ -54,7 +54,7 @@ that's gone stale reports wrong numbers, which is worse than reporting nothing.
 
 ## Numbers, and the rule that matters most
 
-Absence never renders as zero. If we don't know the model, we print "unknown". If a model hides its
-reasoning token count, we print a lower bound with a "greater than or equal to" marker and a flag saying
-why. Rounding a missing value down to nought makes the tool lie in the most flattering direction, which
-is the one direction it must never lie in.
+Absence never renders as zero. If we don't know the model, we print "unknown", and a total that left
+it out carries a "greater than or equal to" marker. If a model hides its reasoning token count, the
+range runs from no thinking to a lot, with a flag saying why. Rounding a missing value down to nought
+makes the tool lie in the most flattering direction, which is the one direction it must never lie in.

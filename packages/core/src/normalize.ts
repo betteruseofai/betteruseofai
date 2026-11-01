@@ -223,15 +223,28 @@ export const normalizeToPerToken = (
       // One figure covers input and output together, so we split it using the
       // weight k: an output token is assumed to cost k times an input token.
       const k = calibration.outputToInputEnergyWeight;
-      const referenceInput = perPrompt.referenceInputTokens.central;
-      const referenceOutput = perPrompt.referenceOutputTokens.central;
-      const denominator = referenceInput + k.central * referenceOutput;
-      if (denominator <= 0) return null;
+      /*
+       * Each bound of the energy is divided by the same bound of the reference
+       * exchange. A published high is high because that exchange was long, so
+       * dividing it by the typical length charged every token as if the long
+       * exchange had been a short one, and a 300 token reply on a reasoning
+       * row came out at hundreds of watt hours (audit E6, decided 2026-10-30).
+       */
+      const reference = (bound: 'low' | 'central' | 'high'): number =>
+        perPrompt.referenceInputTokens[bound] + k.central * perPrompt.referenceOutputTokens[bound];
+      if (reference('low') <= 0 || reference('central') <= 0 || reference('high') <= 0) return null;
 
+      // The three paired rates need not come out in order: a published low can
+      // be measurement doubt rather than a short exchange. So the central stays
+      // the central over the central, and the bounds are the lowest and highest
+      // of the three, before the widening below.
+      const paired = (['low', 'central', 'high'] as const).map(
+        (bound) => perPrompt.energyWh![bound] / reference(bound),
+      );
       const inputRate: Range = {
-        low: perPrompt.energyWh.low / denominator,
-        central: perPrompt.energyWh.central / denominator,
-        high: perPrompt.energyWh.high / denominator,
+        low: Math.min(...paired),
+        central: perPrompt.energyWh.central / reference('central'),
+        high: Math.max(...paired),
       };
       const outputRate = scale(inputRate, k.central);
 

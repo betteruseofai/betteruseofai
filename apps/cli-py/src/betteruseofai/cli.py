@@ -29,7 +29,14 @@ from .engine import (
     load_tokens,
     select_benchmark,
 )
-from .estimate import MEASURE_OF_UNIT, Estimate, UsageEvent, estimate, is_lower_bound
+from .estimate import (
+    MEASURE_OF_UNIT,
+    MISSING_FROM_ALL,
+    Estimate,
+    UsageEvent,
+    estimate,
+    is_lower_bound,
+)
 from .log import (
     LOG_WARN_BYTES,
     append_log,
@@ -468,7 +475,11 @@ def format_range(
         return "unknown"
     flags = flags or []
     measure = MEASURE_OF_UNIT.get(unit)
-    lower_bound = is_lower_bound(flags, measure) if measure else "thinking-unknown" in flags
+    lower_bound = (
+        is_lower_bound(flags, measure)
+        if measure
+        else any(flag in MISSING_FROM_ALL for flag in flags)
+    )
     estimated = "tokens-estimated" in flags or "derived-rate" in flags
     prefix = (">= " if ascii_only else "≥ ") if lower_bound else ("~" if estimated else "")
 
@@ -550,7 +561,9 @@ def caveats(context: Context, totals: Aggregate) -> list[str]:
             )
         )
     if "thinking-unknown" in totals.flags:
-        lines.append("  Some turns hid their reasoning tokens, so the figures are a lower bound.")
+        lines.append(
+            "  Some turns hid their reasoning tokens, so the ranges run from no thinking to a lot."
+        )
     if "embodied-missing" in totals.flags:
         lines.append(
             "  Making the hardware isn't counted for some models, so water and carbon are lower "
@@ -584,8 +597,8 @@ EXPLAIN = {
     "no-benchmark": "We know this model but nobody has published a measurement for it.",
     "tokens-estimated": "Token counts come from our own tokenizer, not from the provider.",
     "thinking-unknown": (
-        "This model thinks before it answers and did not say how much, so the figure is a "
-        "lower bound."
+        "This model thinks before it answers and didn't say how much, so the range runs from "
+        "no thinking to a lot."
     ),
     "proxy-row": "Scaled from a different model, because nobody has measured this one.",
     "region-default": "No region was given, so this uses the world average grid.",
@@ -602,6 +615,7 @@ EXPLAIN = {
     "no-energy-figure": (
         "The source published water and carbon but no energy, so energy is unknown."
     ),
+    "no-water-figure": "The source gives no water figure for the data centre, so water is unknown.",
     "scaled-direct-figure": (
         "Water and carbon were published per exchange and scaled to this one."
     ),
@@ -1397,7 +1411,11 @@ def _figure(value: Range | None, unit: str, flags: list[str]) -> dict[str, str] 
     if value is None:
         return None
     measure = MEASURE_OF_UNIT.get(unit)
-    lower_bound = is_lower_bound(flags, measure) if measure else "thinking-unknown" in flags
+    lower_bound = (
+        is_lower_bound(flags, measure)
+        if measure
+        else any(flag in MISSING_FROM_ALL for flag in flags)
+    )
     estimated = "tokens-estimated" in flags or "derived-rate" in flags
     scaled, scaled_unit = scale_unit(value.central, unit)
     divisor = value.central / scaled if scaled_unit != unit and scaled else 1.0

@@ -149,7 +149,10 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
       model.id,
     );
   }
-  if (event.hosting === 'local' && row.pue.high > 1) flags.push('local-row-missing');
+  // Rows say where they were measured. The facility overhead used to stand in
+  // for that, and missed the Mistral assessment, whose PUE is one only because
+  // it publishes no energy.
+  if (event.hosting === 'local' && (row.hosting ?? 'cloud') !== 'local') flags.push('local-row-missing');
 
   const parent = row.proxyOf
     ? (dataset.benchmarks.find((candidate) => candidate.id === row.proxyOf) ?? null)
@@ -315,10 +318,18 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
     }
     waterMl = withEmbodied(clampNonNegative(order(scale(litres, 1000))));
   }
+  // Energy known and water not, for no reason already given: the row has no
+  // water figure. Said, so a total over such turns reads as a lower bound.
+  if (waterMl === null && energyKwh && !flags.includes('direct-scope-wider')) {
+    flagOnce('no-water-figure');
+  }
 
   // ------------------------------------------------------------------ carbon
 
   let carbonG: Range | null = null;
+  // What the carbon figure actually rests on. A provider's own factor exists
+  // for few rows, and where it doesn't the grid is used and the basis says so.
+  let carbonBasisUsed = carbonBasis;
   const directCarbon = row.perPrompt?.directCarbonG;
   if (directCarbon) {
     // Carbon has two scopes, running and lifecycle, since the grid is always counted.
@@ -333,9 +344,9 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
     // Location-based by default. A provider's market-based factor is a claim about
     // what it bought, not about the electrons it burned, and it flatters the number
     // by three or four times, so it is opt in.
-    const intensity =
-      carbonBasis === 'provider-reported' && row.carbonGPerKwh ? row.carbonGPerKwh : region.gridGco2PerKwh;
-    carbonG = withEmbodied(clampNonNegative(order(mul(energyKwh, intensity))));
+    const provider = carbonBasis === 'provider-reported' && row.carbonGPerKwh ? row.carbonGPerKwh : null;
+    if (!provider) carbonBasisUsed = 'location-based';
+    carbonG = withEmbodied(clampNonNegative(order(mul(energyKwh, provider ?? region.gridGco2PerKwh))));
   }
 
   if (embodiedMissing) flagOnce('embodied-missing');
@@ -362,7 +373,7 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
           ? null
           : thinking.range,
       waterScope,
-      carbonBasis,
+      carbonBasis: carbonBasisUsed,
       qualityScore: row.qualityScore,
       flags,
       sources: collectSources(row, parent, region),

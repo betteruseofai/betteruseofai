@@ -291,6 +291,8 @@ export type EstimateFlag =
   | 'input-partial'
   /** An image or file went with the prompt and is not in the input count. */
   | 'attachments-uncounted'
+  /** The row gives energy but no on-site water figure, so water is unknown. */
+  | 'no-water-figure'
   /** The per token rate was derived from a per prompt figure rather than measured. */
   | 'derived-rate'
   /** The source did not publish the token counts behind its figure, so we assumed them. */

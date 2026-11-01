@@ -1,4 +1,5 @@
 import { estimate } from '../estimate.js';
+import { order } from '../range.js';
 import { downgradeTarget, getModel, resolveModel } from '../resolve.js';
 import type { Model, Range, UsageEvent } from '../types.js';
 import { extractFeatures } from './features.js';
@@ -50,13 +51,14 @@ const nothing = (reason: string): Recommendation => ({
   showInReport: false,
 });
 
+/** Bound by bound, because both sides are priced from the same rows. See saving.ts. */
 const subtract = (before: Range | null, after: Range | null): Range | null => {
   if (before === null || after === null) return null;
-  return {
-    low: Math.max(0, before.low - after.high),
+  return order({
+    low: Math.max(0, before.low - after.low),
     central: Math.max(0, before.central - after.central),
-    high: Math.max(0, before.high - after.low),
-  };
+    high: Math.max(0, before.high - after.high),
+  });
 };
 
 /** A sentence that names the rule and what it saw, so the advice can be argued with. */

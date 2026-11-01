@@ -77,18 +77,30 @@ export const scaleUnit = (value: number, unit: string): { value: number; unit: s
 
 export type Measure = 'energy' | 'water' | 'carbon';
 
+/** Left out of every measure: turns we couldn't price, and attachments we couldn't count. */
+const MISSING_FROM_ALL: readonly EstimateFlag[] = ['model-unknown', 'no-benchmark', 'attachments-uncounted'];
+
+/** Left out of one measure only. */
+const MISSING_FROM: Record<Measure, readonly EstimateFlag[]> = {
+  energy: ['no-energy-figure'],
+  water: ['embodied-missing', 'direct-scope-wider', 'no-water-figure'],
+  carbon: ['embodied-missing', 'direct-scope-wider'],
+};
+
 /**
- * Whether a figure is a lower bound. Undisclosed thinking makes all three one,
- * and so does a total that leaves out turns we couldn't price, from a model we
- * don't recognise or one nobody has measured. Leaving out making the hardware
- * under the lifecycle scope makes water and carbon one, and leaves energy as
- * it is, since the hardware's manufacture is not counted in energy at all.
+ * Whether a figure is a lower bound: whether something is missing from it
+ * that we know about and could not count. A total that leaves out turns we
+ * couldn't price is one in every measure. A turn with no energy figure is
+ * missing from the energy total only, and one with no water or a scope we
+ * couldn't narrow from water or carbon. Making the hardware, under the
+ * lifecycle scope, is missing from water and carbon and never from energy.
+ *
+ * Undisclosed thinking is not on the list. Its range already runs from no
+ * thinking at the low to a lot at the high, so a mark saying "at least"
+ * would call the middle of that range a floor (decided 2026-10-30).
  */
 export const isLowerBound = (flags: readonly EstimateFlag[], measure: Measure): boolean =>
-  flags.includes('thinking-unknown') ||
-  flags.includes('model-unknown') ||
-  flags.includes('no-benchmark') ||
-  (measure !== 'energy' && flags.includes('embodied-missing'));
+  flags.some((flag) => MISSING_FROM_ALL.includes(flag) || MISSING_FROM[measure].includes(flag));
 
 const MEASURE_OF_UNIT: Record<string, Measure> = { Wh: 'energy', mL: 'water', g: 'carbon' };
 
@@ -110,7 +122,7 @@ export interface FormatRangeOptions {
 /**
  * Renders a range.
  *
- * A range whose thinking tokens were never disclosed is a lower bound and is
+ * A range with something known to be missing from it is a lower bound and is
  * marked as one, because the alternative is a number that reads as complete
  * when it is not.
  */
@@ -127,7 +139,7 @@ export const formatRange = (
 
   const lowerBound = measure
     ? isLowerBound(flags, measure)
-    : flags.includes('thinking-unknown');
+    : flags.some((flag) => MISSING_FROM_ALL.includes(flag));
   const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
   const prefix = lowerBound ? (ascii ? '>= ' : '≥ ') : estimated ? '~' : '';
 
@@ -160,7 +172,7 @@ export const explainFlags = (flags: EstimateFlag[]): string[] => {
         break;
       case 'thinking-unknown':
         lines.push(
-          'This model thinks before it answers and did not say how much, so the figure is a lower bound.',
+          "This model thinks before it answers and didn't say how much, so the range runs from no thinking to a lot.",
         );
         break;
       case 'proxy-row':
@@ -186,6 +198,9 @@ export const explainFlags = (flags: EstimateFlag[]): string[] => {
         break;
       case 'no-energy-figure':
         lines.push('The source published water and carbon but no energy, so energy is unknown.');
+        break;
+      case 'no-water-figure':
+        lines.push('The source gives no water figure for the data centre, so water is unknown.');
         break;
       case 'scaled-direct-figure':
         lines.push('Water and carbon were published per exchange and scaled to this one.');

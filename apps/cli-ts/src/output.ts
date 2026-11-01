@@ -158,7 +158,7 @@ export const caveats = (context: Context, totals: Aggregate): string[] => {
     );
   }
   if (totals.flags.includes('thinking-unknown')) {
-    lines.push('  Some turns hid their reasoning tokens, so the figures are a lower bound.');
+    lines.push('  Some turns hid their reasoning tokens, so the ranges run from no thinking to a lot.');
   }
   if (totals.flags.includes('embodied-missing')) {
     lines.push("  Making the hardware isn't counted for some models, so water and carbon are lower bounds.");

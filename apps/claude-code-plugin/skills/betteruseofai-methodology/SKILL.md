@@ -32,9 +32,10 @@ explanation.
 
 ## What each flag means
 
-- **`thinking-unknown`** The model thinks before it answers and did not say how much. The figure is
-  a lower bound and renders with a "greater than or equal to" marker. Never describe it as a total.
-  Claude Code turns never carry it: Anthropic's output count already holds the thinking, so a turn
+- **`thinking-unknown`** The model thinks before it answers and did not say how much. The range
+  runs from no thinking at the low to a lot at the high, with the central at a measured ratio, so
+  describe it as a range that allows for hidden thinking, not as a floor. Claude Code turns never
+  carry it: Anthropic's output count already holds the thinking, so a turn
   with no split still has nothing missing. Nor do rows whose measurement ran the model's reasoning,
   such as o3, because the thinking is already inside their rate.
 - **`proxy-row`** Nobody has measured this model, so the figure is scaled from one that has been.
@@ -53,7 +54,12 @@ explanation.
   asked for, as Mistral did with its life cycle figures. The narrower part can't be taken out of a
   published total, so it reads "unknown".
 - **`model-unknown`** We do not recognise the model. There are no numbers at all, and the figure
-  reads "unknown". It is never zero.
+  reads "unknown". It is never zero. A total that leaves such turns out renders with the "greater
+  than or equal to" marker, and so does one that leaves out a turn with no energy figure
+  (`no-energy-figure`, energy only) or no water figure (`no-water-figure`, water only).
+
+The "greater than or equal to" marker means something known is missing from the figure. That is
+all it means; undisclosed thinking doesn't carry it, because its range already spans it.
 
 ## The rule that matters most
 
@@ -76,8 +82,9 @@ available, but only when the reader asks for it.
   an input token.
 - The tokenizer ratios for Anthropic and Google have not been measured against the providers' own
   counting endpoints.
-- Most region grid intensities in the dataset still need re-fetching from the Ember dataset, and
-  every region currently shares one off-site water range built around a United States figure.
+- Off-site water comes from the World Resources Institute's national factors, and Singapore and
+  South Africa have none of their own yet. The hourly grid range is real only for the regions the
+  gridcarbon snapshot covers.
 - The parametric formula for open models has a unit convention that is not fully pinned down. A
   measured row always wins over it.
 
@@ -87,6 +94,7 @@ measures each one, and how good that measurement is.
 ## Scale
 
 Agentic sessions dwarf chat prompts. A single chat prompt is a fraction of a watt hour. A coding
-session running hundreds of turns reaches kilowatt hours, and cache writes usually dominate: one
-turn in the author's own logs produced 134 output tokens and carried a 351,000 token cache write.
+session running hundreds of turns reaches kilowatt hours, and re-reading the cached context usually
+dominates: over a fortnight of the author's own sessions, cache reads came to 2.2 billion tokens
+against 121 million written and far fewer typed.
 When someone asks what their usage costs, per session is the honest unit, not per prompt.

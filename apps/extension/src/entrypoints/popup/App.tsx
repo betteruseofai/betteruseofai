@@ -160,7 +160,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       {flags.includes('thinking-unknown') ? (
         <p class="buai-popup__note">
-          Some turns hid their reasoning tokens, so these are lower bounds.
+          Some turns hid their reasoning tokens, so the ranges run from no thinking to a lot.
         </p>
       ) : null}
       {flags.includes('embodied-missing') ? (

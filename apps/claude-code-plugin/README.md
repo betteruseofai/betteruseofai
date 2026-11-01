@@ -75,8 +75,8 @@ Every nudge names the rule that produced it, so you can mute that one rule with
 ## What the figures mean
 
 Every figure is a range, because the published measurements disagree by an order of magnitude,
-mostly over where the system boundary is drawn. An unrecognised model reads "unknown", never zero. A
-model that hid its reasoning tokens gives a lower bound rather than a total.
+mostly over where the system boundary is drawn. An unrecognised model reads "unknown", never zero,
+and a total that leaves it out is marked as a lower bound.
 
 The `betteruseofai-methodology` skill has the full account, including what we do not know.
 

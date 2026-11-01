@@ -1,4 +1,5 @@
 import { estimate } from './estimate.js';
+import { order } from './range.js';
 import type { CarbonBasis, Dataset, Estimate, Range, UsageEvent, WaterScope } from './types.js';
 
 /**
@@ -53,14 +54,21 @@ const plus = (a: Range | null, b: Range | null): Range | null => {
   return { low: a.low + b.low, central: a.central + b.central, high: a.high + b.high };
 };
 
-/** A minus B, floored at nothing. A saving is never negative. */
+/**
+ * A minus B, bound by bound, floored at nothing. A saving is never negative.
+ *
+ * Both sides are priced from the same rows, the same region and the same
+ * tokens, so when one side's figure is at its low the other's is too. Taking
+ * A's low minus B's high treated them as unrelated and put the low at nothing
+ * almost every time (audit E4, decided 2026-10-30).
+ */
 const minus = (a: Range | null, b: Range | null): Range | null => {
   if (!a || !b) return null;
-  return {
-    low: Math.max(0, a.low - b.high),
+  return order({
+    low: Math.max(0, a.low - b.low),
     central: Math.max(0, a.central - b.central),
-    high: Math.max(0, a.high - b.low),
-  };
+    high: Math.max(0, a.high - b.high),
+  });
 };
 
 export const saving = (inputs: SavingInput[], dataset: Dataset, options: SavingOptions = {}): Saving => {

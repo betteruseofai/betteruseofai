@@ -65,18 +65,21 @@ describe('rendering a range', () => {
     expect(rendered).not.toMatch(/[–—]/);
   });
 
-  it('marks a lower bound when the thinking count was never disclosed', () => {
-    const rendered = formatRange({ low: 0.5, central: 2, high: 9 }, {
-      unit: 'Wh',
-      flags: ['thinking-unknown'],
-    });
-    expect(rendered.startsWith('≥ ')).toBe(true);
+  it('marks a lower bound only where something is known to be missing', () => {
+    const range = { low: 0.5, central: 2, high: 9 };
+    // A total that left out a turn it couldn't price.
+    expect(formatRange(range, { unit: 'Wh', flags: ['model-unknown'] }).startsWith('≥ ')).toBe(true);
+    // Undisclosed thinking is inside the range already, so it is not a floor.
+    expect(formatRange(range, { unit: 'Wh', flags: ['thinking-unknown'] }).startsWith('≥')).toBe(false);
+    // A turn with no energy figure is missing from energy, not from water.
+    expect(formatRange(range, { unit: 'Wh', flags: ['no-energy-figure'] }).startsWith('≥ ')).toBe(true);
+    expect(formatRange(range, { unit: 'mL', flags: ['no-energy-figure'] }).startsWith('≥')).toBe(false);
   });
 
   it('has an ascii mode for a status line', () => {
     const rendered = formatRange({ low: 0.5, central: 2, high: 9 }, {
       unit: 'Wh',
-      flags: ['thinking-unknown'],
+      flags: ['model-unknown'],
       ascii: true,
     });
     expect(rendered.startsWith('>= ')).toBe(true);

@@ -1,6 +1,6 @@
 {
-  "version": "3.1.0",
-  "sha256": "4ecb918f41b81571226168c67255cec1e869c3f0b0256b83ca98817e9a52db07",
+  "version": "3.2.0",
+  "sha256": "f385a3fb8291806f42beee9020e638152b61ecada9a3199a8f9bd4f8b98ef23e",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -3456,7 +3456,7 @@
     }
   ],
   "calibration": {
-    "version": "3.1.0",
+    "version": "3.2.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",
@@ -3619,12 +3619,12 @@
       "claude-code": {
         "low": 1,
         "central": 1,
-        "high": 1.05
+        "high": 1
       },
       "codex-cli": {
         "low": 1,
         "central": 1,
-        "high": 1.05
+        "high": 1
       },
       "claude-web": {
         "low": 1,

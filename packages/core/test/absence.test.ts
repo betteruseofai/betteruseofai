@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { aggregate } from '../src/aggregate.js';
 import { equivalents } from '../src/equivalents.js';
 import { estimate } from '../src/estimate.js';
-import { formatRange } from '../src/format.js';
+import { explainFlags, formatRange } from '../src/format.js';
 import { resolveModel } from '../src/resolve.js';
 import { event, loadDataset, tokens } from './helpers.js';
 
@@ -93,12 +93,15 @@ describe('undisclosed thinking tokens', () => {
     );
   });
 
-  it('render as a lower bound, not as a settled figure', () => {
+  it('render as a range that spans the thinking, not as a floor', () => {
+    // The low assumes no thinking and the high a lot, so the central is the
+    // middle of that range. Marking it "at least" called the middle a floor
+    // (audit E5, decided 2026-10-30). The flag and its note stay.
     const result = estimate(withUnknownThinking, { dataset });
-    expect(formatRange(result.energyWh, { unit: 'Wh', flags: result.basis.flags })).toMatch(/^≥ /);
-    expect(
-      formatRange(result.energyWh, { unit: 'Wh', flags: result.basis.flags, ascii: true }),
-    ).toMatch(/^>= /);
+    expect(result.basis.flags).toContain('thinking-unknown');
+    const rendered = formatRange(result.energyWh, { unit: 'Wh', flags: result.basis.flags });
+    expect(rendered).not.toMatch(/^≥/);
+    expect(explainFlags(result.basis.flags).join(' ')).toContain('from no thinking to a lot');
   });
 
   it('cost more than the same exchange with no thinking at all', () => {

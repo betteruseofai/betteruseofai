@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Any
 
-from .engine import Range, get_model
+from .engine import Range, get_model, order
 from .estimate import Estimate, UsageEvent, estimate
 
 SAVING_BASELINE = "the largest model in each family"
@@ -44,11 +44,14 @@ def _plus(a: Range | None, b: Range | None) -> Range | None:
 
 
 def _minus(a: Range | None, b: Range | None) -> Range | None:
-    """A minus B, floored at nothing. A saving is never negative."""
+    """A minus B, bound by bound, floored at nothing. Both sides are priced from the
+    same rows, so their lows go together and their highs go together."""
     if a is None or b is None:
         return None
-    return Range(
-        max(0.0, a.low - b.high), max(0.0, a.central - b.central), max(0.0, a.high - b.low)
+    return order(
+        Range(
+            max(0.0, a.low - b.low), max(0.0, a.central - b.central), max(0.0, a.high - b.high)
+        )
     )
 
 

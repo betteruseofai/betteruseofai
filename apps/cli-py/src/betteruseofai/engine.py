@@ -375,16 +375,27 @@ def normalize_to_per_token(
             # Mistral assessment, cannot produce a per token rate at all.
             return None
         k = to_range(calibration["outputToInputEnergyWeight"])
-        reference_input = float(per_prompt["referenceInputTokens"]["central"])
-        reference_output = float(per_prompt["referenceOutputTokens"]["central"])
-        denominator = reference_input + k.central * reference_output
-        if denominator <= 0:
+
+        # Each bound of the energy over the same bound of the reference
+        # exchange: a published high is high because that exchange was long.
+        def reference(bound: str) -> float:
+            return float(per_prompt["referenceInputTokens"][bound]) + k.central * float(
+                per_prompt["referenceOutputTokens"][bound]
+            )
+
+        if min(reference("low"), reference("central"), reference("high")) <= 0:
             return None
 
         energy = to_range(per_prompt["energyWh"])
-        input_rate = Range(
-            energy.low / denominator, energy.central / denominator, energy.high / denominator
-        )
+        # The paired rates need not come out in order, since a published low can be
+        # measurement doubt rather than a short exchange. The central stays central
+        # over central; the bounds are the lowest and highest of the three.
+        paired = [
+            energy.low / reference("low"),
+            energy.central / reference("central"),
+            energy.high / reference("high"),
+        ]
+        input_rate = Range(min(paired), energy.central / reference("central"), max(paired))
         output_rate = scale(input_rate, k.central)
 
         flags.append("derived-rate")

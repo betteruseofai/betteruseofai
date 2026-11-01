@@ -465,12 +465,13 @@ describe('the calculator', () => {
 
   it('shows the local comparison its own caveats', async () => {
     if (skip()) return;
-    // A reasoning model with no thinking count typed in: every local figure is a lower bound.
+    // A reasoning model with no thinking count typed in: the local side says the
+    // thinking was hidden, under its own figures, where the cloud list can't.
     const { page } = await open('/calculator#model=gpt-4o&compare=1&local=deepseek-r1-distill-llama-70b');
     await page.waitForSelector('.calc__local .buai-readout__figure');
     const local = await page.locator('.calc__local .buai-readout__figure').allTextContents();
     expect(local).toHaveLength(3);
-    for (const figure of local) expect(figure.trim()).toMatch(/^≥/);
+    expect((await page.textContent('.calc__local-caveats')) ?? '').toContain('from no thinking to a lot');
     await page.close();
 
     // A model nobody has measured on a desk is priced from a data centre row, and says so.

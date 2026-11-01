@@ -48,6 +48,16 @@ describe('the saving against the largest model in each family', () => {
     expect(saved.energyWh!.central).toBeCloseTo(frontier.energyWh!.central - small.estimate.energyWh!.central, 6);
   });
 
+  it('pairs the two sides bound by bound, so its low is a real saving (E4)', () => {
+    // Both sides come from the same rows: when one is at its low the other is
+    // too. Low minus high treated them as unrelated, and the low was nothing.
+    const small = turn('claude-haiku-4.5', '2026-09-01', 1);
+    const saved = saving([small], dataset, {});
+    const frontier = estimate({ ...small.event, modelId: 'claude-opus-5' }, { dataset });
+    expect(saved.energyWh!.low).toBeGreaterThan(0);
+    expect(saved.energyWh!.low).toBeCloseTo(frontier.energyWh!.low - small.estimate.energyWh!.low, 6);
+  });
+
   it('skips a turn it cannot re-price and says how many', () => {
     const saved = saving([turn(null, '2026-09-01', 1), turn('claude-haiku-4.5', '2026-09-01', 2)], dataset, {});
     expect(saved.skipped).toBe(1);

@@ -153,8 +153,8 @@ export const claudeAdapter: SiteAdapter = {
       modelSource: modelRaw ? 'response' : 'unknown',
       outputText: output,
       ...(Object.keys(reported).length > 0 ? { reportedTokens: reported } : {}),
-      // Thinking happened and nobody said how much. That is a lower bound, not
-      // a zero, and the flag is what makes the interface say so.
+      // Thinking happened and nobody said how much. That is a range from none to
+      // a lot, not a zero, and the flag is what makes the interface say so.
       thinkingUndisclosed: thinkingSeen && thinkingCount === null,
     };
   },

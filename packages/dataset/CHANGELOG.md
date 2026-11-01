@@ -1,5 +1,16 @@
 # @betteruseofai/dataset
 
+## 3.2.0
+
+Data only, so a minor bump.
+
+- **Claude Code and Codex CLI hide nothing from the input count.** Both report the provider's own
+  count, system prompt included, so their hidden context factor is one, not up to 1.05. Their
+  highs drop by up to five per cent and they no longer carry the `input-partial` flag, whose
+  explanation, a hidden system prompt, wasn't true for them (audit E16).
+- The regions note no longer says every region shares one United States water range; each has its
+  own WRI factor since 0.4.0.
+
 ## 3.1.0
 
 Data only, so a minor bump.

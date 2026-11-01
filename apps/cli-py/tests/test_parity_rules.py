@@ -518,6 +518,79 @@ def test_a_total_that_left_out_turns_is_a_lower_bound():
         assert is_lower_bound(rolled.flags, measure)
 
 
+def test_unknown_thinking_is_a_range_not_a_floor():
+    result = estimate(event(tokens=TokenCounts(input=1000, output=500, thinking=None)), DATASET)
+    assert "thinking-unknown" in result.flags
+    assert not is_lower_bound(result.flags, "energy")
+
+
+def test_a_per_prompt_row_pairs_with_its_own_reference_lengths():
+    shape = {"input": 200, "output": 300, "thinking": 0}
+    r1 = estimate(
+        event(model_raw="deepseek-r1-distill-llama-70b", tokens=TokenCounts(**shape)), DATASET
+    )
+    assert r1.energy_wh.high < 10
+    gpt5 = estimate(event(model_raw="gpt-5", tokens=TokenCounts(**shape)), DATASET)
+    assert gpt5.energy_wh.central == pytest.approx(0.34, abs=1e-6)
+    assert gpt5.energy_wh.high < 3
+
+
+def test_a_local_model_on_a_hosted_row_says_so_whatever_the_overhead():
+    turn = event(
+        model_raw="mistral-large-2", hosting="local", tokens=TokenCounts(input=200, output=300)
+    )
+    local = estimate(
+        turn,
+        DATASET,
+        water_scope="lifecycle",
+    )
+    assert "local-row-missing" in local.flags
+
+
+def test_the_carbon_basis_is_the_one_used():
+    turn = event(tokens=TokenCounts(input=200, output=300, thinking=0))
+    proxied = estimate(turn, DATASET, carbon_basis="provider-reported")
+    assert proxied.carbon_basis == "location-based"
+
+
+def test_a_row_with_no_water_says_so_and_makes_water_totals_a_lower_bound():
+    no_water = estimate(
+        event(model_raw="deepseek-r1-distill-llama-70b", tokens=TokenCounts(input=200, output=300)),
+        DATASET,
+        water_scope="on-site",
+    )
+    assert "no-water-figure" in no_water.flags
+    assert is_lower_bound(no_water.flags, "water")
+    assert not is_lower_bound(no_water.flags, "energy")
+
+
+def test_grid_hours_average_out_over_days():
+    def priced(day: int):
+        turn = event(
+            id=f"t{day}",
+            tokens=TokenCounts(input=200, output=300, thinking=0),
+            timestamp=f"2026-09-{day:02d}T12:00:00.000Z",
+        )
+        return (turn, estimate(turn, DATASET, region_code="GB"))
+
+    def spread(r):
+        return r.high / r.low
+
+    month = aggregate([priced(d) for d in (1, 4, 7, 10, 13, 16, 19, 22, 25, 28)], "all")[0]
+    assert spread(month.carbon_g) == pytest.approx(spread(month.energy_wh), rel=1e-6)
+    day = aggregate([priced(1)], "all")[0]
+    assert spread(day.carbon_g) > spread(day.energy_wh) * 1.5
+
+
+def test_a_saving_pairs_its_bounds():
+    from betteruseofai.saving import saving
+
+    small = event(model_raw="claude-haiku-4.5", tokens=TokenCounts(input=400, output=300))
+    small_estimate = estimate(small, DATASET)
+    saved = saving([(small, small_estimate)], DATASET)
+    assert saved.energy_wh.low > 0
+
+
 def test_an_uncounted_attachment_is_flagged():
     shape = {"input": 200, "output": 300, "thinking": 0}
     with_image = estimate(event(tokens=TokenCounts(**shape, attachments_uncounted=True)), DATASET)

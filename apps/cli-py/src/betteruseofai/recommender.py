@@ -17,7 +17,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from .engine import Range, downgrade_target, get_model, resolve_model
+from .engine import Range, downgrade_target, get_model, order, resolve_model
 from .estimate import TokenCounts, UsageEvent, estimate
 
 DEFAULT_HINT_THRESHOLD = 0.6
@@ -601,10 +601,13 @@ def _nothing(reason: str) -> Recommendation:
 def _subtract(before: Range | None, after: Range | None) -> Range | None:
     if before is None or after is None:
         return None
-    return Range(
-        max(0.0, before.low - after.high),
-        max(0.0, before.central - after.central),
-        max(0.0, before.high - after.low),
+    # Bound by bound, because both sides are priced from the same rows.
+    return order(
+        Range(
+            max(0.0, before.low - after.low),
+            max(0.0, before.central - after.central),
+            max(0.0, before.high - after.high),
+        )
     )
 
 

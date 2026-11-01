@@ -1,6 +1,6 @@
 {
-  "datasetVersion": "3.1.0",
-  "datasetSha256": "4ecb918f41b81571226168c67255cec1e869c3f0b0256b83ca98817e9a52db07",
+  "datasetVersion": "3.2.0",
+  "datasetSha256": "f385a3fb8291806f42beee9020e638152b61ecada9a3199a8f9bd4f8b98ef23e",
   "results": {
     "unknown-model": {
       "modelId": null,
@@ -138,17 +138,17 @@
       "energyWh": {
         "low": "2.92998",
         "central": "11.7199",
-        "high": "52.8716"
+        "high": "52.7396"
       },
       "waterMl": {
         "low": "5.29709",
         "central": "29.3923",
-        "high": "194.985"
+        "high": "194.498"
       },
       "carbonG": {
         "low": "0.285966",
         "central": "2.54791",
-        "high": "18.78"
+        "high": "18.7331"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-opus",
@@ -166,7 +166,6 @@
         "carbonBasis": "location-based",
         "qualityScore": 2,
         "flags": [
-          "input-partial",
           "proxy-row"
         ],
         "sourceUrls": [
@@ -181,17 +180,17 @@
       "energyWh": {
         "low": "1.13044",
         "central": "8.95347",
-        "high": "96.8855"
+        "high": "96.8415"
       },
       "waterMl": {
         "low": "2.66547",
         "central": "29.5276",
-        "high": "471.628"
+        "high": "471.414"
       },
       "carbonG": {
         "low": "0.337212",
         "central": "3.13103",
-        "high": "38.386"
+        "high": "38.3686"
       },
       "basis": {
         "benchmarkRowId": "proxy.claude-sonnet",
@@ -209,7 +208,6 @@
         "carbonBasis": "location-based",
         "qualityScore": 2,
         "flags": [
-          "input-partial",
           "proxy-row",
           "thinking-unknown"
         ],
@@ -223,19 +221,19 @@
     "per-prompt-derived": {
       "modelId": "gemini-2.5-flash",
       "energyWh": {
-        "low": "0.035",
+        "low": "0.073618",
         "central": "0.247385",
-        "high": "2.40923"
+        "high": "1.67308"
       },
       "waterMl": {
-        "low": "0.120927",
+        "low": "0.254353",
         "central": "1.45092",
-        "high": "25.7186"
+        "high": "17.8602"
       },
       "carbonG": {
-        "low": "0.012075",
+        "low": "0.0253982",
         "central": "0.0853477",
-        "high": "0.831185"
+        "high": "0.577212"
       },
       "basis": {
         "benchmarkRowId": "google.gemini-apps.2025-median",
@@ -264,19 +262,19 @@
     "provider-reported-carbon": {
       "modelId": "gemini-2.5-flash",
       "energyWh": {
-        "low": "0.035",
+        "low": "0.073618",
         "central": "0.247385",
-        "high": "2.40923"
+        "high": "1.67308"
       },
       "waterMl": {
-        "low": "0.120927",
+        "low": "0.254353",
         "central": "1.45092",
-        "high": "25.7186"
+        "high": "17.8602"
       },
       "carbonG": {
-        "low": "0.00329",
+        "low": "0.00692009",
         "central": "0.0232542",
-        "high": "0.226468"
+        "high": "0.157269"
       },
       "basis": {
         "benchmarkRowId": "google.gemini-apps.2025-median",
@@ -592,19 +590,19 @@
     "direct-onsite-widened": {
       "modelId": "gpt-5",
       "energyWh": {
-        "low": "0.035",
+        "low": "0.119",
         "central": "0.34",
-        "high": "9"
+        "high": "2.62921"
       },
       "waterMl": {
-        "low": "0.177",
+        "low": "0.3618",
         "central": "1.3876",
-        "high": "45.39"
+        "high": "15.3836"
       },
       "carbonG": {
-        "low": "0.0104405",
+        "low": "0.0354977",
         "central": "0.118898",
-        "high": "3.5658"
+        "high": "1.04169"
       },
       "basis": {
         "benchmarkRowId": "openai.altman-statement.2025",
@@ -632,19 +630,19 @@
     "direct-onsite-lifecycle": {
       "modelId": "gpt-5",
       "energyWh": {
-        "low": "0.035",
+        "low": "0.119",
         "central": "0.34",
-        "high": "9"
+        "high": "2.62921"
       },
       "waterMl": {
-        "low": "0.177",
+        "low": "0.3618",
         "central": "1.3876",
-        "high": "45.39"
+        "high": "15.3836"
       },
       "carbonG": {
-        "low": "0.0104405",
+        "low": "0.0354977",
         "central": "0.118898",
-        "high": "3.5658"
+        "high": "1.04169"
       },
       "basis": {
         "benchmarkRowId": "openai.altman-statement.2025",
