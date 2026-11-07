@@ -11,6 +11,7 @@ from .engine import (
     add,
     clamp_non_negative,
     exact,
+    get_model,
     get_region,
     mul,
     normalize_to_per_token,
@@ -78,6 +79,8 @@ class UsageEvent:
     session_id: str | None = None
     region_hint: str | None = None
     meta: dict[str, Any] = field(default_factory=dict)
+    # A resolved id, used before the raw string, as the TypeScript does.
+    model_id: str | None = None
 
 
 @dataclass
@@ -198,7 +201,7 @@ def estimate(
         raise RuntimeError(f"Dataset has no default region \"{dataset['defaultRegion']}\"")
     resolved_region = region["code"]
 
-    model = resolve_model(event.model_raw, dataset)
+    model = get_model(event.model_id, dataset) or resolve_model(event.model_raw, dataset)
     if model is None:
         return _unknown(
             event, dataset["version"], resolved_region, [*flags, "model-unknown"], "unknown-model"

@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from betteruseofai.engine import load_dataset
+from betteruseofai.estimate import TokenCounts
 from betteruseofai.recommender import (
     create_recommender,
     extract_features,
@@ -55,6 +56,8 @@ def test_the_shared_cases(case: dict):
         assert got.show_in_report == wanted["showInReport"], why
     if "confidence" in wanted:
         assert got.confidence == wanted["confidence"], why
+    if "explanationContains" in wanted:
+        assert wanted["explanationContains"] in got.explanation, why
 
 
 def test_the_arithmetic_reader_never_evaluates_what_it_was_given():
@@ -89,6 +92,91 @@ def test_the_unit_reader_converts_only_within_one_quantity():
     assert read_unit_conversion("5 km in miles").answer == "3.106856 miles"
     assert read_unit_conversion("5 km in kilograms") is None
     assert read_unit_conversion("5 parsecs in bananas") is None
+
+
+def test_the_unit_reader_reads_one_well_formed_number_or_nothing():
+    assert read_unit_conversion("1.2.3 km to m") is None
+    assert read_unit_conversion("1,500 m in km").answer == "1.5 km"
+
+
+def test_the_arithmetic_reader_leaves_dates_and_telephone_numbers_alone():
+    assert read_arithmetic("2026-10-19") is None
+    assert read_arithmetic("19/10/2026") is None
+    assert read_arithmetic("020-7946-0018") is None
+    assert read_arithmetic("1.2.3 + 4") is None
+    assert read_arithmetic("0.5 + 0.25").answer == "0.75"
+
+
+def test_answers_print_the_way_javascript_prints_them():
+    # The same strings are asserted in the TypeScript tests.
+    assert read_arithmetic("123456789 * 987654321").answer == "121932631112635260"
+    assert read_arithmetic("1 / 30000").answer == "0.00003333333333"
+    assert read_arithmetic("99999999999 * 99999999999").answer == "9.9999999998e+21"
+
+
+def test_the_opening_verb_counts_only_as_a_whole_word():
+    assert extract_features("listen to this").imperative_verb is None
+    assert extract_features("tagline for a bakery").imperative_verb is None
+    assert extract_features("list the planets").imperative_verb == "list"
+    assert extract_features("Please fix the grammar here").imperative_verb == "fix the grammar"
+    assert extract_features("Summarise: the notes").imperative_verb == "summarise"
+
+
+def test_it_names_the_parts_of_a_program_a_prompt_talks_about():
+    assert extract_features("extract the parser into its own module").code_nouns == [
+        "parser",
+        "module",
+    ]
+    assert extract_features("rewrite the film script").code_nouns == []
+
+
+def test_words_and_characters_are_counted_the_way_javascript_counts_them():
+    assert extract_features("one\x1ctwo").words == 1
+    assert extract_features("one﻿two").words == 2
+    assert abs(extract_features("\U0001f600a").non_latin_share - 2 / 3) < 1e-12
+    assert extract_features("\U0001f600a").chars == 3
+    assert extract_features("٣. one").constraint_count == 0
+
+
+SWAP = "Rewrite this sentence so it is shorter."
+
+
+def test_the_swap_is_priced_on_a_real_turn_when_there_is_one():
+    recommender = create_recommender(DATASET)
+    guessed = recommender.recommend(SWAP, model_id="claude-opus-5", at="2026-11-07")
+    real = recommender.recommend(
+        SWAP,
+        model_id="claude-opus-5",
+        at="2026-11-07",
+        turn=TokenCounts(
+            input=2000,
+            cached_read=150000,
+            output=800,
+            thinking=None,
+            thinking_in_output=True,
+        ),
+    )
+    small = guessed.estimated_savings.energy_wh.central
+    assert small > 0
+    assert real.estimated_savings.energy_wh.central > small * 10
+
+
+def test_the_swap_is_priced_on_the_region_it_is_given():
+    france = create_recommender(DATASET, region_code="FR").recommend(
+        SWAP, model_id="claude-opus-5", at="2026-11-07"
+    )
+    india = create_recommender(DATASET, region_code="IN").recommend(
+        SWAP, model_id="claude-opus-5", at="2026-11-07"
+    )
+    assert france.estimated_savings.energy_wh == india.estimated_savings.energy_wh
+    assert france.estimated_savings.carbon_g.central < india.estimated_savings.carbon_g.central / 2
+
+
+def test_the_swap_is_priced_on_the_date_it_is_given():
+    # No row was published by 2000, so there is nothing to price it with.
+    got = create_recommender(DATASET).recommend(SWAP, model_id="claude-opus-5", at="2000-01-01")
+    assert got.kind == "downgrade"
+    assert got.estimated_savings is None
 
 
 def test_features_finish_inside_the_budget():

@@ -246,7 +246,26 @@ def test_equivalents_scale_up_to_a_week_of_agent_sessions():
 
 
 def test_the_stale_search_figure_is_a_last_resort():
-    assert equivalents(4, "energy", DATASET)[0]["id"] == "phone-charge"
+    # 17 Wh is nine tenths of a phone charge or 57 searches.
+    found = equivalents(17, "energy", DATASET)
+    assert found[0]["id"] == "phone-charge"
+    assert "google-search" not in [item["id"] for item in found]
+
+
+def test_a_typical_prompt_finds_something_other_than_the_2009_search():
+    found = equivalents(0.3, "energy", DATASET)[0]
+    assert found["id"] == "led-bulb-minute"
+    assert abs(found["count"] - 2) < 1e-9
+
+
+def test_a_mug_boils_for_what_boiling_a_mug_takes():
+    found = equivalents(35, "energy", DATASET)[0]
+    assert found["id"] == "kettle-boil"
+    assert found["count"] == 1
+
+
+def test_no_carbon_comparison_hides_a_grid_inside_it():
+    assert "phone-charge-carbon" not in [e["id"] for e in DATASET["equivalents"]]
 
 
 # ------------------------------------------------------------- the tool

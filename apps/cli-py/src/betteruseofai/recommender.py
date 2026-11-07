@@ -15,6 +15,8 @@ import math
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Any
 
 from .engine import Range, downgrade_target, get_model, order, resolve_model
@@ -54,6 +56,7 @@ class Features:
     unit_conversion: UnitConversion | None = None
     date_math: bool = False
     imperative_verb: str | None = None
+    code_nouns: list[str] = field(default_factory=list)
     reasoning_cues: list[str] = field(default_factory=list)
     constraint_count: int = 0
     question_count: int = 0
@@ -61,17 +64,57 @@ class Features:
     non_latin_share: float = 0.0
 
 
+# The two languages disagree on what whitespace is, what a digit is and where
+# a line ends, so this file spells out JavaScript's answers and uses them.
+# JavaScript's \s and String.prototype.trim, as a character class.
+_S = "[\t\n\v\f\r    -     　﻿]"
+_TRIM = re.compile(f"^{_S}+|{_S}+\\Z")
+_SPLIT = re.compile(f"{_S}+")
+# JavaScript's . and the m flag's ^ and $ treat all four of these as line ends.
+_LINE_ENDS = re.compile("[\r  ]")
+_A = re.ASCII  # \d, \w, \b and case folding as JavaScript has them
+
+
+def _js_trim(text: str) -> str:
+    return _TRIM.sub("", text)
+
+
+def _utf16_length(text: str) -> int:
+    """String length as JavaScript counts it, in UTF-16 code units."""
+    return len(text.encode("utf-16-le")) // 2
+
+
+def _js_number(value: float) -> str:
+    """Number.prototype.toString, which repr and str do not match past 1e16 or below 1e-4."""
+    if value == 0:
+        return "0"
+    sign = "-" if value < 0 else ""
+    digits_tuple, exponent = Decimal(repr(abs(value))).normalize().as_tuple()[1:]
+    digits = "".join(str(d) for d in digits_tuple)
+    k = len(digits)
+    n = k + int(exponent)  # value = 0.digits x 10^n
+    if k <= n <= 21:
+        return sign + digits + "0" * (n - k)
+    if 0 < n <= 21:
+        return sign + digits[:n] + "." + digits[n:]
+    if -6 < n <= 0:
+        return sign + "0." + "0" * (-n) + digits
+    power = n - 1
+    mark = "+" if power >= 0 else "-"
+    mantissa = digits if k == 1 else digits[0] + "." + digits[1:]
+    return f"{sign}{mantissa}e{mark}{abs(power)}"
+
+
 def _format_answer(value: float) -> str:
     """Write an answer the way a person would, matching the TypeScript exactly."""
-    if value == int(value) and abs(value) < 1e15:
-        return str(int(value))
-    text = repr(float(f"{value:.10g}"))
-    return text[:-2] if text.endswith(".0") else text
+    if math.isfinite(value) and value == math.floor(value):
+        return _js_number(value)
+    return _js_number(float(f"{value:.10g}"))
 
 
 def _evaluate_expression(text: str) -> float | None:
     """A tiny recursive descent parser over numbers, brackets and + - * / %."""
-    source = re.sub(r"\s+", "", text)
+    source = _SPLIT.sub("", text)
     if not source or len(source) > 120:
         return None
 
@@ -87,10 +130,11 @@ def _evaluate_expression(text: str) -> float | None:
             index += 1
         if index == start:
             return None
-        try:
-            return float(source[start:index])
-        except ValueError:
+        text = source[start:index]
+        # "1.2.3" is not a number, in either language.
+        if not _NUMBER.match(text):
             return None
+        return float(text)
 
     def factor() -> float | None:
         nonlocal index
@@ -148,27 +192,37 @@ def _evaluate_expression(text: str) -> float | None:
     return result
 
 
+_NUMBER = re.compile(r"(?:\d+\.?\d*|\.\d+)\Z", _A)
+
 _ARITHMETIC = re.compile(
-    r"^(?:what(?:'s| is)|calculate|compute|work out|how much is)?\s*"
-    r"([0-9()+\-*/%.\s]{3,120}?)\s*(?:=|\?)?$",
-    re.IGNORECASE,
+    rf"^(?:what(?:'s| is)|calculate|compute|work out|how much is)?{_S}*"
+    rf"([0-9()+\-*/%.\t\n\v\f\r    -     　﻿]"
+    rf"{{3,120}}?){_S}*(?:=|\?)?\Z",
+    re.IGNORECASE | _A,
 )
+
+# Digits and dashes that are not a sum: a date, a telephone number, a code.
+_DATE_LIKE = re.compile(r"^\d+([-/])\d+(?:\1\d+)+\Z", _A)
+_LEADING_ZERO = re.compile(r"(?:^|[^\d.])0\d", _A)
 
 
 def read_arithmetic(prompt: str) -> Arithmetic | None:
-    text = prompt.strip()
+    text = _js_trim(prompt)
     if not re.search(r"[0-9]", text) or not re.search(r"[+\-*/%]", text):
         return None
     match = _ARITHMETIC.match(text)
     if not match:
         return None
-    expression = match.group(1).strip()
+    expression = _js_trim(match.group(1))
     if not re.search(r"[+\-*/%]", expression):
+        return None
+    # "2026-10-19" is a date, not 1997. "100-37" with one dash is still a sum.
+    if _DATE_LIKE.match(expression) or _LEADING_ZERO.search(expression):
         return None
     value = _evaluate_expression(expression)
     if value is None:
         return None
-    return Arithmetic(re.sub(r"\s+", " ", expression), _format_answer(value))
+    return Arithmetic(_SPLIT.sub(" ", expression), _format_answer(value))
 
 
 # Deliberately short. A wrong conversion given confidently is worse than
@@ -187,19 +241,19 @@ _UNITS: dict[str, tuple[str, float]] = {
     "gallon": ("l", 3.785411784), "gallons": ("l", 3.785411784),
 }  # fmt: skip
 
+# One well-formed number, and not the tail of a longer one: "1.2.3 km" is nothing.
 _CONVERSION = re.compile(
-    r"(-?[0-9][0-9,.]*)\s*([a-z]+)\s*(?:in|to|into|as)\s+([a-z]+)", re.IGNORECASE
+    r"(?<![\d.,])(-?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)(?![\d.,])"
+    rf"{_S}*([a-z]+){_S}*(?:in|to|into|as){_S}+([a-z]+)",
+    re.IGNORECASE | _A,
 )
 
 
 def read_unit_conversion(prompt: str) -> UnitConversion | None:
-    match = _CONVERSION.search(prompt.strip())
+    match = _CONVERSION.search(_js_trim(prompt))
     if not match:
         return None
-    try:
-        value = float(match.group(1).replace(",", ""))
-    except ValueError:
-        return None
+    value = float(match.group(1).replace(",", ""))
     from_unit = match.group(2).lower()
     to_unit = match.group(3).lower()
 
@@ -213,7 +267,7 @@ def read_unit_conversion(prompt: str) -> UnitConversion | None:
 
 
 _CODE_SIGNALS = [
-    re.compile(p, flags) for p, flags in [
+    re.compile(p.replace(r"\s", _S), flags | _A) for p, flags in [
         (r"```", 0),
         (r"\bfunction\s+\w+\s*\(", 0),
         (r"\b(?:const|let|var)\s+\w+\s*=", 0),
@@ -236,6 +290,21 @@ _IMPERATIVES = (
     "format", "reformat", "convert", "capitalise", "capitalize", "tidy", "clean up",
 )  # fmt: skip
 
+# A whole word at the start, so "listen" is not "list" and "tagline" is not "tag".
+_IMPERATIVE_PATTERNS = [
+    (verb, re.compile(f"^(?:please{_S}+)?{verb}(?![a-z])", _A)) for verb in _IMPERATIVES
+]
+
+# Words that name parts of a program. Words with an everyday sense ("file",
+# "script", "branch", "test", "class") are left out on purpose.
+_CODE_NOUNS = re.compile(
+    r"\b(?:functions?|methods?|modules?|parsers?|tests|(?:unit|failing) tests?|bugs?|repos?"
+    r"|repository|codebase|commits?|endpoints?|components?|variables?|compiler|linter"
+    r"|stack trace|regex|schema|migrations?|pull request|api|dependency|dependencies"
+    r"|exceptions?|git|type errors?|source code|the code)\b",
+    _A,
+)
+
 _REASONING_CUES = (
     "why", "prove", "derive", "explain how", "explain why", "work out",
     "trade-off", "tradeoff", "compare", "design", "architect", "debug",
@@ -246,27 +315,33 @@ _REASONING_CUES = (
 _DATE_MATH = re.compile(
     r"\b(?:how many (?:days|weeks|months|years)|days? (?:between|until|since|from now)"
     r"|what day (?:is|was)|add \d+ days)\b",
-    re.IGNORECASE,
+    re.IGNORECASE | _A,
 )
 
-_BULLET = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+", re.MULTILINE)
-_JOIN = re.compile(r"\b(?:and also|as well as|then also|additionally)\b")
-_NON_LATIN = re.compile(r"[^\x20-ɏ\s]")
+_BULLET = re.compile(rf"^{_S}*(?:[-*•]|\d+[.)]){_S}+", re.MULTILINE | _A)
+_JOIN = re.compile(r"\b(?:and also|as well as|then also|additionally)\b", _A)
+_NON_LATIN = re.compile(f"(?!{_S})[^\\x00-ɏ]")
 
 
 def extract_features(prompt: str, conversation_depth: int = 0) -> Features:
-    trimmed = (prompt or "").strip()
-    words = len(trimmed.split()) if trimmed else 0
+    prompt = prompt or ""
+    trimmed = _js_trim(prompt)
+    words = len(_SPLIT.split(trimmed)) if trimmed else 0
     lines = len(trimmed.split("\n")) if trimmed else 0
 
+    # JavaScript ends a line at \r,   and   too, for . and for ^ and
+    # $ under the m flag. Python ends one only at \n.
+    lined = _LINE_ENDS.sub("\n", prompt)
+
     has_code_fence = "```" in prompt
-    hits = sum(1 for pattern in _CODE_SIGNALS if pattern.search(prompt))
+    hits = sum(1 for pattern in _CODE_SIGNALS if pattern.search(lined))
     code_likelihood = min(1.0, hits / 3)
 
     lower = trimmed.lower()
     imperative_verb = next(
-        (v for v in _IMPERATIVES if lower.startswith(v) or lower.startswith(f"please {v}")), None
+        (verb for verb, pattern in _IMPERATIVE_PATTERNS if pattern.match(lower)), None
     )
+    code_nouns = list(dict.fromkeys(_CODE_NOUNS.findall(lower)))
     # A longer cue swallows a shorter one it contains, so "explain why" does not
     # also count as "why". Without this the confidence climbs on one phrase and
     # the explanation reads as a list of near-duplicates.
@@ -275,13 +350,15 @@ def extract_features(prompt: str, conversation_depth: int = 0) -> Features:
         cue for cue in all_cues if not any(other != cue and cue in other for other in all_cues)
     ]
 
-    constraint_count = len(_BULLET.findall(prompt)) + len(_JOIN.findall(lower))
+    constraint_count = len(_BULLET.findall(lined)) + len(_JOIN.findall(lower))
     question_count = prompt.count("?")
-    non_latin = len(_NON_LATIN.findall(prompt))
+    # Counted in UTF-16 code units on both sides, as JavaScript counts them.
+    non_latin = sum(_utf16_length(found) for found in _NON_LATIN.findall(prompt))
+    length = _utf16_length(prompt)
 
     return Features(
         words=words,
-        chars=len(trimmed),
+        chars=_utf16_length(trimmed),
         lines=lines,
         code_likelihood=code_likelihood,
         has_code_fence=has_code_fence,
@@ -289,11 +366,12 @@ def extract_features(prompt: str, conversation_depth: int = 0) -> Features:
         unit_conversion=read_unit_conversion(trimmed),
         date_math=bool(_DATE_MATH.search(trimmed)),
         imperative_verb=imperative_verb,
+        code_nouns=code_nouns,
         reasoning_cues=reasoning_cues,
         constraint_count=constraint_count,
         question_count=question_count,
         conversation_depth=conversation_depth,
-        non_latin_share=0.0 if not prompt else non_latin / len(prompt),
+        non_latin_share=0.0 if not prompt else non_latin / length,
     )
 
 
@@ -525,6 +603,16 @@ def _multi_step_rule(ctx: RuleContext) -> RuleResult | None:
     )
 
 
+def _code_work_rule(ctx: RuleContext) -> RuleResult | None:
+    f = ctx.features
+    if not f.code_nouns:
+        return None
+    # "Extract the parser into its own module" and "correct the failing tests"
+    # open like small tasks and are changes to a program.
+    named = " and ".join(f.code_nouns[:2])
+    return RuleResult("keep.code-work", "keep", 0.75, [f"the prompt is about code: {named}"])
+
+
 def _deep_conversation_rule(ctx: RuleContext) -> RuleResult | None:
     f = ctx.features
     if f.conversation_depth < 8:
@@ -553,6 +641,7 @@ DEFAULT_RULES: list[Rule] = [
     Rule("keep.deep-reasoning", 1, "keep", _deep_reasoning_rule),
     Rule("keep.long-code", 1, "keep", _long_code_rule),
     Rule("keep.multi-step", 1, "keep", _multi_step_rule),
+    Rule("keep.code-work", 1, "keep", _code_work_rule),
     Rule("keep.deep-conversation", 1, "keep", _deep_conversation_rule),
 ]
 
@@ -611,6 +700,16 @@ def _subtract(before: Range | None, after: Range | None) -> Range | None:
     )
 
 
+def _alone_on_ladder(model: dict[str, Any], dataset: dict[str, Any]) -> bool:
+    """True when no other current model shares this one's ladder."""
+    return not any(
+        other["id"] != model["id"]
+        and other["family"] == model["family"]
+        and other.get("deprecated") is None
+        for other in dataset["models"]
+    )
+
+
 def _explain(winner: RuleResult, target: dict[str, Any] | None, vetoed_by: list[str]) -> str:
     seen = "; ".join(winner.reasons)
     if vetoed_by:
@@ -634,16 +733,40 @@ def _explain(winner: RuleResult, target: dict[str, Any] | None, vetoed_by: list[
     return f"Rule {winner.rule_id} fired: {seen}."
 
 
+@dataclass
+class _Pricing:
+    """The person's settings, so a swap is priced the way their own figures are."""
+
+    region_code: str | None = None
+    water_scope: str = "on-site + off-site"
+    carbon_basis: str = "location-based"
+
+
 def _price_swap(
     words: int,
     surface: str,
     from_model: dict[str, Any],
     to_model: dict[str, Any],
     dataset: dict[str, Any],
+    pricing: _Pricing,
     expected_output_tokens: int | None = None,
+    turn: TokenCounts | None = None,
+    at: str | None = None,
 ) -> Savings | None:
+    # Priced on a real turn when the caller has one, otherwise on a guess from
+    # the prompt's length. Both sides take the same counts: moving model part
+    # way through a session also starts its cache again, a one-off cost this
+    # leaves out.
     input_tokens = max(1, round(words * 1.4))
     output_tokens = expected_output_tokens or max(50, input_tokens * 3)
+    tokens = turn or TokenCounts(
+        input=input_tokens,
+        output=output_tokens,
+        thinking=None,
+        estimated=True,
+        estimator="words",
+    )
+    timestamp = at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     def shape(model_id: str) -> UsageEvent:
         return UsageEvent(
@@ -651,18 +774,23 @@ def _price_swap(
             surface=surface,
             hosting="cloud",
             model_raw=model_id,
-            tokens=TokenCounts(
-                input=input_tokens,
-                output=output_tokens,
-                thinking=None,
-                estimated=True,
-                estimator="words",
-            ),
-            timestamp="1970-01-01T00:00:00.000Z",
+            model_id=model_id,
+            tokens=tokens,
+            timestamp=timestamp,
         )
 
-    before = estimate(shape(from_model["id"]), dataset, at="2026-09-10")
-    after = estimate(shape(to_model["id"]), dataset, at="2026-09-10")
+    def priced(model_id: str) -> Any:
+        return estimate(
+            shape(model_id),
+            dataset,
+            region_code=pricing.region_code,
+            water_scope=pricing.water_scope,
+            carbon_basis=pricing.carbon_basis,
+            at=timestamp[:10],
+        )
+
+    before = priced(from_model["id"])
+    after = priced(to_model["id"])
     if before.energy_wh is None and after.energy_wh is None:
         return None
 
@@ -682,6 +810,9 @@ class Recommender:
         hint_threshold: float = DEFAULT_HINT_THRESHOLD,
         report_threshold: float = DEFAULT_REPORT_THRESHOLD,
         muted: list[str] | None = None,
+        region_code: str | None = None,
+        water_scope: str = "on-site + off-site",
+        carbon_basis: str = "location-based",
     ) -> None:
         blocked = set(muted or [])
         self.rules = [r for r in [*DEFAULT_RULES, *(rules or [])] if r.id not in blocked]
@@ -689,6 +820,7 @@ class Recommender:
         self.has_local_model = has_local_model
         self.hint_threshold = hint_threshold
         self.report_threshold = report_threshold
+        self.pricing = _Pricing(region_code, water_scope, carbon_basis)
 
     def recommend(
         self,
@@ -698,6 +830,8 @@ class Recommender:
         surface: str = "api",
         conversation_depth: int = 0,
         expected_output_tokens: int | None = None,
+        turn: TokenCounts | None = None,
+        at: str | None = None,
     ) -> Recommendation:
         features = extract_features(prompt, conversation_depth)
         if features.words == 0:
@@ -714,10 +848,11 @@ class Recommender:
 
         # A veto blocks a downgrade or a local suggestion, but not an answer we
         # can give outright. If the sum is on the page, the sum is on the page.
+        # A no-llm suggestion with no answer is only advice, and a veto holds it.
         suggestions = [
             (rule, res)
             for rule, res in fired
-            if res.kind != "keep" and (res.kind == "no-llm" or not blocking)
+            if res.kind != "keep" and ((res.kind == "no-llm" and res.answer) or not blocking)
         ]
         suggestions.sort(key=lambda pair: (-pair[1].confidence, pair[1].rule_id))
 
@@ -742,15 +877,26 @@ class Recommender:
             else None
         )
 
-        # A downgrade with nowhere to go is not a downgrade.
+        # A downgrade with nowhere to go is not a downgrade. A model alone on
+        # its ladder is not the smallest of anything, so it gets its own sentence.
         if winner.kind == "downgrade" and model and target is None:
             return _nothing(
-                f"{model['displayName']} is already the smallest model we know on its ladder."
+                f"We don't know a smaller model on the same ladder as {model['displayName']}."
+                if _alone_on_ladder(model, self.dataset)
+                else f"{model['displayName']} is already the smallest model we know on its ladder."
             )
 
         savings = (
             _price_swap(
-                features.words, surface, model, target, self.dataset, expected_output_tokens
+                features.words,
+                surface,
+                model,
+                target,
+                self.dataset,
+                self.pricing,
+                expected_output_tokens,
+                turn,
+                at,
             )
             if target and model
             else None

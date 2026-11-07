@@ -1,4 +1,12 @@
-import type { Dataset, Model, Range, Surface } from '../types.js';
+import type {
+  CarbonBasis,
+  Dataset,
+  Model,
+  Range,
+  Surface,
+  TokenCounts,
+  WaterScope,
+} from '../types.js';
 import type { Features } from './features.js';
 
 /**
@@ -87,6 +95,11 @@ export interface RecommenderOptions {
   reportThreshold?: number;
   /** Rules to leave out by id, for the mute command. */
   muted?: string[];
+  /** The person's region, so a swap is priced on their grid. Default region otherwise. */
+  regionCode?: string;
+  /** The person's water scope, so the saving counts what their figures count. */
+  waterScope?: WaterScope;
+  carbonBasis?: CarbonBasis;
 }
 
 export interface RecommendInput {
@@ -98,4 +111,12 @@ export interface RecommendInput {
   conversationDepth?: number;
   /** Token counts to price the saving against. Estimated from the prompt when absent. */
   expectedOutputTokens?: number;
+  /**
+   * The token counts of a real turn on this surface, such as the last one in a
+   * Claude Code session, whose cached context dwarfs the prompt. When given, the
+   * swap is priced on it rather than on a guess from the prompt's length.
+   */
+  turn?: TokenCounts;
+  /** When the turn happens, to pick the benchmark rows in force. Defaults to now. */
+  at?: string;
 }

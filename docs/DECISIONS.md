@@ -237,6 +237,27 @@ against. The decisions taken on it, on 2026-09-13:
     flagged by the row's hosting, not its overhead (E7); the carbon basis records the grid when a
     row has no provider factor (E8); and dataset 3.2.0 sets Claude Code's and Codex CLI's hidden
     context factor to one, since both report the provider's own input count (E16).
+54. **The recommender and the equivalents, from the audit of 2026-10-19.** Dataset 3.3.0. The
+    equivalents follow the owner's choices of 2026-11-07, each the recommended option (E15): the
+    car comparisons stay on the US EPA's typical passenger vehicle, now cited to it and
+    re-derived from its page as 248.7 g a kilometre, and labelled a typical US car; the phone
+    charge's carbon is gone, because it was the charge's energy on the US grid and disagreed with
+    the energy comparison everywhere else; and minutes of the 9 W bulb fill the gap where a 0.3 Wh
+    prompt found only the 2009 search. The kettle mug is worked out from NIST's heat capacity of
+    water plus a tenth for losses, 35 Wh where it was a recalled 100. The teaspoon is NIST's
+    5 mL. A side effect of the bulb minutes: anything from 1.5 to 15 Wh now reads in minutes of
+    the bulb before a fraction of a phone charge, because a whole number of something wins. The
+    recommender (E10, E11, E13, E14), with no question to the owner: a model alone on its ladder
+    is no longer called the smallest. The swap is priced for the person's region and scope on the
+    day it happens, and in Claude Code on the session's last turn; before, it was a fixed
+    2026-09-10, the default region and a toy shape, and priced a 16 Wh agent turn at 0.47. Both
+    sides take the same counts, so the cache a model change throws away is left out. A new veto,
+    `keep.code-work` at 0.75, holds back a downgrade when the prompt names parts of the code;
+    words with an everyday sense, such as "file" or "script", are left out of its list. The
+    opening verb counts only as a whole word. Dates, telephone numbers and malformed numbers are
+    no longer read as sums. A no-llm suggestion with no answer, which is only date arithmetic, now yields to a
+    veto like any other advice. Python now matches JavaScript on whitespace, digits, line ends,
+    UTF-16 lengths and how a number prints, and its `estimate` honours a resolved model id.
 
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.

@@ -30,6 +30,7 @@ interface Case {
     showAsHint?: boolean;
     showInReport?: boolean;
     confidence?: number;
+    explanationContains?: string;
   };
 }
 
@@ -62,6 +63,9 @@ describe('the shared recommender cases', () => {
     if (wanted.showAsHint !== undefined) expect(got.showAsHint).toBe(wanted.showAsHint);
     if (wanted.showInReport !== undefined) expect(got.showInReport).toBe(wanted.showInReport);
     if (wanted.confidence !== undefined) expect(got.confidence).toBe(wanted.confidence);
+    if (wanted.explanationContains !== undefined) {
+      expect(got.explanation).toContain(wanted.explanationContains);
+    }
   });
 });
 
@@ -97,6 +101,21 @@ describe('the arithmetic reader', () => {
   it('gives up on anything long enough to be a denial of service', () => {
     expect(readArithmetic(`1${'+1'.repeat(200)}`)).toBeNull();
   });
+
+  it('leaves dates, telephone numbers and malformed numbers alone', () => {
+    expect(readArithmetic('2026-10-19')).toBeNull();
+    expect(readArithmetic('19/10/2026')).toBeNull();
+    expect(readArithmetic('020-7946-0018')).toBeNull();
+    expect(readArithmetic('1.2.3 + 4')).toBeNull();
+    expect(readArithmetic('0.5 + 0.25')?.answer).toBe('0.75');
+  });
+
+  // The same strings are asserted in the Python tests, so the two print alike.
+  it('prints very large and very small answers the way JavaScript does', () => {
+    expect(readArithmetic('123456789 * 987654321')?.answer).toBe('121932631112635260');
+    expect(readArithmetic('1 / 30000')?.answer).toBe('0.00003333333333');
+    expect(readArithmetic('99999999999 * 99999999999')?.answer).toBe('9.9999999998e+21');
+  });
 });
 
 describe('the unit reader', () => {
@@ -105,6 +124,11 @@ describe('the unit reader', () => {
     expect(readUnitConversion('2 kg in pounds')?.answer).toBe('4.4092452 pounds');
     expect(readUnitConversion('5 km in kilograms')).toBeNull();
     expect(readUnitConversion('5 parsecs in bananas')).toBeNull();
+  });
+
+  it('reads one well-formed number or nothing', () => {
+    expect(readUnitConversion('1.2.3 km to m')).toBeNull();
+    expect(readUnitConversion('1,500 m in km')?.answer).toBe('1.5 km');
   });
 });
 
@@ -123,6 +147,33 @@ describe('features', () => {
   it('counts separate requirements from bullets and joins', () => {
     expect(extractFeatures({ prompt: '- one\n- two\n- three' }).constraintCount).toBe(3);
     expect(extractFeatures({ prompt: 'do this and also that' }).constraintCount).toBe(1);
+  });
+
+  it('takes the opening verb only as a whole word', () => {
+    expect(extractFeatures({ prompt: 'listen to this' }).imperativeVerb).toBeNull();
+    expect(extractFeatures({ prompt: 'tagline for a bakery' }).imperativeVerb).toBeNull();
+    expect(extractFeatures({ prompt: 'list the planets' }).imperativeVerb).toBe('list');
+    expect(extractFeatures({ prompt: 'Please fix the grammar here' }).imperativeVerb).toBe(
+      'fix the grammar',
+    );
+    expect(extractFeatures({ prompt: 'Summarise: the notes' }).imperativeVerb).toBe('summarise');
+  });
+
+  it('names the parts of a program a prompt talks about', () => {
+    expect(extractFeatures({ prompt: 'extract the parser into its own module' }).codeNouns).toEqual([
+      'parser',
+      'module',
+    ]);
+    expect(extractFeatures({ prompt: 'rewrite the film script' }).codeNouns).toEqual([]);
+  });
+
+  // The same counts are asserted in the Python tests.
+  it('counts words and characters the way JavaScript does', () => {
+    expect(extractFeatures({ prompt: 'one\u001ctwo' }).words).toBe(1);
+    expect(extractFeatures({ prompt: 'one﻿two' }).words).toBe(2);
+    expect(extractFeatures({ prompt: '😀a' }).nonLatinShare).toBeCloseTo(2 / 3, 12);
+    expect(extractFeatures({ prompt: '😀a' }).chars).toBe(3);
+    expect(extractFeatures({ prompt: '٣. one' }).constraintCount).toBe(0);
   });
 
   it('spots a code block', () => {
@@ -160,6 +211,50 @@ describe('what the recommender will not do', () => {
     });
     expect(got.estimatedSavings?.energyWh?.central).toBeGreaterThan(0);
     expect(got.estimatedSavings?.carbonG?.central).toBeGreaterThan(0);
+  });
+
+  it('prices the swap on a real turn when it is given one', () => {
+    const prompt = 'Rewrite this sentence so it is shorter.';
+    const guessed = recommender.recommend({ prompt, modelId: 'claude-opus-5', at: '2026-11-07' });
+    const real = recommender.recommend({
+      prompt,
+      modelId: 'claude-opus-5',
+      at: '2026-11-07',
+      turn: {
+        input: 2_000,
+        cachedRead: 150_000,
+        output: 800,
+        thinking: null,
+        thinkingInOutput: true,
+        estimated: false,
+        estimator: 'provider',
+      },
+    });
+    const small = guessed.estimatedSavings?.energyWh?.central ?? 0;
+    const large = real.estimatedSavings?.energyWh?.central ?? 0;
+    expect(small).toBeGreaterThan(0);
+    expect(large).toBeGreaterThan(small * 10);
+  });
+
+  it('prices the swap on the region it is given', () => {
+    const ask = { prompt: 'Rewrite this sentence so it is shorter.', modelId: 'claude-opus-5', at: '2026-11-07' };
+    const france = createRecommender({ dataset, regionCode: 'FR' }).recommend(ask);
+    const india = createRecommender({ dataset, regionCode: 'IN' }).recommend(ask);
+    expect(france.estimatedSavings?.energyWh).toEqual(india.estimatedSavings?.energyWh);
+    expect(france.estimatedSavings?.carbonG?.central).toBeLessThan(
+      (india.estimatedSavings?.carbonG?.central ?? 0) / 2,
+    );
+  });
+
+  it('prices the swap on the date it is given, not a fixed one', () => {
+    // No row was published by 2000, so there is nothing to price it with.
+    const got = recommender.recommend({
+      prompt: 'Rewrite this sentence so it is shorter.',
+      modelId: 'claude-opus-5',
+      at: '2000-01-01',
+    });
+    expect(got.kind).toBe('downgrade');
+    expect(got.estimatedSavings).toBeNull();
   });
 
   it('never reports a negative saving', () => {

@@ -34,6 +34,10 @@ export const recommend = (context: Context, args: ParsedArgs): string => {
     dataset: context.dataset,
     // Only offered when the user has said they run models locally.
     hasLocalModel: flagBool(args.flags, 'local'),
+    // The saving is priced the way the person's own figures are.
+    ...(context.regionCode ? { regionCode: context.regionCode } : {}),
+    waterScope: context.waterScope,
+    carbonBasis: context.carbonBasis,
   });
 
   const result = recommender.recommend({
@@ -41,6 +45,7 @@ export const recommend = (context: Context, args: ParsedArgs): string => {
     modelId: flagString(args.flags, 'model') ?? 'claude-opus-5',
     surface: 'api',
     ...(depth ? { conversationDepth: Number.parseInt(depth, 10) } : {}),
+    at: context.now.toISOString(),
   });
 
   if (context.json) {

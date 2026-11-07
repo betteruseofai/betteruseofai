@@ -190,6 +190,24 @@ describe('equivalents', () => {
     expect(found[0]?.count).toBeGreaterThan(1);
   });
 
+  it('find something for a typical prompt other than the 2009 search', () => {
+    // 0.3 Wh is 120 seconds of the bulb, past the cap, and 0.016 of a phone charge.
+    const found = equivalents(0.3, 'energy', dataset);
+    expect(found[0]?.id).toBe('led-bulb-minute');
+    expect(found[0]?.count).toBeCloseTo(2, 9);
+  });
+
+  it('boil a mug for what boiling a mug takes', () => {
+    // 300 mL from 10 degrees is 31.4 Wh of heat, 35 with the kettle's losses.
+    expect(equivalents(35, 'energy', dataset)[0]).toMatchObject({ id: 'kettle-boil', count: 1 });
+  });
+
+  it('carry no carbon comparison that hides a grid inside it', () => {
+    // A phone charge's carbon is its energy on one grid, the US's, so it
+    // disagreed with the energy comparison in every other region.
+    expect(dataset.equivalents.map((entry) => entry.id)).not.toContain('phone-charge-carbon');
+  });
+
   it('still take a count below one when nothing above it is in range', () => {
     const found = equivalents(120, 'water', dataset);
     expect(found.length).toBeGreaterThan(0);
@@ -212,10 +230,12 @@ describe('equivalents', () => {
   });
 
   it('leave the stale search figure until nothing else fits', () => {
-    // 4 Wh is a fifth of a phone charge or thirteen searches. The search figure
-    // is seventeen years old, so the phone charge wins even though its count is
-    // further from one.
-    expect(equivalents(4, 'energy', dataset)[0]?.id).toBe('phone-charge');
+    // 17 Wh is nine tenths of a phone charge or 57 searches, and past the cap
+    // in minutes of the bulb. The search figure is seventeen years old, so the
+    // phone charge wins though its count is below one.
+    const found = equivalents(17, 'energy', dataset);
+    expect(found[0]?.id).toBe('phone-charge');
+    expect(found.map((item) => item.id)).not.toContain('google-search');
   });
 
   it('mark the seventeen year old search figure as stale', () => {

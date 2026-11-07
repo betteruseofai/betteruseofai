@@ -1,7 +1,7 @@
 import { estimate } from '../estimate.js';
 import { order } from '../range.js';
 import { downgradeTarget, getModel, resolveModel } from '../resolve.js';
-import type { Model, Range, UsageEvent } from '../types.js';
+import type { EstimateOptions, Model, Range, TokenCounts, UsageEvent } from '../types.js';
 import { extractFeatures } from './features.js';
 import { DEFAULT_RULES } from './rules.js';
 import type {
@@ -60,6 +60,12 @@ const subtract = (before: Range | null, after: Range | null): Range | null => {
     high: Math.max(0, before.high - after.high),
   });
 };
+
+/** True when no other current model shares this one's ladder. */
+const aloneOnLadder = (model: Model, dataset: RecommenderOptions['dataset']): boolean =>
+  !dataset.models.some(
+    (other) => other.id !== model.id && other.family === model.family && other.deprecated === undefined,
+  );
 
 /** A sentence that names the rule and what it saw, so the advice can be argued with. */
 const explain = (winner: RuleResult, target: Model | null, vetoedBy: string[]): string => {
@@ -132,7 +138,9 @@ export const createRecommender = (options: RecommenderOptions): Recommender => {
       .filter(({ result }) => result.kind !== 'keep')
       // A veto blocks a downgrade or a local suggestion, but not an answer we
       // can give outright. If the sum is on the page, the sum is on the page.
-      .filter(({ result }) => result.kind === 'no-llm' || blocking.length === 0)
+      // A no-llm suggestion with no answer, such as date arithmetic, is only
+      // advice, and a veto holds it back like any other.
+      .filter(({ result }) => (result.kind === 'no-llm' && result.answer) || blocking.length === 0)
       .sort((a, b) => {
         if (a.result.confidence !== b.result.confidence) {
           return b.result.confidence - a.result.confidence;
@@ -162,14 +170,18 @@ export const createRecommender = (options: RecommenderOptions): Recommender => {
     const target = winner.kind === 'downgrade' && model ? downgradeTarget(model, dataset) : null;
 
     // A downgrade with nowhere to go is not a downgrade. Say nothing rather
-    // than suggesting a swap we cannot name.
+    // than suggesting a swap we cannot name. A model alone on its ladder, such
+    // as a frontier model whose smaller siblings we have no row for, is not the
+    // smallest of anything, so it gets a different sentence.
     if (winner.kind === 'downgrade' && model && target === null) {
       return nothing(
-        `${model.displayName} is already the smallest model we know on its ladder.`,
+        aloneOnLadder(model, dataset)
+          ? `We don't know a smaller model on the same ladder as ${model.displayName}.`
+          : `${model.displayName} is already the smallest model we know on its ladder.`,
       );
     }
 
-    const savings = target && model ? priceSwap(input, features, model, target, dataset) : null;
+    const savings = target && model ? priceSwap(input, features, model, target, options) : null;
 
     // A smaller model is not always a lighter one: a mini model on a high
     // reasoning budget can cost more than the model above it. If ours prices the
@@ -202,21 +214,32 @@ export const createRecommender = (options: RecommenderOptions): Recommender => {
 /**
  * What the swap would save on a turn of this shape.
  *
- * The output length is a guess, so this is a rough figure and the interface
- * should say so. It is still worth showing: the gap between a frontier model
- * and the rung below it is usually a factor, not a few per cent.
+ * Priced on a real turn when the caller has one, and otherwise on a guess from
+ * the prompt's length, which is a rough figure the interface should say is
+ * rough. Either way it is priced on the person's region, scope and date, the
+ * same as their own figures. Both sides take the same token counts: moving
+ * model part way through a session also starts its cache again, a one-off cost
+ * this leaves out.
  */
 const priceSwap = (
   input: RecommendInput,
   features: { words: number },
   from: Model,
   to: Model,
-  dataset: RecommenderOptions['dataset'],
+  options: RecommenderOptions,
 ): Savings | null => {
   // Roughly four characters to a token, and a reply about three times the
   // length of the prompt for the sort of task these rules fire on.
   const inputTokens = Math.max(1, Math.round(features.words * 1.4));
   const outputTokens = input.expectedOutputTokens ?? Math.max(50, inputTokens * 3);
+  const tokens: TokenCounts = input.turn ?? {
+    input: inputTokens,
+    output: outputTokens,
+    thinking: null,
+    estimated: true,
+    estimator: 'words',
+  };
+  const timestamp = input.at ?? new Date().toISOString();
 
   const shape = (modelId: string): UsageEvent => ({
     id: 'recommendation',
@@ -224,18 +247,19 @@ const priceSwap = (
     hosting: 'cloud',
     modelRaw: modelId,
     modelId,
-    tokens: {
-      input: inputTokens,
-      output: outputTokens,
-      thinking: null,
-      estimated: true,
-      estimator: 'words',
-    },
-    timestamp: new Date(0).toISOString(),
+    tokens,
+    timestamp,
   });
 
-  const before = estimate(shape(from.id), { dataset, at: '2026-09-10' });
-  const after = estimate(shape(to.id), { dataset, at: '2026-09-10' });
+  const settings: EstimateOptions = {
+    dataset: options.dataset,
+    at: timestamp.slice(0, 10),
+    ...(options.regionCode ? { regionCode: options.regionCode } : {}),
+    ...(options.waterScope ? { waterScope: options.waterScope } : {}),
+    ...(options.carbonBasis ? { carbonBasis: options.carbonBasis } : {}),
+  };
+  const before = estimate(shape(from.id), settings);
+  const after = estimate(shape(to.id), settings);
   if (before.energyWh === null && after.energyWh === null) return null;
 
   return {

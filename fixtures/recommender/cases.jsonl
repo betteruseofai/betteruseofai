@@ -25,4 +25,13 @@
 {"name":"empty","prompt":"   ","expect":{"kind":"keep","confidence":0}}
 {"name":"bottom-of-the-ladder","prompt":"What is the capital of Australia","modelId":"claude-haiku-4.5","expect":{"kind":"keep"},"why":"Nothing smaller to move to, so say nothing rather than naming a swap we cannot make."}
 {"name":"long-open-ended","prompt":"I am trying to work out whether to shard this table by tenant or by time, and I need to weigh the trade-offs against our query patterns and our retention policy.","expect":{"kind":"keep","vetoedBy":["keep.deep-reasoning"]}}
+{"name":"alone-on-its-ladder","prompt":"What is the capital of Australia","modelId":"gpt-5.6","expect":{"kind":"keep","explanationContains":"We don't know a smaller model on the same ladder as GPT-5.6"},"why":"GPT-5.6 is the only current model on its ladder, so it is not the smallest of anything."}
+{"name":"agentic-extract","prompt":"extract the parser into its own module","expect":{"kind":"keep","vetoedBy":["keep.code-work"]},"why":"Opens like a shaped task and is a refactor."}
+{"name":"agentic-correct","prompt":"correct the failing tests","expect":{"kind":"keep","vetoedBy":["keep.code-work"]},"why":"Opens like a proofread and is a change to a program."}
+{"name":"tagline-is-not-tag","prompt":"tagline ideas for a bakery that opened last spring on the high street, sells sourdough and cinnamon buns, and wants something warm that does not sound like every other bakery in town","expect":{"ruleId":"downgrade.no-reasoning-cues"},"why":"Only a whole word counts as the verb, so this is not a request to tag anything."}
+{"name":"a-date-is-not-a-sum","prompt":"2026-10-19","expect":{"answer":null},"why":"A date, not 2026 minus 10 minus 19."}
+{"name":"a-phone-number-is-not-a-sum","prompt":"020-7946-0018","expect":{"answer":null},"why":"A telephone number, not a subtraction."}
+{"name":"one-dash-is-still-a-sum","prompt":"100-37","expect":{"kind":"no-llm","answer":"63"}}
+{"name":"malformed-number","prompt":"1.2.3 km to m","expect":{"answer":null},"why":"Not a number, so not 1,200 m or 2,300 m."}
+{"name":"date-math-held-by-a-veto","prompt":"how many days between 1 March and 14 June?","conversationDepth":12,"expect":{"kind":"keep","vetoedBy":["keep.deep-conversation"]},"why":"With no answer to give, the suggestion is only advice, and a veto holds it back."}
 {"name":"no-downgrade-to-a-heavier-model","prompt":"tidy this paragraph please","modelId":"o3","why":"o4-mini was measured on a high reasoning budget and prices heavier than o3, so suggesting it would be advice to use more.","expect":{"kind":"keep","showAsHint":false}}

@@ -1,5 +1,23 @@
 # @betteruseofai/dataset
 
+## 3.3.0
+
+Data only, so a minor bump. From the audit of 19 October 2026 (E15).
+
+- **A mug from the kettle is 35 Wh, not 100.** Worked out from NIST's heat capacity of water:
+  300 mL from 10 to 100 degrees is 31.4 Wh, and we add a tenth for heat the kettle loses. The old
+  figure was recalled rather than sourced, and made a prompt look three times smaller than it is
+  next to a mug.
+- **The car comparisons are cited to the EPA.** They were the EPA's US figure under the UK's
+  DESNZ name. Re-derived from the EPA page of 3 June 2026, 8,887 g a gallon at 22.2 miles a gallon,
+  which is 248.7 g a kilometre where it was 244. Labelled a typical US car.
+- **The phone charge's carbon is gone.** It was the charge's energy on the US grid, so in France
+  one estimate came to half a charge of energy and three hundredths of a charge of carbon.
+- **Minutes of a 9 W LED bulb, an energy comparison.** A typical prompt of about 0.3 Wh found
+  nothing but the 2009 web search; it's now two minutes of the bulb.
+- **The teaspoon is 5 mL**, from NIST's metric kitchen table. The old 4.9 was the US customary
+  teaspoon under a metric name.
+
 ## 3.2.0
 
 Data only, so a minor bump.

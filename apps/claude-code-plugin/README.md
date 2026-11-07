@@ -68,9 +68,13 @@ Inside a coding session the bar is higher than elsewhere, and three rules are mu
 - `downgrade.short-simple`, because a one-line follow-up only makes sense with the whole session
   behind it
 
+A prompt that names parts of the code, such as a parser or the failing tests, holds back any
+suggestion of a smaller model. That's code work, and the bigger model is doing it.
+
 A nudge that fires wrongly gets the whole feature switched off, and then nothing is measured at all.
 Every nudge names the rule that produced it, so you can mute that one rule with
-`/betteruseofai:mute`.
+`/betteruseofai:mute`. When one does fire, the saving it quotes is worked out on the session's last
+turn, cached context and all, for your region and water scope.
 
 ## What the figures mean
 

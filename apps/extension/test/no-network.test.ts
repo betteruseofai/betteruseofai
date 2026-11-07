@@ -155,6 +155,8 @@ describe('the built extension', () => {
       'https://www.ledvance.com',
       'https://www.bipm.org',
       'https://www.nist.gov',
+      // The NIST Chemistry WebBook, which the kettle comparison cites. Printed only.
+      'https://webbook.nist.gov',
       'https://docs.claude.com',
       'https://ai.google.dev',
       'https://github.com',

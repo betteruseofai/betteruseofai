@@ -1,6 +1,6 @@
 {
-  "version": "3.2.0",
-  "sha256": "f385a3fb8291806f42beee9020e638152b61ecada9a3199a8f9bd4f8b98ef23e",
+  "version": "3.3.0",
+  "sha256": "41089741295e3d024a60d2f6d84db7c8001edc9f0ccd31c2c79eb09e27edd69c",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -3150,6 +3150,26 @@
       "notes": "9 W for one second is 0.0025 Wh."
     },
     {
+      "id": "led-bulb-minute",
+      "quantity": "energy",
+      "unitPer": "Wh",
+      "amount": 0.15,
+      "singular": "minute of a 9 W LED bulb",
+      "plural": "minutes of a 9 W LED bulb",
+      "source": {
+        "title": "LED lamp product data, typical 9 W A60 replacement for a 60 W incandescent",
+        "url": "https://www.ledvance.com/",
+        "publisher": "LEDVANCE",
+        "date": "2025",
+        "retrieved": "2026-09-10"
+      },
+      "provenance": {
+        "method": "source-appendix",
+        "recorded": "2026-11-07"
+      },
+      "notes": "9 W for one minute is 0.15 Wh. A typical prompt of about 0.3 Wh is 120 seconds of the bulb, past the cap of a hundred, and too small for a phone charge, so before this it found only the 2009 web search."
+    },
+    {
       "id": "phone-charge",
       "quantity": "energy",
       "unitPer": "Wh",
@@ -3174,20 +3194,21 @@
       "id": "kettle-boil",
       "quantity": "energy",
       "unitPer": "Wh",
-      "amount": 100,
+      "amount": 35,
       "singular": "mug of water boiled in a kettle",
       "plural": "mugs of water boiled in a kettle",
       "source": {
-        "title": "Energy use of domestic kettles",
-        "url": "https://energysavingtrust.org.uk/",
-        "publisher": "Energy Saving Trust",
-        "date": "2025",
-        "retrieved": "2026-09-10"
+        "title": "Water, condensed phase thermochemistry data, liquid phase heat capacity (Shomate equation)",
+        "url": "https://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Mask=2",
+        "publisher": "National Institute of Standards and Technology, Chemistry WebBook",
+        "date": "1979-03",
+        "retrieved": "2026-11-07",
+        "licence": "public domain"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "Roughly 0.1 kWh to bring 300 mL from tap temperature to boiling, allowing for kettle losses. Worth replacing with a cited figure."
+        "method": "fetched",
+        "recorded": "2026-11-07",
+        "note": "Worked out, not quoted. The page's Shomate coefficients give 75.37 J/mol K at 298 K, which is 4.184 J/g K. Taking 300 mL from 10 to 100 degrees is 300 x 4.184 x 90 = 112,968 J, or 31.4 Wh. We add a tenth for heat lost from the kettle, our assumption, which gives 35 Wh. The old figure of 100 Wh was recalled, not sourced, and made a prompt look three times smaller next to a mug than it is."
       }
     },
     {
@@ -3215,19 +3236,21 @@
       "id": "teaspoon",
       "quantity": "water",
       "unitPer": "mL",
-      "amount": 4.9,
+      "amount": 5,
       "singular": "teaspoon of water",
       "plural": "teaspoons of water",
       "source": {
-        "title": "Metric teaspoon, standard measure",
-        "url": "https://www.bipm.org/en/measurement-units",
-        "publisher": "International Bureau of Weights and Measures",
-        "date": "2019",
-        "retrieved": "2026-09-10"
+        "title": "Metric Kitchen: Cooking Measurement Equivalencies",
+        "url": "https://www.nist.gov/pml/owm/metric-si/metric-kitchen/metric-kitchen-cooking-measurement-equivalencies",
+        "publisher": "National Institute of Standards and Technology",
+        "date": "2026-04-29",
+        "retrieved": "2026-11-07",
+        "licence": "public domain"
       },
       "provenance": {
-        "method": "source-appendix",
-        "recorded": "2026-09-10"
+        "method": "fetched",
+        "recorded": "2026-11-07",
+        "note": "The table pairs 1 teaspoon with 5 mL. The old 4.9 mL was the US customary teaspoon (4.93 mL) under a metric label."
       }
     },
     {
@@ -3273,41 +3296,21 @@
       "id": "car-metre",
       "quantity": "carbon",
       "unitPer": "g",
-      "amount": 0.244,
-      "singular": "metre driven in an average petrol car",
-      "plural": "metres driven in an average petrol car",
+      "amount": 0.2487,
+      "singular": "metre driven in a typical US car",
+      "plural": "metres driven in a typical US car",
       "source": {
-        "title": "Greenhouse gas reporting: conversion factors 2025 to 2026, average car, petrol",
-        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
-        "publisher": "Department for Energy Security and Net Zero",
-        "date": "2025",
-        "retrieved": "2026-09-10",
-        "licence": "Open Government Licence v3.0"
-      },
-      "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
-        "note": "244 g per km, cross-checked against the EPA figure of 393 g per mile. Copy the exact cell out of the DEFRA spreadsheet before launch."
-      }
-    },
-    {
-      "id": "phone-charge-carbon",
-      "quantity": "carbon",
-      "unitPer": "g",
-      "amount": 12.4,
-      "singular": "smartphone charged from empty",
-      "plural": "smartphones charged from empty",
-      "source": {
-        "title": "Greenhouse Gas Equivalencies Calculator",
-        "url": "https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator",
+        "title": "Greenhouse Gas Emissions from a Typical Passenger Vehicle",
+        "url": "https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle",
         "publisher": "United States Environmental Protection Agency",
-        "date": "2026-08",
-        "retrieved": "2026-09-10",
+        "date": "2026-06-03",
+        "retrieved": "2026-11-07",
         "licence": "public domain"
       },
       "provenance": {
-        "method": "source-appendix",
-        "recorded": "2026-09-10"
+        "method": "fetched",
+        "recorded": "2026-11-07",
+        "note": "The page gives 8,887 g of CO2 a gallon and 22.2 miles a gallon, which is 400.3 g a mile, or 248.7 g a kilometre. Tailpipe CO2 only. This was cited to the UK's DESNZ before, whose average petrol car is far lower; the 244 g figure was the EPA's older 393 g a mile."
       }
     },
     {
@@ -3415,20 +3418,20 @@
       "id": "car-kilometre",
       "quantity": "carbon",
       "unitPer": "g",
-      "amount": 244,
-      "singular": "kilometre driven in an average petrol car",
-      "plural": "kilometres driven in an average petrol car",
+      "amount": 248.7,
+      "singular": "kilometre driven in a typical US car",
+      "plural": "kilometres driven in a typical US car",
       "source": {
-        "title": "Greenhouse gas reporting: conversion factors 2025 to 2026, average car, petrol",
-        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
-        "publisher": "Department for Energy Security and Net Zero",
-        "date": "2025",
-        "retrieved": "2026-09-10",
-        "licence": "Open Government Licence v3.0"
+        "title": "Greenhouse Gas Emissions from a Typical Passenger Vehicle",
+        "url": "https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle",
+        "publisher": "United States Environmental Protection Agency",
+        "date": "2026-06-03",
+        "retrieved": "2026-11-07",
+        "licence": "public domain"
       },
       "provenance": {
-        "method": "recalled-pending-refetch",
-        "recorded": "2026-09-10",
+        "method": "fetched",
+        "recorded": "2026-11-07",
         "note": "The same factor as car-metre, a thousand times over, so the pair covers both a single prompt and a week of sessions."
       }
     },
@@ -3456,7 +3459,7 @@
     }
   ],
   "calibration": {
-    "version": "3.2.0",
+    "version": "3.3.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",

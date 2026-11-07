@@ -241,6 +241,20 @@ const multiStep: Rule = {
   },
 };
 
+const codeWork: Rule = {
+  id: 'keep.code-work',
+  version: 1,
+  kind: 'keep',
+  evaluate({ features }) {
+    if (features.codeNouns.length === 0) return null;
+    // "Extract the parser into its own module" and "correct the failing tests"
+    // open like small tasks and are changes to a program, which need the
+    // program in view. The bigger model is doing real work there.
+    const named = features.codeNouns.slice(0, 2).join(' and ');
+    return result('keep.code-work', 'keep', 0.75, [`the prompt is about code: ${named}`]);
+  },
+};
+
 const deepConversation: Rule = {
   id: 'keep.deep-conversation',
   version: 1,
@@ -269,5 +283,6 @@ export const DEFAULT_RULES: Rule[] = [
   deepReasoning,
   longCode,
   multiStep,
+  codeWork,
   deepConversation,
 ];

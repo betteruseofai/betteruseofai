@@ -1332,12 +1332,17 @@ def cmd_recommend(context: Context, args: dict[str, Any]) -> str:
         # Only offered when the user has said they run models locally.
         context.dataset,
         has_local_model=bool(args["flags"].get("local")),
+        # The saving is priced the way the person's own figures are.
+        region_code=context.region_code,
+        water_scope=context.water_scope,
+        carbon_basis=context.carbon_basis,
     )
     result = recommender.recommend(
         prompt,
         model_id=args["flags"].get("model") or "claude-opus-5",
         surface="api",
         conversation_depth=int(depth) if depth else 0,
+        at=context.iso_now(),
     )
 
     if context.json:

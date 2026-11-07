@@ -379,6 +379,49 @@ describe('the status line and the hooks', () => {
     expect(said).toContain('save roughly');
   });
 
+  it('prices the saving on the last turn it has read, not on the prompt alone', async () => {
+    const saved = (said: string): number =>
+      Number.parseFloat(/save roughly ([0-9.]+) Wh/.exec(said)?.[1] ?? 'NaN');
+
+    // Nothing read for this session yet, so the saving is a guess from the prompt.
+    const guessed = await hookWith('UserPromptSubmit', {
+      session_id: 'priced-on-a-guess',
+      transcript_path: alpha,
+      prompt: rewrite,
+    });
+
+    // A turn the way an agent session looks: a short prompt on a long cached
+    // context. The Stop hook reads it, and the next prompt prices on it.
+    const dir = mkdtempSync(join(tmpdir(), 'buai-turn-'));
+    const transcript = join(dir, 'session.jsonl');
+    const usage = {
+      input_tokens: 40,
+      cache_creation_input_tokens: 2_000,
+      cache_read_input_tokens: 150_000,
+      output_tokens: 600,
+    };
+    writeFileSync(
+      transcript,
+      `${JSON.stringify({
+        type: 'assistant',
+        uuid: 'u1',
+        timestamp: '2026-09-15T11:00:00.000Z',
+        requestId: 'req_1',
+        sessionId: 'priced-on-a-turn',
+        message: { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5', content: [], usage },
+      })}\n`,
+      'utf8',
+    );
+    const session = { session_id: 'priced-on-a-turn', transcript_path: transcript };
+    await hookWith('Stop', session);
+    const real = await hookWith('UserPromptSubmit', { ...session, prompt: rewrite });
+
+    const small = saved(JSON.parse(guessed.stdout).systemMessage as string);
+    const large = saved(JSON.parse(real.stdout).systemMessage as string);
+    expect(small).toBeGreaterThan(0);
+    expect(large).toBeGreaterThan(small);
+  });
+
   it('takes a model switch made after the last turn over the transcript', async () => {
     const session = { session_id: 'switched', transcript_path: alpha };
     await hookWith('PostModelSwitch', { ...session, from_model: 'claude-opus-5', to_model: 'claude-haiku-4-5' });

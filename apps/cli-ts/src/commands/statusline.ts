@@ -409,13 +409,28 @@ export const hook = async (context: Context, args: ParsedArgs): Promise<string> 
       dataset: context.dataset,
       hintThreshold: 0.75,
       muted: [...CODING_SESSION_MUTES, ...readMuted()],
+      ...(context.regionCode ? { regionCode: context.regionCode } : {}),
+      waterScope: context.waterScope,
+      carbonBasis: context.carbonBasis,
     });
+
+    /*
+     * A turn here carries the whole session as cached context, so a guess from
+     * the prompt's length prices a swap at a few per cent of what it saves. The
+     * last turn we have already read is the better shape. It costs one read of
+     * the cache file the status line keeps, and none of the transcript.
+     */
+    const last = Object.values(readCache(input.session_id).events).sort((a, b) =>
+      a.timestamp < b.timestamp ? 1 : -1,
+    )[0];
 
     const model = currentModel(input);
     const advice = recommender.recommend({
       prompt,
       ...(model ? { modelRaw: model } : {}),
       surface: 'claude-code',
+      ...(last ? { turn: last.tokens } : {}),
+      at: context.now.toISOString(),
     });
 
     if (!advice.showAsHint) return say(null);

@@ -180,8 +180,16 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
         dataset,
         hasLocalModel: current.hasLocalModel,
         muted: current.mutedRules,
+        // Priced the way the person's own figures are.
+        ...(current.regionCode ? { regionCode: current.regionCode } : {}),
+        waterScope: current.waterScope,
+        carbonBasis: current.carbonBasis,
       });
-      const advice = recommender.recommend({ prompt: ask.prompt, surface: ask.surface });
+      const advice = recommender.recommend({
+        prompt: ask.prompt,
+        surface: ask.surface,
+        at: new Date().toISOString(),
+      });
 
       if (!advice.showAsHint) {
         sendResponse({ show: false });

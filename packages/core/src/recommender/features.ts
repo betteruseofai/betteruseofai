@@ -39,6 +39,8 @@ export interface Features {
   dateMath: boolean;
   /** The leading verb, when the prompt is an instruction. */
   imperativeVerb: string | null;
+  /** Words that name parts of a program, so "correct the failing tests" reads as code work. */
+  codeNouns: string[];
   /** Phrases that suggest the answer needs working out rather than recalling. */
   reasoningCues: string[];
   /** Separate requirements in the prompt, counted from bullets and "and also" joins. */
@@ -70,7 +72,10 @@ const evaluateExpression = (text: string): number | null => {
     const start = index;
     while (index < source.length && /[0-9.]/.test(source[index] as string)) index += 1;
     if (index === start) return null;
-    const value = Number.parseFloat(source.slice(start, index));
+    const text = source.slice(start, index);
+    // "1.2.3" is not a number. parseFloat would read 1.2 and Python would refuse.
+    if (!/^(?:\d+\.?\d*|\.\d+)$/.test(text)) return null;
+    const value = Number.parseFloat(text);
     return Number.isFinite(value) ? value : null;
   };
 
@@ -128,6 +133,15 @@ const formatAnswer = (value: number): string => {
   return String(rounded);
 };
 
+/**
+ * Digits and dashes that are not a sum. "2026-10-19" is a date, not 1997, and
+ * "020-7946-0018" is a telephone number. Three or more groups joined by the same
+ * dash or slash with no spaces, or any number with a leading zero, is read as a
+ * date, a number or a code, and left alone. "100-37" with one dash is still a sum.
+ */
+const notASum = (expression: string): boolean =>
+  /^\d+([-/])\d+(?:\1\d+)+$/.test(expression) || /(?:^|[^\d.])0\d/.test(expression);
+
 const ARITHMETIC = /^(?:what(?:'s| is)|calculate|compute|work out|how much is)?\s*([0-9()+\-*/%.\s]{3,120}?)\s*(?:=|\?)?$/i;
 
 export const readArithmetic = (prompt: string): Arithmetic | null => {
@@ -138,6 +152,7 @@ export const readArithmetic = (prompt: string): Arithmetic | null => {
   if (!match?.[1]) return null;
   const expression = match[1].trim();
   if (!/[+\-*/%]/.test(expression)) return null;
+  if (notASum(expression)) return null;
   const value = evaluateExpression(expression);
   if (value === null) return null;
   return { expression: expression.replace(/\s+/g, ' '), answer: formatAnswer(value) };
@@ -178,8 +193,13 @@ const UNITS: Record<string, { base: string; factor: number }> = {
   gallons: { base: 'l', factor: 3.785411784 },
 };
 
+/*
+ * One well-formed number, with thousands commas or a decimal point but not
+ * both mixed up, and not the tail of a longer one: "1.2.3 km" is nothing, not
+ * 1.2 km or 2.3 km.
+ */
 const CONVERSION =
-  /(-?[0-9][0-9,.]*)\s*([a-z]+)\s*(?:in|to|into|as)\s+([a-z]+)/i;
+  /(?<![\d.,])(-?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)(?![\d.,])\s*([a-z]+)\s*(?:in|to|into|as)\s+([a-z]+)/i;
 
 export const readUnitConversion = (prompt: string): UnitConversion | null => {
   const match = CONVERSION.exec(prompt.trim());
@@ -221,12 +241,26 @@ const IMPERATIVES = [
   'format', 'reformat', 'convert', 'capitalise', 'capitalize', 'tidy', 'clean up',
 ] as const;
 
+// A whole word at the start, so "listen" is not "list" and "tagline" is not "tag".
+const IMPERATIVE_PATTERNS = IMPERATIVES.map((verb) => ({
+  verb,
+  pattern: new RegExp(`^(?:please\\s+)?${verb}(?![a-z])`),
+}));
+
 const REASONING_CUES = [
   'why', 'prove', 'derive', 'explain how', 'explain why', 'work out',
   'trade-off', 'tradeoff', 'compare', 'design', 'architect', 'debug',
   'root cause', 'step by step', 'reason about', 'implications', 'strategy',
   'edge case', 'race condition', 'optimise', 'optimize', 'refactor',
 ] as const;
+
+/*
+ * Words that name parts of a program. "Extract the parser into its own module"
+ * starts like a shaped task and is a refactor. Words with an everyday sense
+ * ("file", "script", "branch", "test", "class") are left out on purpose.
+ */
+const CODE_NOUNS =
+  /\b(?:functions?|methods?|modules?|parsers?|tests|(?:unit|failing) tests?|bugs?|repos?|repository|codebase|commits?|endpoints?|components?|variables?|compiler|linter|stack trace|regex|schema|migrations?|pull request|api|dependency|dependencies|exceptions?|git|type errors?|source code|the code)\b/g;
 
 const DATE_MATH =
   /\b(?:how many (?:days|weeks|months|years)|days? (?:between|until|since|from now)|what day (?:is|was)|add \d+ days)\b/i;
@@ -249,8 +283,9 @@ export const extractFeatures = (input: FeatureInput): Features => {
   const codeLikelihood = Math.min(1, hits / 3);
 
   const lower = trimmed.toLowerCase();
-  const imperativeVerb =
-    IMPERATIVES.find((verb) => lower.startsWith(verb) || lower.startsWith(`please ${verb}`)) ?? null;
+  const imperativeVerb = IMPERATIVE_PATTERNS.find(({ pattern }) => pattern.test(lower))?.verb ?? null;
+
+  const codeNouns = [...new Set((lower.match(CODE_NOUNS) ?? []).map((word) => word.trim()))];
 
   /*
    * A longer cue swallows a shorter one it contains, so "explain why" does not
@@ -282,6 +317,7 @@ export const extractFeatures = (input: FeatureInput): Features => {
     unitConversion: readUnitConversion(trimmed),
     dateMath: DATE_MATH.test(trimmed),
     imperativeVerb,
+    codeNouns,
     reasoningCues: [...reasoningCues],
     constraintCount,
     questionCount,
