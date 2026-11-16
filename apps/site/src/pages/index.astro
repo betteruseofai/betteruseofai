@@ -139,7 +139,7 @@ const sections = 7;
           date={mistral?.source.date ?? '2025-07-22'}
           retrieved={mistral?.source.retrieved}
           url={mistral?.source.url}
-        />. Both are honest. They are counting different things across different boundaries.
+        />. Both are honest. They're counting different things and stopping at different fences.
       </p>
       <p>
         So we show the whole spread instead of picking a favourite, and every figure says which
@@ -147,9 +147,9 @@ const sections = 7;
         about how much is known.
       </p>
       <p>
-        Some models think before answering and do not say how much. Where that happens the low
-        bound assumes none, the high assumes a lot, and a note says the thinking was hidden. We
-        would rather show the whole of that than quietly pick one.
+        Some models think before answering and don't say how much. Where that happens the low
+        bound assumes none, the high assumes a lot, and a note says the thinking was hidden. We'd
+        rather show the whole of that than quietly pick one.
       </p>
     </div>
   </section>
@@ -166,7 +166,7 @@ const sections = 7;
         building keeping it cool, a grid making the electricity, and a power station using water
         to make it. Further back still is the land the building stands on and the water that went
         into the chips. The diagram traces the line back. What we count, we count with a source
-        beside it. What we cannot count is drawn without a number.
+        beside it. What we can't count is drawn without a number.
       </p>
     </div>
 
@@ -257,7 +257,7 @@ const sections = 7;
       <li>
         <span>
           <strong>Count the tokens.</strong> Where the provider reports them we use theirs. Where it
-          does not, we count with an open tokenizer and apply a measured correction, and the figure
+          doesn't, we count with an open tokenizer and apply a measured correction, and the figure
           carries a tilde.
         </span>
       </li>
@@ -396,10 +396,10 @@ const sections = 7;
 
     <Hazard>
       <p style="margin-bottom: 0">
-        Running a model on your own laptop is not automatically lighter. A data centre batches
+        Running a model on your own laptop isn't automatically lighter. A data centre batches
         hundreds of requests onto one accelerator and runs it hard. Your machine runs one request
         and draws power for as long as it thinks. For a short answer from a small model your laptop
-        usually wins. For a long answer from a large one it often does not, and the{' '}
+        usually wins. For a long answer from a large one it often doesn't, and the{' '}
         <a href="/calculator">calculator</a> will say which way it falls for the work you actually do.
       </p>
     </Hazard>
@@ -408,13 +408,13 @@ const sections = 7;
   <section class="band">
     <div class="band__head">
       <Index n={7} of={sections} />
-      <h2 class="band__title">Helping</h2>
+      <h2 class="band__title">Where you come in</h2>
     </div>
 
     <div class="prose">
       <p>
         The dataset is the part of this that matters, and it is only as good as its sources. The
-        most useful thing anyone can send is a published measurement we have missed, with its
+        most useful thing anyone can send is a published measurement we've missed, with its
         boundary and its method written down. The second most useful is telling us a row is wrong,
         with a reason.
       </p>
@@ -460,7 +460,7 @@ const sections = 7;
       <details>
         <summary>Does any of this leave my machine?</summary>
         <p>
-          The extension and both command line tools make no network requests at all, and there is a
+          The extension and both command line tools make no network requests at all, and there's a
           test in the repository that reads the built files and fails if one appears. This website
           loads one analytics script from Cloudflare, which the privacy page names in full.
         </p>

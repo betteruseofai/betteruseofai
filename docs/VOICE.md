@@ -59,6 +59,16 @@ What transfers is the register, not the grammar.
 The samples also run long sentences chained with commas. On the site, sentences average under
 twenty words. A long one is fine occasionally, and it should be doing something.
 
+## Looser, from 2026-11-16
+
+The owner asked for the wording to be easier going. Body copy stays deadpan and gets drier: a
+contraction wherever one fits, and the odd aside that reports something true and stops. A heading
+or an empty state can be playful now and then ("Where on Earth", "Where we stop counting"). A
+line that does a factual job stays plain, and so does anything over a destructive action.
+
+A grid or a country is never called dirty, or worse than another. We say how much carbon a unit
+of electricity carries on that grid, which is a fact about the grid.
+
 ## A worked comparison
 
 Not the voice:
