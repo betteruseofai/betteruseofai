@@ -478,7 +478,7 @@ def test_the_dashboard_file_escapes_the_one_thing_that_could_end_its_script():
 
     html = render_dashboard('{"text":"</script><script>alert(1)</script>"}')
     assert "</script><script>alert" not in html
-    assert "<\/script><script>alert(1)<\/script>" in html
+    assert r"<\/script><script>alert(1)<\/script>" in html
 
 
 # ------------------------------------------------- thinking is charged once
