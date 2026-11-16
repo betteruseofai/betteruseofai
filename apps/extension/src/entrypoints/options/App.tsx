@@ -56,10 +56,11 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <h1>Settings</h1>
 
       <section class="buai-options__section">
-        <h2>Where you are</h2>
+        <h2>Where on Earth</h2>
         <p>
-          Carbon depends on the grid the electricity came from, and grids differ by a factor of
-          about twenty. We use the world average until you say otherwise.
+          Carbon depends on the grid that made the electricity, and a unit of it can carry about
+          twenty times more carbon on one grid than on another. Until you tell us, we assume you
+          live in the world average, which nobody does.
         </p>
         <label class="buai-options__field">
           <span class="buai-readout__label">Region</span>
@@ -86,13 +87,14 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       </section>
 
       <section class="buai-options__section">
-        <h2>What counts as water and carbon</h2>
+        <h2>Where we stop counting</h2>
         <p>
-          Published water figures differ by more than a hundred times, almost entirely over where
-          the boundary is drawn. Google counts the water its cooling towers evaporate. Mistral
-          counts that, plus the water used generating the electricity, plus the water embedded in
-          building the hardware. The last choice adds making the hardware to carbon too. Nobody has
-          published that share for most models, so there water and carbon show as lower bounds.
+          Published water figures differ by more than a hundred times, and nearly all of that is
+          down to where each company stops counting. Google counts the water its cooling towers
+          evaporate. Mistral counts that and keeps going: the water used to generate the
+          electricity, and the water that went into building the hardware. The last choice below
+          counts building the hardware for carbon too. Hardly anyone publishes that share, so under
+          it water and carbon read as "at least".
         </p>
         {(['on-site', 'on-site + off-site', 'lifecycle'] as const).map((scope) => (
           <label class="buai-options__radio" key={scope}>
@@ -106,10 +108,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
               <strong>{scope}</strong>
               <span class="buai-options__hint">
                 {scope === 'on-site'
-                  ? 'Cooling at the building, and nothing else.'
+                  ? "Cooling at the building. That's it."
                   : scope === 'on-site + off-site'
-                    ? 'Adds the water used generating the electricity. This is the default.'
-                    : 'Adds making the hardware, to water and carbon both, where a source provides it.'}
+                    ? 'Adds the water the power station used. The default.'
+                    : 'Adds building the hardware, for water and carbon, where anyone has published it.'}
               </span>
             </span>
           </label>
@@ -119,9 +121,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <section class="buai-options__section">
         <h2>Which carbon figure</h2>
         <p>
-          A provider's market-based factor is a claim about what it bought, not about the electrons
-          it burned, and it flatters the result: Google's own two figures differ by three and a half
-          times. Location-based is the default for that reason.
+          A provider's market-based figure tells you what it bought. The electricity it used came
+          off the local grid like everyone else's, and the bought version is kinder: Google's own
+          two figures differ by three and a half times. We default to location-based for that
+          reason.
         </p>
         {(['location-based', 'provider-reported'] as const).map((basis) => (
           <label class="buai-options__radio" key={basis}>
@@ -151,8 +154,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           <span>
             <strong>Say something before I send</strong>
             <span class="buai-options__hint">
-              Only when a rule is confident, and never for anything that looks like real work. Every
-              nudge names the rule that produced it.
+              Only when a rule is sure of itself, and never for anything that looks like real work.
+              Every nudge says which rule spoke up.
             </span>
           </span>
         </label>
@@ -167,7 +170,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           <span>
             <strong>I run models on this machine</strong>
             <span class="buai-options__hint">
-              Off by default. We will not suggest a tool you have not said you have.
+              Off by default. We won't recommend a tool you haven't told us you have.
             </span>
           </span>
         </label>
@@ -176,8 +179,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <section class="buai-options__section">
         <h2>What we keep</h2>
         <p>
-          Counts, timestamps and model names, in this browser. Never the prompt, never the answer,
-          never a fragment of either. Turns older than this are deleted.
+          Counts, timestamps and model names, in this browser. Your prompts and the answers are
+          never stored, not even a scrap. Turns older than this are deleted.
         </p>
         <label class="buai-options__field">
           <span class="buai-readout__label">Keep for</span>
@@ -209,12 +212,12 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       <Hazard label="What this never does">
         <p>
-          It opens no connection. There is no backend, no account and no telemetry, and the
-          benchmark figures ship inside the extension rather than being fetched. The only addresses
-          it reads are the three chat sites.
+          It opens no connection of its own. There's no backend and no account, nothing phones
+          home, and the benchmark figures ship inside the extension so there's nothing to fetch.
+          The only addresses it reads are the three chat sites.
         </p>
         <p style="margin-bottom:0">
-          You can check that claim. Open the network panel and watch the extension: it makes no
+          Don't take our word for it. Open the network panel and watch: the extension makes no
           requests of its own, ever.
         </p>
       </Hazard>
@@ -222,14 +225,14 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <section class="buai-options__section">
         <h2>Forget everything</h2>
         <p>
-          {count} turns are stored. This deletes all of them at once, and there is nothing to
-          recover afterwards, here or anywhere else.
+          We're holding {count} turns. This deletes the lot. There's no undo and no copy anywhere
+          else, because there never was an anywhere else.
         </p>
         {/* Two presses, because one slip of the mouse would lose every turn for good. */}
         {confirming ? (
           <div class="buai-options__confirm" role="alertdialog" aria-label="Delete every stored turn">
             <p>
-              Delete all {count} turns? There is no undo.
+              Delete all {count} turns? There's no undo.
             </p>
             <button
               class="buai-button"

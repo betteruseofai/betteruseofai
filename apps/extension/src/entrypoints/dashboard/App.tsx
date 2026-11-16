@@ -65,10 +65,10 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   if (!summary.total || summary.total.count === 0) {
     return (
       <main class="buai-dash">
-        <h1>Nothing to show yet</h1>
+        <h1>Nothing here yet</h1>
         <div class="buai-standby">
           <span class="buai-standby__code">empty</span>
-          Send a message on one of the sites this extension reads and it will appear here.
+          Send a message on one of the sites this extension reads and it'll turn up here.
         </div>
       </main>
     );
@@ -88,7 +88,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       </div>
 
       <section>
-        <h2>Every day</h2>
+        <h2>Day by day</h2>
         <div class="buai-dash__days">
           {summary.byDay.map((day) => (
             <div class="buai-dash__day" key={day.key}>
@@ -123,7 +123,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
             <tbody>
               {summary.byModel.map((one) => (
                 <tr key={one.key}>
-                  <td>{one.key === 'unknown' ? 'we do not recognise this one' : one.key}</td>
+                  <td>{one.key === 'unknown' ? "one we don't recognise" : one.key}</td>
                   <td class="buai-num">{one.count}</td>
                   <td class="buai-num">{short(one.energyWh, 'Wh')}</td>
                   <td class="buai-num">{short(one.waterMl, 'mL')}</td>
@@ -212,7 +212,7 @@ const Rings = ({ saving }: { saving: Saving }) => {
           <Readout label="Energy not drawn" value={saving.energyWh} unit="Wh" />
           <p class="buai-dash__saving-note">
             Against {saving.baseline}, priced on the same rows, region and boundary as everything
-            else here. A turn that was already on the largest model saved nothing.
+            else here. A turn already on the largest model saved nothing.
             {saving.skipped > 0
               ? ` ${saving.skipped} ${saving.skipped === 1 ? 'turn' : 'turns'} could not be re-priced and ${saving.skipped === 1 ? 'is' : 'are'} not in the figure.`
               : ''}

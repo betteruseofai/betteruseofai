@@ -56,7 +56,7 @@ export const healthNotes = (store: HealthStore): string[] =>
     const site = SITE_NAMES[id] ?? id;
     if (record.state === 'unsupported') {
       return [
-        `${site} no longer looks the way we expect. Turns there may go uncounted until we update the extension.`,
+        `${site} has moved its furniture and we can't find our way around. Turns there may go uncounted until we update the extension.`,
       ];
     }
     if (record.state === 'degraded') {

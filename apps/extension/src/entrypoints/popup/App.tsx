@@ -64,7 +64,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <main class="buai-popup">
         <div class="buai-standby">
           <span class="buai-standby__code">no reply</span>
-          The background worker did not answer. Reload the extension and try again.
+          The background worker isn't answering. Reload the extension and try again.
         </div>
       </main>
     );
@@ -96,8 +96,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         ) : null}
         <div class="buai-standby">
           <span class="buai-standby__code">nothing yet</span>
-          Send a message on claude.ai, chatgpt.com or gemini.google.com and it will appear here.
-          Nothing is counted until you do, and nothing leaves this machine when you have.
+          Nothing to report. Send a message on claude.ai, chatgpt.com or gemini.google.com and
+          it'll turn up here. It won't go anywhere else.
         </div>
       </main>
     );
@@ -108,7 +108,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
   const caveats: string[] = [];
   if (total.unknownModelCount > 0) {
     caveats.push(
-      `${total.unknownModelCount} of ${total.count} turns used a model we do not recognise. They are counted but not priced, because a guess would be worse than a gap.`,
+      `${total.unknownModelCount} of ${total.count} turns used a model we don't recognise. We've counted them and left the price blank, since a guess would be worse than a gap.`,
     );
   }
   caveats.push(...healthNotes(summary.health));
@@ -149,7 +149,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
         * error state rather than as a caveat.
         */}
       {caveats.length > 0 ? (
-        <Hazard label={caveats.length === 1 ? 'Worth knowing' : 'Worth knowing, on both counts'}>
+        <Hazard label="Worth knowing">
           {caveats.map((line) => (
             <p class="buai-popup__caveat" key={line}>
               {line}
@@ -160,11 +160,11 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
 
       {flags.includes('thinking-unknown') ? (
         <p class="buai-popup__note">
-          Some turns hid their reasoning tokens, so the ranges run from no thinking to a lot.
+          Some turns kept their thinking to themselves, so the ranges run from none to a lot.
         </p>
       ) : null}
       {flags.includes('embodied-missing') ? (
-        <p class="buai-popup__note">Making the hardware isn't counted for some models, so water and carbon are lower bounds.</p>
+        <p class="buai-popup__note">Nobody has published what the hardware cost to make for some models, so water and carbon are at least this much.</p>
       ) : null}
 
       <MetaStrip
@@ -213,10 +213,10 @@ const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: st
   const [picked, setPicked] = useState('');
   return (
     <section class="buai-popup__firstrun" data-first-run>
-      <p class="buai-readout__label">One question before the first count</p>
+      <p class="buai-readout__label">One question, then we'll leave you alone</p>
       <p class="buai-popup__firstrun-why">
-        Carbon depends on the grid your electricity comes from, and grids differ by a factor of
-        about twenty. Where are you?
+        Carbon depends on the grid your electricity comes from, and a unit of it can carry about
+        twenty times more carbon on one grid than on another. Where are you?
       </p>
       <label class="buai-popup__firstrun-field">
         <span class="buai-visually-hidden">Region</span>
@@ -245,7 +245,7 @@ const FirstRun = ({ dataset, onChoose }: { dataset: Dataset; onChoose: (code: st
         Use this region
       </button>
       <button class="buai-button buai-button--quiet" type="button" onClick={() => onChoose(null)}>
-        Use the world average
+        The world average will do
       </button>
     </section>
   );
