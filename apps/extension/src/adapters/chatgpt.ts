@@ -19,7 +19,95 @@ import { sseEvents } from './claude.js';
  */
 
 const CONVERSATION_ENDPOINT = /\/backend-api\/(?:f\/)?conversation$/;
+/*
+ * Signed out, the site uses another address and another format altogether: a
+ * form-encoded request and a stream of JSON lines. Recorded on 16 November
+ * 2026. Neither the request nor the stream names a model, so a signed-out
+ * turn is priced as unknown unless the page says more.
+ */
+const ANON_ENDPOINT = /\/unauth-mweb\/conversation\/updates$/;
 const CONVERSATION_IN_URL = /\/c\/([0-9a-f-]{16,})/i;
+
+const parseAnonRequest = (body: string): ParsedRequest | null => {
+  const form = new URLSearchParams(body);
+  const prompt = form.get('prompt');
+  if (prompt === null) return null;
+
+  let conversationId: string | null = null;
+  try {
+    const state = JSON.parse(form.get('conversationState') ?? '{}') as Record<string, unknown>;
+    if (typeof state['backendConversationId'] === 'string') conversationId = state['backendConversationId'];
+  } catch {
+    // No conversation yet, or a state we cannot read. The turn still counts.
+  }
+
+  let attached = false;
+  for (const field of ['imageAttachments', 'pendingImageUploads']) {
+    try {
+      const list = JSON.parse(form.get(field) ?? '[]') as unknown;
+      if (Array.isArray(list) && list.length > 0) attached = true;
+    } catch {
+      // Not a list we can read, so it is not evidence of an attachment.
+    }
+  }
+
+  return {
+    conversationId,
+    modelRaw: null,
+    modelSource: 'unknown',
+    inputText: prompt,
+    ...(attached ? { attachmentsUncounted: true } : {}),
+  };
+};
+
+/**
+ * The signed-out stream: one JSON object a line, each with a version and a
+ * type. The answer arrives as numbered revisions of a message. A revision
+ * carries plain markdown, or a rendered block with a markdown fallback that
+ * restates the whole answer so far, so the fallback of the newest revision is
+ * taken once and never added up.
+ *
+ * Plain markdown was empty in the one exchange recorded. Appending it under
+ * mode "append" and replacing it under "replace" is what the field names say,
+ * and has not been seen in a real stream.
+ */
+const parseAnonStream = (body: string): ParsedStream | null => {
+  const messages = new Map<string, { markdown: string; fallback: string }>();
+  let recognised = false;
+
+  for (const line of body.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('{')) continue;
+    let record: Record<string, unknown>;
+    try {
+      record = JSON.parse(trimmed) as Record<string, unknown>;
+    } catch {
+      continue;
+    }
+    if (typeof record['version'] !== 'number' || typeof record['type'] !== 'string') continue;
+    recognised = true;
+    if (record['type'] !== 'content' || typeof record['messageId'] !== 'string') continue;
+
+    const held = messages.get(record['messageId']) ?? { markdown: '', fallback: '' };
+    if (typeof record['markdown'] === 'string') {
+      held.markdown = record['mode'] === 'replace' ? record['markdown'] : held.markdown + record['markdown'];
+    }
+    const block = record['dil'] as Record<string, unknown> | undefined;
+    if (block && typeof block['fallbackMarkdown'] === 'string') held.fallback = block['fallbackMarkdown'];
+    else if (record['mode'] === 'replace') held.fallback = '';
+    messages.set(record['messageId'], held);
+  }
+
+  if (!recognised) return null;
+  return {
+    modelRaw: null,
+    modelSource: 'unknown',
+    outputText: [...messages.values()].map((one) => one.markdown + one.fallback).join('\n'),
+    // Nothing in this stream says whether the model reasoned first, and
+    // nothing says it did not.
+    thinkingUndisclosed: false,
+  };
+};
 
 const walkForText = (value: unknown): string => {
   if (typeof value === 'string') return value;
@@ -36,15 +124,19 @@ export const chatgptAdapter: SiteAdapter = {
   id: 'chatgpt-web',
   surface: 'chatgpt-web',
   hosting: 'cloud',
-  version: 1,
+  version: 2,
   matches: ['https://chatgpt.com/*', 'https://chat.openai.com/*'],
   provider: 'openai',
 
   shouldCapture(url, method) {
-    return method.toUpperCase() === 'POST' && CONVERSATION_ENDPOINT.test(new URL(url, 'https://chatgpt.com').pathname);
+    if (method.toUpperCase() !== 'POST') return false;
+    const path = new URL(url, 'https://chatgpt.com').pathname;
+    return CONVERSATION_ENDPOINT.test(path) || ANON_ENDPOINT.test(path);
   },
 
   parseRequest(body, _headers, url): ParsedRequest | null {
+    if (ANON_ENDPOINT.test(new URL(url, 'https://chatgpt.com').pathname)) return parseAnonRequest(body);
+
     let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(body) as Record<string, unknown>;
@@ -71,6 +163,9 @@ export const chatgptAdapter: SiteAdapter = {
   },
 
   parseStream(body): ParsedStream | null {
+    // The signed-out stream is JSON lines with no "data:" in front of them.
+    if (/^\s*\{/.test(body)) return parseAnonStream(body);
+
     const events = sseEvents(body);
     if (events.length === 0) return null;
 

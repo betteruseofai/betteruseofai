@@ -20,6 +20,11 @@ without saying how much, so the turn is a lower bound. Both cases happen on the 
 requested model would be a wrong number, so an adapter that reads the request slug and stops has a
 bug. `sse-reasoning.txt` streams thoughts that are never counted.
 
+`anon-request.txt` and `anon-source.ndjson` are the signed-out site, which uses a different address
+(`/unauth-mweb/conversation/updates`) and a different format: a form-encoded request and a stream of
+JSON lines. These two are cut down from a real exchange recorded on 16 November 2026, with the
+tokens and identifiers taken out and the text replaced. Neither names a model.
+
 ### `gemini/`
 
 The request body is a nested array with no field names, doubly encoded inside a form field, which

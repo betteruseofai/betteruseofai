@@ -78,6 +78,8 @@ export const installInterceptor = (config: InterceptorConfig): (() => void) => {
     let requestBody = '';
     try {
       if (typeof init?.body === 'string') requestBody = init.body;
+      // A form sent as an object rather than as text, which reads the same.
+      else if (init?.body instanceof URLSearchParams) requestBody = init.body.toString();
       else if (input instanceof Request) requestBody = await input.clone().text();
     } catch {
       // A body we cannot read is a turn we cannot count. Carry on regardless:
@@ -163,6 +165,7 @@ export const installInterceptor = (config: InterceptorConfig): (() => void) => {
 
     override send(body?: Document | XMLHttpRequestBodyInit | null): void {
       if (typeof body === 'string') this.buaiBody = body;
+      else if (body instanceof URLSearchParams) this.buaiBody = body.toString();
       if (wanted(this.buaiUrl, this.buaiMethod)) {
         this.addEventListener('load', () => {
           try {

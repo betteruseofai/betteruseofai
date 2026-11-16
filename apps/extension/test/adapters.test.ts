@@ -205,6 +205,39 @@ describe('chatgpt.com', () => {
     expect(chatgptAdapter.shouldCapture('https://chatgpt.com/backend-api/f/conversation', 'POST')).toBe(true);
     expect(chatgptAdapter.shouldCapture('https://chatgpt.com/backend-api/me', 'POST')).toBe(false);
   });
+
+  /*
+   * Signed out, the site talks to a different address in a different format.
+   * Recorded on 16 November 2026: a form-encoded request and a stream of JSON
+   * lines, with no model named anywhere in either.
+   */
+  const anonUrl = 'https://chatgpt.com/unauth-mweb/conversation/updates?lightweight_authenticated=0&operationId=x';
+
+  it('captures the signed-out endpoint, and not the calls beside it', () => {
+    expect(chatgptAdapter.shouldCapture(anonUrl, 'POST')).toBe(true);
+    expect(chatgptAdapter.shouldCapture('https://chatgpt.com/unauth-mweb/conversation/prepare', 'POST')).toBe(false);
+  });
+
+  it('reads the prompt out of the signed-out form, and claims no model', () => {
+    const parsed = chatgptAdapter.parseRequest(read('chatgpt', 'anon-request.txt'), {}, anonUrl);
+    expect(parsed?.inputText).toBe('List the three longest rivers.');
+    expect(parsed?.modelRaw).toBeNull();
+    expect(parsed?.modelSource).toBe('unknown');
+    expect(parsed?.attachmentsUncounted).toBeUndefined();
+  });
+
+  it('flags a signed-out image it cannot count', () => {
+    const body = read('chatgpt', 'anon-request.txt').replace('imageAttachments=%5B%5D', 'imageAttachments=%5B%7B%7D%5D');
+    expect(chatgptAdapter.parseRequest(body, {}, anonUrl)?.attachmentsUncounted).toBe(true);
+  });
+
+  it('takes the newest revision of the signed-out answer, once', () => {
+    const parsed = chatgptAdapter.parseStream(read('chatgpt', 'anon-source.ndjson'));
+    expect(parsed?.outputText).toBe('1. First River\n2. Second River\n3. Third River');
+    // The stream names an "experience", not a model. Unknown, not a guess.
+    expect(parsed?.modelRaw).toBeNull();
+    expect(parsed?.modelSource).toBe('unknown');
+  });
 });
 
 describe('gemini.google.com', () => {

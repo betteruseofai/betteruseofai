@@ -1,0 +1,12 @@
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"started"}}
+{"version":2,"type":"shared","html":"<template for=\"conversation-partial-control\"></template>"}
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"conversation-id","conversationId":"00000000-0000-4000-8000-000000000004","canonicalPath":"/uc/00000000-0000-4000-8000-000000000004"}}
+{"version":2,"type":"content","messageId":"00000000-0000-4000-8000-000000000005","revision":1,"mode":"replace","markdown":"","references":[],"dil":{"kind":"dil","renderer":"dil-v2","status":"pending","code":"DIL.render()","constants":{"0":"1. First"},"fallbackMarkdown":"1\\. First","viewState":{"widgets":{}}},"status":"streaming"}
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"assistant-content-started","messageId":"00000000-0000-4000-8000-000000000005"}}
+{"version":2,"type":"content","messageId":"00000000-0000-4000-8000-000000000005","revision":2,"mode":"append","baseRevision":1,"markdown":"","dil":{"kind":"dil","renderer":"dil-v2","status":"pending","code":"DIL.render()","constants":{"0":"First River","1":"Second River","2":"Third River"},"fallbackMarkdown":"1. First River\n2. Second River\n3. Third River","viewState":{"widgets":{}}},"status":"streaming"}
+{"version":2,"type":"content","messageId":"00000000-0000-4000-8000-000000000005","revision":3,"mode":"append","baseRevision":2,"markdown":"","status":"complete"}
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"last-token-received"}}
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"turn-latency","turnLatency":{"tags":{"plan_type":"guest","requested_model_experience":"instant","stream_protocol":"source_ndjson"}}}}
+{"version":2,"type":"state","conversationState":"{\"backendConversationId\":\"00000000-0000-4000-8000-000000000004\",\"messages\":[],\"parentMessageId\":\"00000000-0000-4000-8000-000000000005\"}","safety":{}}
+{"version":2,"type":"control","detail":{"operationId":"00000000-0000-4000-8000-000000000003","streamType":"initial","kind":"terminal-received","conversationId":"00000000-0000-4000-8000-000000000004","messageId":"00000000-0000-4000-8000-000000000005","terminalKind":"complete","transportOnly":true}}
+{"version":2,"type":"end"}

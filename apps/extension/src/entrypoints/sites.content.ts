@@ -250,7 +250,8 @@ const capturePatternsFor = (adapterId: string): string[] => {
       // retry_completion is a regeneration, and it costs as much as the first answer.
       return ['/api/organizations/[^/]+/chat_conversations/[^/]+/(?:retry_)?completion'];
     case 'chatgpt-web':
-      return ['/backend-api/(?:f/)?conversation$'];
+      // The second is the signed-out address, which always carries a query.
+      return ['/backend-api/(?:f/)?conversation$', '/unauth-mweb/conversation/updates(?:\\?|$)'];
     case 'gemini-web':
       return ['StreamGenerate'];
     case 'local-webui':
