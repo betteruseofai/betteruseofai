@@ -44,6 +44,8 @@ export interface SavingOptions {
   regionCode?: string;
   waterScope?: WaterScope;
   carbonBasis?: CarbonBasis;
+  /** Which calendar day a timestamp belongs to. UTC by default; see AggregateOptions. */
+  dayOf?: (timestamp: string) => string;
 }
 
 export const SAVING_BASELINE = 'the largest model in each family';
@@ -77,9 +79,10 @@ export const saving = (inputs: SavingInput[], dataset: Dataset, options: SavingO
   let carbon: Range | null = null;
   let skipped = 0;
   const days = new Map<string, Range | null>();
+  const { dayOf, ...priceWith } = options;
 
   for (const { event, estimate: actual } of inputs) {
-    const day = event.timestamp.slice(0, 10);
+    const day = dayOf ? dayOf(event.timestamp) : event.timestamp.slice(0, 10);
     const model = actual.modelId ? dataset.models.find((one) => one.id === actual.modelId) : undefined;
     if (!model || !actual.energyWh) {
       skipped += 1;
@@ -96,7 +99,7 @@ export const saving = (inputs: SavingInput[], dataset: Dataset, options: SavingO
       continue;
     }
 
-    const counterfactual = estimate({ ...event, modelId: top.id, modelRaw: top.id }, { dataset, ...options });
+    const counterfactual = estimate({ ...event, modelId: top.id, modelRaw: top.id }, { dataset, ...priceWith });
 
     const saved = minus(counterfactual.energyWh, actual.energyWh);
     energy = plus(energy, saved);

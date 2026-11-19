@@ -66,6 +66,12 @@ body {
   min-height: 2px;
 }
 
+/* A day with no turns: the track's floor and the date, no bar. A bar of
+   nothing would read as a measured zero, and nothing was measured. */
+.buai-dash__track--empty {
+  border-bottom-style: dashed;
+}
+
 .buai-dash__daylabel,
 .buai-dash__dayvalue {
   font-family: var(--font-mono);

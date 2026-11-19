@@ -2,6 +2,7 @@ import { displayNumber, equivalents, scaleUnit } from '@betteruseofai/core';
 import type { Aggregate, Dataset, Range, Saving } from '@betteruseofai/core';
 import { useEffect, useState } from 'preact/hooks';
 
+import { everyDay, isEmptyDay, localDay } from '../../lib/days.js';
 import { MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
@@ -90,18 +91,26 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <section>
         <h2>Day by day</h2>
         <div class="buai-dash__days">
-          {summary.byDay.map((day) => (
-            <div class="buai-dash__day" key={day.key}>
-              <div class="buai-dash__bar-track">
-                <div
-                  class="buai-dash__bar"
-                  style={{ height: `${((day.energyWh?.central ?? 0) / peak) * 100}%` }}
-                />
+          {everyDay(summary.byDay).map((day) =>
+            isEmptyDay(day) ? (
+              <div class="buai-dash__day" key={day.key} data-empty-day>
+                <div class="buai-dash__bar-track buai-dash__track--empty" />
+                <span class="buai-dash__daylabel">{day.key.slice(5)}</span>
+                <span class="buai-dash__dayvalue">no turns</span>
               </div>
-              <span class="buai-dash__daylabel">{day.key.slice(5)}</span>
-              <span class="buai-dash__dayvalue">{short(day.energyWh, 'Wh')}</span>
-            </div>
-          ))}
+            ) : (
+              <div class="buai-dash__day" key={day.key}>
+                <div class="buai-dash__bar-track">
+                  <div
+                    class="buai-dash__bar"
+                    style={{ height: `${((day.energyWh?.central ?? 0) / peak) * 100}%` }}
+                  />
+                </div>
+                <span class="buai-dash__daylabel">{day.key.slice(5)}</span>
+                <span class="buai-dash__dayvalue">{short(day.energyWh, 'Wh')}</span>
+              </div>
+            ),
+          )}
         </div>
       </section>
 
@@ -158,7 +167,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       <MetaStrip
         items={[
           `${total.count} turns`,
-          `${total.from.slice(0, 10)} to ${total.to.slice(0, 10)}`,
+          `${localDay(total.from)} to ${localDay(total.to)}`,
           `dataset ${summary.datasetVersion}`,
           'telemetry: none',
         ]}

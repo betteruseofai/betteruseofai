@@ -6,6 +6,7 @@ import { ADAPTERS, adapterById } from '../adapters/index.js';
 import type { ExtensionMessage } from '../adapters/types.js';
 import { setRanksLoader } from '@betteruseofai/tokenizers';
 
+import { localDay } from '../lib/days.js';
 import { alreadyCounted, replacedBy } from '../lib/fallback.js';
 import { HEALTH_KEY, currentHealth, recordHealth } from '../lib/health.js';
 import type { HealthStore } from '../lib/health.js';
@@ -135,7 +136,8 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
         settings: current,
         datasetVersion: dataset.version,
         total: aggregate(pairs, 'all')[0] ?? null,
-        byDay: aggregate(pairs, 'day'),
+        // Days end at the viewer's own midnight. Stored timestamps stay UTC.
+        byDay: aggregate(pairs, 'day', { dayOf: localDay }),
         byModel: aggregate(pairs, 'model'),
         bySurface: aggregate(pairs, 'surface'),
         // The saving against the largest model in each family, for the
@@ -146,6 +148,7 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
                 ...(current.regionCode ? { regionCode: current.regionCode } : {}),
                 waterScope: current.waterScope,
                 carbonBasis: current.carbonBasis,
+                dayOf: localDay,
               })
             : null,
         health: currentHealth(await readHealth(), ADAPTERS),

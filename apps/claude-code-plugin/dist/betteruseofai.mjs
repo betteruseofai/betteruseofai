@@ -723,26 +723,26 @@ var init_estimate = __esm({
 });
 
 // ../../packages/core/dist/aggregate.js
-var isoDay, isoWeekStart, keyFor, bump, GRID_HOURS_AVERAGE_MS, atYearAverage, aggregate;
+var utcDay, isoWeekStart, keyFor, bump, GRID_HOURS_AVERAGE_MS, atYearAverage, aggregate;
 var init_aggregate = __esm({
   "../../packages/core/dist/aggregate.js"() {
     "use strict";
     init_range();
-    isoDay = (timestamp) => timestamp.slice(0, 10);
-    isoWeekStart = (timestamp) => {
-      const date = /* @__PURE__ */ new Date(`${isoDay(timestamp)}T00:00:00Z`);
+    utcDay = (timestamp) => timestamp.slice(0, 10);
+    isoWeekStart = (day) => {
+      const date = /* @__PURE__ */ new Date(`${day}T00:00:00Z`);
       const weekday = date.getUTCDay();
       const shift = weekday === 0 ? 6 : weekday - 1;
       date.setUTCDate(date.getUTCDate() - shift);
       return date.toISOString().slice(0, 10);
     };
-    keyFor = (bucket, input) => {
+    keyFor = (bucket, input, dayOf) => {
       const { event, estimate: estimate2 } = input;
       switch (bucket) {
         case "day":
-          return isoDay(event.timestamp);
+          return dayOf(event.timestamp);
         case "week":
-          return isoWeekStart(event.timestamp);
+          return isoWeekStart(dayOf(event.timestamp));
         case "model":
           return estimate2.modelId ?? "unknown";
         case "surface":
@@ -768,10 +768,11 @@ var init_aggregate = __esm({
       const intensity = carbonG.central / energyWh.central;
       return { low: energyWh.low * intensity, central: carbonG.central, high: energyWh.high * intensity };
     };
-    aggregate = (inputs, bucket = "all") => {
+    aggregate = (inputs, bucket = "all", options = {}) => {
+      const dayOf = options.dayOf ?? utcDay;
       const buckets = /* @__PURE__ */ new Map();
       for (const input of inputs) {
-        const key = keyFor(bucket, input);
+        const key = keyFor(bucket, input, dayOf);
         const existing = buckets.get(key);
         if (existing)
           existing.push(input);
@@ -897,8 +898,9 @@ var init_saving = __esm({
       let carbon = null;
       let skipped = 0;
       const days = /* @__PURE__ */ new Map();
+      const { dayOf, ...priceWith } = options;
       for (const { event, estimate: actual } of inputs) {
-        const day = event.timestamp.slice(0, 10);
+        const day = dayOf ? dayOf(event.timestamp) : event.timestamp.slice(0, 10);
         const model = actual.modelId ? dataset2.models.find((one) => one.id === actual.modelId) : void 0;
         if (!model || !actual.energyWh) {
           skipped += 1;
@@ -914,7 +916,7 @@ var init_saving = __esm({
           skipped += 1;
           continue;
         }
-        const counterfactual = estimate({ ...event, modelId: top.id, modelRaw: top.id }, { dataset: dataset2, ...options });
+        const counterfactual = estimate({ ...event, modelId: top.id, modelRaw: top.id }, { dataset: dataset2, ...priceWith });
         const saved = minus(counterfactual.energyWh, actual.energyWh);
         energy = plus(energy, saved);
         water = plus(water, minus(counterfactual.waterMl, actual.waterMl));

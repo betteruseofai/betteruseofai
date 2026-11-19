@@ -10,11 +10,12 @@ import type { Aggregate, AggregateBucket, Estimate, EstimateFlag, Range, UsageEv
  * could be estimated has null totals rather than zeroed ones.
  */
 
-const isoDay = (timestamp: string): string => timestamp.slice(0, 10);
+/** The calendar day a timestamp falls on in UTC, which is what both CLIs use. */
+export const utcDay = (timestamp: string): string => timestamp.slice(0, 10);
 
-/** Monday of the week containing this timestamp, as an ISO date. */
-const isoWeekStart = (timestamp: string): string => {
-  const date = new Date(`${isoDay(timestamp)}T00:00:00Z`);
+/** Monday of the week containing this day, as an ISO date. */
+const isoWeekStart = (day: string): string => {
+  const date = new Date(`${day}T00:00:00Z`);
   const weekday = date.getUTCDay();
   const shift = weekday === 0 ? 6 : weekday - 1;
   date.setUTCDate(date.getUTCDate() - shift);
@@ -26,13 +27,22 @@ export interface AggregateInput {
   estimate: Estimate;
 }
 
-const keyFor = (bucket: AggregateBucket, input: AggregateInput): string => {
+export interface AggregateOptions {
+  /**
+   * Which calendar day a timestamp belongs to, as YYYY-MM-DD. UTC by default.
+   * The browser extension passes the viewer's own midnight, so "today" starts
+   * when theirs does; timestamps stay stored in UTC either way.
+   */
+  dayOf?: (timestamp: string) => string;
+}
+
+const keyFor = (bucket: AggregateBucket, input: AggregateInput, dayOf: (timestamp: string) => string): string => {
   const { event, estimate } = input;
   switch (bucket) {
     case 'day':
-      return isoDay(event.timestamp);
+      return dayOf(event.timestamp);
     case 'week':
-      return isoWeekStart(event.timestamp);
+      return isoWeekStart(dayOf(event.timestamp));
     case 'model':
       return estimate.modelId ?? 'unknown';
     case 'surface':
@@ -72,10 +82,15 @@ const atYearAverage = (estimate: Estimate): Range | null => {
   return { low: energyWh.low * intensity, central: carbonG.central, high: energyWh.high * intensity };
 };
 
-export const aggregate = (inputs: AggregateInput[], bucket: AggregateBucket = 'all'): Aggregate[] => {
+export const aggregate = (
+  inputs: AggregateInput[],
+  bucket: AggregateBucket = 'all',
+  options: AggregateOptions = {},
+): Aggregate[] => {
+  const dayOf = options.dayOf ?? utcDay;
   const buckets = new Map<string, AggregateInput[]>();
   for (const input of inputs) {
-    const key = keyFor(bucket, input);
+    const key = keyFor(bucket, input, dayOf);
     const existing = buckets.get(key);
     if (existing) existing.push(input);
     else buckets.set(key, [input]);

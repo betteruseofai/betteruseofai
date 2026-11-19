@@ -275,6 +275,17 @@ against. The decisions taken on it, on 2026-09-13:
     turn it follows the running total in the same message. The recommender itself is unchanged
     and still drives the extension's hint, where a chat prompt stands on its own.
 
+56. **The extension's days end at the viewer's midnight.** Decided with the owner on 2026-11-19,
+    the recommended option, closing the last open item of X11. Timestamps are still stored in
+    UTC, as `CLAUDE.md` asks, and the rule is read as being about storage. The dashboard's day
+    chart, its saving rings and its date range now draw the line at the browser's own midnight,
+    so "today" in India no longer starts at 5:30. `aggregate` and `saving` in core take an
+    optional `dayOf`; without it they keep UTC days, so both command line tools, their fixtures
+    and the Python mirror are unchanged and give the same output on every machine. Days with no
+    turns between the first and the last now show as gaps marked "no turns", with no bar, since a
+    bar of nothing would read as a measured zero. Past a year of days the chart shows only the
+    days there are.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 
