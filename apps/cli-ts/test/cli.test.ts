@@ -24,6 +24,8 @@ beforeAll(() => {
   process.env['BUAI_STATE_DIR'] = mkdtempSync(join(tmpdir(), 'buai-cli-'));
   // The log is on whenever this variable is set, and off the real one.
   process.env['BUAI_LOG_DIR'] = mkdtempSync(join(tmpdir(), 'buai-log-'));
+  // Never the person's own mutes. A test that wants some sets its own.
+  process.env['BUAI_CONFIG'] = join(mkdtempSync(join(tmpdir(), 'buai-config-')), 'none.json');
 });
 
 describe('parsing arguments', () => {
@@ -310,47 +312,6 @@ describe('the status line and the hooks', () => {
     expect(result.stdout).toBe('');
   });
 
-  it('nudges on a rewrite prompt but stays quiet on real engineering work', async () => {
-    const payload = (prompt: string) =>
-      JSON.stringify({
-        session_id: 'hint-test',
-        transcript_path: join(logs, 'claude-code', 'projects', 'example-project', 'session-alpha.jsonl'),
-        model: { id: 'claude-opus-5' },
-        prompt,
-      });
-
-    const speak = async (prompt: string) => {
-      const original = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
-      Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
-      const text = payload(prompt);
-      // Feed the payload through a readable, the way Claude Code pipes it in.
-      const { Readable } = await import('node:stream');
-      const fake = Readable.from([Buffer.from(text)]);
-      Object.defineProperty(process, 'stdin', { value: fake, configurable: true });
-      try {
-        return await run(['hook', 'UserPromptSubmit', '--now', NOW]);
-      } finally {
-        if (original) Object.defineProperty(process.stdin, 'isTTY', original);
-      }
-    };
-
-    const nudged = JSON.parse((await speak('Rewrite this paragraph so it reads more plainly.')).stdout);
-    expect(nudged.systemMessage).toContain('downgrade.rewrite-task');
-    expect(nudged.systemMessage).toContain('save roughly');
-    // No comma after a full stop.
-    expect(nudged.systemMessage).not.toMatch(/\.\s*,/);
-
-    const quiet = JSON.parse(
-      (await speak('Explain why this deadlock happens and derive the ordering that prevents it.'))
-        .stdout,
-    );
-    expect(quiet.systemMessage).toBeUndefined();
-
-    // Muted inside a coding session: a sum on a line is usually being discussed.
-    const sum = JSON.parse((await speak('17 * 23')).stdout);
-    expect(sum.systemMessage).toBeUndefined();
-  });
-
   /** Sends a hook payload the way Claude Code does, with no model field unless given one. */
   const hookWith = async (event: string, payload: Record<string, unknown>) => {
     const original = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
@@ -365,85 +326,134 @@ describe('the status line and the hooks', () => {
     }
   };
   const alpha = join(logs, 'claude-code', 'projects', 'example-project', 'session-alpha.jsonl');
-  const rewrite = 'Rewrite this paragraph so it reads more plainly.';
 
-  it('reads the model from the transcript, because UserPromptSubmit does not send one', async () => {
-    const result = await hookWith('UserPromptSubmit', {
-      session_id: 'no-model-field',
-      transcript_path: alpha,
-      prompt: rewrite,
-    });
-    const said = JSON.parse(result.stdout).systemMessage as string;
-    // The last turn in the fixture is on Opus 5, so the nudge can name the rung below.
-    expect(said).toContain('Claude Sonnet 5 would probably do');
-    expect(said).toContain('save roughly');
-  });
-
-  it('prices the saving on the last turn it has read, not on the prompt alone', async () => {
-    const saved = (said: string): number =>
-      Number.parseFloat(/save roughly ([0-9.]+) Wh/.exec(said)?.[1] ?? 'NaN');
-
-    // Nothing read for this session yet, so the saving is a guess from the prompt.
-    const guessed = await hookWith('UserPromptSubmit', {
-      session_id: 'priced-on-a-guess',
-      transcript_path: alpha,
-      prompt: rewrite,
-    });
-
-    // A turn the way an agent session looks: a short prompt on a long cached
-    // context. The Stop hook reads it, and the next prompt prices on it.
-    const dir = mkdtempSync(join(tmpdir(), 'buai-turn-'));
-    const transcript = join(dir, 'session.jsonl');
-    const usage = {
-      input_tokens: 40,
-      cache_creation_input_tokens: 2_000,
-      cache_read_input_tokens: 150_000,
-      output_tokens: 600,
+  /**
+   * A session as Claude Code writes it, one assistant line a turn. Each call
+   * writes the whole file again, which the reader sees as lines appended.
+   */
+  const session = (id: string) => {
+    const dir = mkdtempSync(join(tmpdir(), 'buai-session-'));
+    const transcript = join(dir, `${id}.jsonl`);
+    const lines: string[] = [];
+    const add = (model: string, context: number) => {
+      const n = lines.length + 1;
+      const minute = String(n % 60).padStart(2, '0');
+      const hour = String(9 + Math.floor(n / 60)).padStart(2, '0');
+      lines.push(
+        JSON.stringify({
+          type: 'assistant',
+          uuid: `u${n}`,
+          timestamp: `2026-09-15T${hour}:${minute}:00.000Z`,
+          requestId: `req_${n}`,
+          sessionId: id,
+          message: {
+            id: `msg_${n}`,
+            type: 'message',
+            role: 'assistant',
+            model,
+            content: [],
+            usage: {
+              input_tokens: 40,
+              cache_creation_input_tokens: 1_000,
+              cache_read_input_tokens: context - 1_040,
+              output_tokens: 600,
+            },
+          },
+        }),
+      );
+      writeFileSync(transcript, `${lines.join('\n')}\n`, 'utf8');
     };
-    writeFileSync(
-      transcript,
-      `${JSON.stringify({
-        type: 'assistant',
-        uuid: 'u1',
-        timestamp: '2026-09-15T11:00:00.000Z',
-        requestId: 'req_1',
-        sessionId: 'priced-on-a-turn',
-        message: { id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-opus-5', content: [], usage },
-      })}\n`,
-      'utf8',
-    );
-    const session = { session_id: 'priced-on-a-turn', transcript_path: transcript };
-    await hookWith('Stop', session);
-    const real = await hookWith('UserPromptSubmit', { ...session, prompt: rewrite });
+    const stop = async (): Promise<string | undefined> =>
+      JSON.parse((await hookWith('Stop', { session_id: id, transcript_path: transcript })).stdout)
+        .systemMessage as string | undefined;
+    return { add, stop };
+  };
 
-    const small = saved(JSON.parse(guessed.stdout).systemMessage as string);
-    const large = saved(JSON.parse(real.stdout).systemMessage as string);
-    expect(small).toBeGreaterThan(0);
-    expect(large).toBeGreaterThan(small);
+  it('no longer nudges on a prompt in Claude Code', async () => {
+    for (const event of ['UserPromptSubmit', 'PostModelSwitch']) {
+      const result = await hookWith(event, {
+        session_id: 'old-hooks',
+        transcript_path: alpha,
+        model: { id: 'claude-opus-5' },
+        prompt: 'Rewrite this paragraph so it reads more plainly.',
+        to_model: 'claude-haiku-4-5',
+      });
+      expect(JSON.parse(result.stdout)).toEqual({});
+    }
   });
 
-  it('takes a model switch made after the last turn over the transcript', async () => {
-    const session = { session_id: 'switched', transcript_path: alpha };
-    await hookWith('PostModelSwitch', { ...session, from_model: 'claude-opus-5', to_model: 'claude-haiku-4-5' });
-    const result = await hookWith('UserPromptSubmit', { ...session, prompt: rewrite });
-    // Haiku is the bottom of its ladder, so there is nothing smaller to suggest.
-    expect(JSON.parse(result.stdout).systemMessage).toBeUndefined();
+  it('says once when a turn reads a lot of context', async () => {
+    const one = session('long-context');
+    one.add('claude-sonnet-5-5', 20_000);
+    expect(await one.stop()).toBeUndefined();
+
+    one.add('claude-sonnet-5-5', 162_000);
+    const said = await one.stop();
+    expect(said).toContain('session.long-context');
+    expect(said).toContain('162,000 tokens');
+    expect(said).toMatch(/hold \d+% of this session's energy/);
+    expect(said).toContain('least certain');
+
+    one.add('claude-sonnet-5-5', 170_000);
+    expect(await one.stop()).toBeUndefined();
   });
 
-  it('honours a rule muted with /betteruseofai:mute', async () => {
+  it('stays quiet at the line itself', async () => {
+    const one = session('at-the-line');
+    one.add('claude-opus-5-5', 150_000);
+    expect(await one.stop()).toBeUndefined();
+  });
+
+  it('prices a long session on the top model one rung down, once', async () => {
+    const one = session('top-model');
+    for (let n = 0; n < 29; n += 1) one.add('claude-opus-5-5', 40_000);
+    // 29 turns: not long yet.
+    expect(await one.stop()).toBeUndefined();
+
+    one.add('claude-opus-5-5', 40_000);
+    const said = (await one.stop()) as string;
+    // The thirtieth turn is also a tenth one, so the running total comes first.
+    expect(said.startsWith('Session so far:')).toBe(true);
+    expect(said).toContain('session.top-model');
+    expect(said).toContain("All 30 of this session's turns ran on Claude Opus 5.5");
+    expect(said).toContain('on Claude Sonnet 5.5 would have used about');
+    expect(said).toMatch(/about [0-9.]+ k?Wh \[ [0-9.]+ to [0-9.]+ \] less energy/);
+
+    one.add('claude-opus-5-5', 40_000);
+    expect(await one.stop()).toBeUndefined();
+  });
+
+  it('says nothing about the model when most turns were already one rung down', async () => {
+    const one = session('mostly-sonnet');
+    for (let n = 0; n < 24; n += 1) one.add('claude-opus-5-5', 40_000);
+    for (let n = 0; n < 7; n += 1) one.add('claude-sonnet-5-5', 40_000);
+    // 24 of 31 is under four in five.
+    expect(await one.stop()).toBeUndefined();
+  });
+
+  it('says one thing a turn when both are due', async () => {
+    const one = session('both');
+    for (let n = 0; n < 31; n += 1) one.add('claude-opus-5-5', 160_000);
+    const first = await one.stop();
+    expect(first).toContain('session.long-context');
+    expect(first).not.toContain('session.top-model');
+
+    one.add('claude-opus-5-5', 160_000);
+    expect(await one.stop()).toContain('session.top-model');
+  });
+
+  it('honours a session message muted with /betteruseofai:mute', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'buai-config-'));
     const path = join(dir, 'config.json');
-    writeFileSync(path, JSON.stringify({ muted: ['downgrade.rewrite-task'] }), 'utf8');
+    writeFileSync(path, JSON.stringify({ muted: ['session.long-context'] }), 'utf8');
+    const before = process.env['BUAI_CONFIG'];
     process.env['BUAI_CONFIG'] = path;
     try {
-      const result = await hookWith('UserPromptSubmit', {
-        session_id: 'muted',
-        transcript_path: alpha,
-        prompt: rewrite,
-      });
-      expect(JSON.parse(result.stdout).systemMessage).toBeUndefined();
+      const one = session('muted');
+      one.add('claude-sonnet-5-5', 200_000);
+      expect(await one.stop()).toBeUndefined();
     } finally {
-      delete process.env['BUAI_CONFIG'];
+      process.env['BUAI_CONFIG'] = before;
     }
   });
 

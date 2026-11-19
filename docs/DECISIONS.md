@@ -259,10 +259,24 @@ against. The decisions taken on it, on 2026-09-13:
     veto like any other advice. Python now matches JavaScript on whitespace, digits, line ends,
     UTF-16 lengths and how a number prints, and its `estimate` honours a resolved model id.
 
+55. **The nudge in Claude Code moves from the prompt to the session.** Decided with the owner on
+    2026-11-19, option 4 of the audit's section on the nudge, with each detail the recommended
+    option. The plugin no longer registers `UserPromptSubmit` or `PostModelSwitch`; the commands
+    stay and answer with nothing, so an older install's hooks.json doesn't break. The `Stop` hook
+    says two things, each at most once a session and never both on one turn, the context first.
+    `session.long-context` fires when a turn reads more than 150,000 tokens of input and cache,
+    with the share of the session's energy on turns that size and a note that re-reading cached
+    context is the least certain part of the estimate. `session.top-model` fires after 30 priced
+    turns of which at least four in five ran on a model with a rung below it, and quotes what the
+    same turns would have used one rung down: each turn priced again with its own counts, the two
+    subtracted bound by bound as in 53, then summed. A model change part way through starts the
+    cache again, which the figure leaves out and the message says so. Both can be muted by id,
+    and what has been said is kept in the session's cache file. When a message falls on a tenth
+    turn it follows the running total in the same message. The recommender itself is unchanged
+    and still drives the extension's hint, where a chat prompt stands on its own.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
-- What the nudge should do inside Claude Code, given that it cannot fire at its current bar and
-  would fire on half of all prompts at the default one.
 
 - The tokenizer ratios, which need the providers' counting endpoints and so an API key, in
   `packages/dataset/CHANGELOG.md`.

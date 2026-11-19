@@ -12,7 +12,7 @@
     {
       "name": "betteruseofai",
       "source": "./apps/claude-code-plugin",
-      "description": "A live statusline footprint and a nudge when a smaller model would do."
+      "description": "A live statusline footprint, and a word when a session's context or model is the heavy part."
     }
   ]
 }

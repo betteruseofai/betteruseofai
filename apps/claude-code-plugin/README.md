@@ -1,7 +1,8 @@
 # Better Use of AI, for Claude Code
 
-A live footprint on your status line, a session total every ten turns, and a nudge when a smaller
-model would probably do. Everything is worked out on your machine. Nothing is sent anywhere.
+A live footprint on your status line, a session total every ten turns, and a word when the session
+itself is the heavy part: a very large context, or a long run on the biggest model. Everything is
+worked out on your machine. Nothing is sent anywhere.
 
 ## Installing
 
@@ -20,11 +21,10 @@ works: the hooks report the session total without any status line at all.
 | Piece | What it does |
 |---|---|
 | Status line | `4.10 kWh · 13.4 L · 1.82 kg · Claude Opus 5 100% · ctx 41%` |
-| `Stop` hook | Keeps the running total, says it every ten turns, and appends each turn to the event log |
-| `UserPromptSubmit` hook | Nudges when a smaller model would do, on a high bar |
+| `Stop` hook | Keeps the running total, says it every ten turns, appends each turn to the event log, and says each session message once |
 | `/betteruseofai:report` | What this session has cost, with its heaviest turns |
 | `/betteruseofai:footprint` | What the last week has cost |
-| `/betteruseofai:mute` | Turn off one nudge without turning off the rest |
+| `/betteruseofai:mute` | Turn off one session message without turning off the other |
 | `/betteruseofai:dashboard` | Every session on this machine as one page, written to a file and opened |
 
 ## The status line is cheap on purpose
@@ -59,22 +59,26 @@ The log is append only and grows slowly, a few hundred bytes a turn. `betteruseo
 365d` trims it; nothing trims it on its own. `betteruseofai doctor` says how big it is. It never
 leaves the machine.
 
-## The nudge is quiet by default
+## What we say about a session
 
-Inside a coding session the bar is higher than elsewhere, and three rules are muted outright:
+We used to read each prompt before it went and suggest a smaller model when it looked simple. In an
+agent that guess doesn't work. A short prompt such as "carry on" points at a long task and a lot of
+context, so its length says nothing about the work. Measured on 240 real prompts, the hint either
+almost never fired or fired wrongly on a quarter of them.
 
-- `no-llm.arithmetic`, because a sum on a line is usually being discussed rather than asked
-- `no-llm.unit-conversion`, for the same reason
-- `downgrade.short-simple`, because a one-line follow-up only makes sense with the whole session
-  behind it
+What does move the number shows up after a turn has run. Each turn re-reads the whole context, and
+turns over 150,000 tokens held three quarters of the energy in the sessions we measured. The model
+the session runs on is the other big lever. So the `Stop` hook says two things, each at most once a
+session and never both on the same turn:
 
-A prompt that names parts of the code, such as a parser or the failing tests, holds back any
-suggestion of a smaller model. That's code work, and the bigger model is doing it.
+- `session.long-context`, when a turn reads more than 150,000 tokens of context. It says how much
+  of the session's energy is on turns that size. Re-reading cached context is the least certain
+  part of our estimate, and the message says so.
+- `session.top-model`, after 30 priced turns of which four in five ran on a model with a smaller
+  sibling. It says what the same turns would have used one rung down, from their real token counts,
+  for your region and water scope.
 
-A nudge that fires wrongly gets the whole feature switched off, and then nothing is measured at all.
-Every nudge names the rule that produced it, so you can mute that one rule with
-`/betteruseofai:mute`. When one does fire, the saving it quotes is worked out on the session's last
-turn, cached context and all, for your region and water scope.
+Every message names its rule, so you can turn either one off with `/betteruseofai:mute`.
 
 ## What the figures mean
 

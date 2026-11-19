@@ -17,9 +17,9 @@ a local model, or no model at all when the frontier model isn't earning its keep
 
 | Piece | What it does |
 |---|---|
-| Browser extension | Counts what you send on claude.ai, chatgpt.com and gemini.google.com, plus local LLM front ends |
+| Browser extension | Counts what you send on claude.ai, chatgpt.com and gemini.google.com |
 | Command line tools | Read your Claude Code and Codex CLI logs and report per session, per day, per model |
-| Claude Code plugin | A live statusline figure and a nudge before you send a prompt a smaller model could handle |
+| Claude Code plugin | A live statusline figure, and a word when a session's context or model is the heavy part |
 | Website | The methodology, a calculator, and a guide to running models locally |
 
 Everything ships from one dataset of published benchmarks, so the extension, the CLIs and the site

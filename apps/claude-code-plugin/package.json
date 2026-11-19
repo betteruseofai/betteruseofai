@@ -2,7 +2,7 @@
   "name": "@betteruseofai/claude-code-plugin",
   "version": "0.0.0",
   "private": true,
-  "description": "Claude Code plugin: a live footprint on the status line and a nudge when a smaller model would do.",
+  "description": "Claude Code plugin: a live footprint on the status line, and a word when a session's context or model is the heavy part.",
   "license": "MIT",
   "type": "module",
   "scripts": {

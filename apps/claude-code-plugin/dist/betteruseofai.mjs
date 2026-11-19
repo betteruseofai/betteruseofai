@@ -2503,6 +2503,103 @@ var init_context = __esm({
   }
 });
 
+// ../cli-ts/src/session-nudge.ts
+var LONG_CONTEXT_TOKENS, LONG_SESSION_TURNS, TOP_MODEL_SHARE, SESSION_RULES, contextTokens, thousands, minus2, plus2, longContext, topModel, sessionNudge;
+var init_session_nudge = __esm({
+  "../cli-ts/src/session-nudge.ts"() {
+    "use strict";
+    init_dist();
+    LONG_CONTEXT_TOKENS = 15e4;
+    LONG_SESSION_TURNS = 30;
+    TOP_MODEL_SHARE = 0.8;
+    SESSION_RULES = {
+      longContext: "session.long-context",
+      topModel: "session.top-model"
+    };
+    contextTokens = (event) => (event.tokens.input ?? 0) + (event.tokens.cachedRead ?? 0) + (event.tokens.cachedWrite ?? 0);
+    thousands = (tokens) => (Math.round(tokens / 1e3) * 1e3).toLocaleString("en-GB");
+    minus2 = (a, b) => {
+      if (!a || !b) return null;
+      const low = Math.max(0, a.low - b.low);
+      const central = Math.max(0, a.central - b.central);
+      const high = Math.max(0, a.high - b.high);
+      return { low: Math.min(low, central), central, high: Math.max(high, central) };
+    };
+    plus2 = (a, b) => {
+      if (!a) return b;
+      if (!b) return a;
+      return { low: a.low + b.low, central: a.central + b.central, high: a.high + b.high };
+    };
+    longContext = (input) => {
+      const sizes = input.events.map(contextTokens);
+      const largest = Math.max(0, ...sizes);
+      if (largest <= LONG_CONTEXT_TOKENS) return null;
+      let all = 0;
+      let big = 0;
+      input.estimates.forEach((one, index) => {
+        const central = one.energyWh?.central;
+        if (central === void 0) return;
+        all += central;
+        if ((sizes[index] ?? 0) > LONG_CONTEXT_TOKENS) big += central;
+      });
+      const share = all > 0 ? ` Turns over ${thousands(LONG_CONTEXT_TOKENS)} tokens hold ${Math.round(big / all * 100)}% of this session's energy so far.` : "";
+      return {
+        ruleId: SESSION_RULES.longContext,
+        message: `Rule ${SESSION_RULES.longContext}: a turn in this session read ${thousands(largest)} tokens of context, and every turn after it reads all of that again.${share} A fresh session or /compact between tasks keeps it down. The cost of re-reading cached context is the least certain part of our estimate, so take the energy as a rough guide.`
+      };
+    };
+    topModel = (input) => {
+      const { dataset: dataset2 } = input;
+      const priced = [];
+      input.events.forEach((event, index) => {
+        const one = input.estimates[index];
+        const model = one?.modelId ? getModel(one.modelId, dataset2) : null;
+        if (one && model && one.energyWh) priced.push({ event, estimate: one, model });
+      });
+      if (priced.length < LONG_SESSION_TURNS) return null;
+      const onTop = priced.map((turn) => ({ ...turn, target: downgradeTarget(turn.model, dataset2) })).filter((turn) => turn.target !== null);
+      if (onTop.length / priced.length < TOP_MODEL_SHARE) return null;
+      let saved = null;
+      for (const turn of onTop) {
+        const swapped = estimate(
+          { ...turn.event, modelId: turn.target.id, modelRaw: turn.target.id },
+          { dataset: dataset2, ...input.settings }
+        );
+        saved = plus2(saved, minus2(turn.estimate.energyWh, swapped.energyWh));
+      }
+      if (!saved || saved.central <= 0) return null;
+      const counts = /* @__PURE__ */ new Map();
+      for (const turn of onTop) {
+        const entry = counts.get(turn.model.id) ?? { model: turn.model, target: turn.target, turns: 0 };
+        entry.turns += 1;
+        counts.set(turn.model.id, entry);
+      }
+      const ranked = [...counts.values()].sort((a, b) => b.turns - a.turns || (a.model.id < b.model.id ? -1 : 1));
+      const main = ranked[0];
+      const single = ranked.length === 1;
+      const howMany = onTop.length === priced.length ? `All ${priced.length} of this session's turns` : `${onTop.length} of this session's ${priced.length} turns`;
+      const ran = single ? `${howMany} ran on ${main.model.displayName}.` : `${howMany} ran on a model with a smaller sibling, mostly ${main.model.displayName}.`;
+      const swap = single ? `on ${main.target.displayName}` : "one rung down";
+      return {
+        ruleId: SESSION_RULES.topModel,
+        message: `Rule ${SESSION_RULES.topModel}: ${ran} The same turns ${swap} would have used about ${formatRange(saved, { unit: "Wh" })} less energy. Switching part way through starts the cache again, which that leaves out. If the rest of the work is lighter, /model moves the session down.`
+      };
+    };
+    sessionNudge = (input) => {
+      const quiet = /* @__PURE__ */ new Set([...input.said, ...input.muted]);
+      for (const [id, check] of [
+        [SESSION_RULES.longContext, longContext],
+        [SESSION_RULES.topModel, topModel]
+      ]) {
+        if (quiet.has(id)) continue;
+        const nudge = check(input);
+        if (nudge) return nudge;
+      }
+      return null;
+    };
+  }
+});
+
 // ../cli-ts/src/commands/statusline.ts
 var statusline_exports = {};
 __export(statusline_exports, {
@@ -2516,10 +2613,10 @@ __export(statusline_exports, {
   stateDir: () => stateDir,
   statusline: () => statusline
 });
-import { closeSync, fstatSync, mkdirSync as mkdirSync3, openSync, readFileSync as readFileSync2, readSync, writeFileSync as writeFileSync3 } from "node:fs";
+import { mkdirSync as mkdirSync3, readFileSync as readFileSync2, writeFileSync as writeFileSync3 } from "node:fs";
 import { homedir as homedir4 } from "node:os";
 import { dirname as dirname2, join as join7 } from "node:path";
-var stateDir, safeName, cachePath, linePath, readCheapLine, writeLine, readCache, writeCache, refreshSession, readStdin, parseStdinJson, statusline, CODING_SESSION_MUTES, configPath, readMuted, switchPath, readSwitch, lastTranscriptModel, currentModel, hook;
+var stateDir, safeName, cachePath, linePath, readCheapLine, writeLine, readCache, writeCache, refreshSession, readStdin, parseStdinJson, statusline, configPath, readMuted, markSaid, hook;
 var init_statusline = __esm({
   "../cli-ts/src/commands/statusline.ts"() {
     "use strict";
@@ -2527,6 +2624,7 @@ var init_statusline = __esm({
     init_dist3();
     init_args();
     init_log();
+    init_session_nudge();
     stateDir = () => process.env["BUAI_STATE_DIR"] ?? join7(process.env["CLAUDE_PLUGIN_DATA"] ?? join7(homedir4(), ".claude"), "betteruseofai", "state");
     safeName = (sessionId) => sessionId.replace(/[^A-Za-z0-9_-]/g, "_");
     cachePath = (sessionId) => join7(stateDir(), `${safeName(sessionId)}.json`);
@@ -2563,7 +2661,7 @@ var init_statusline = __esm({
       const { added, state } = await readClaudeCodeIncremental(transcriptPath, cached.state);
       const events = { ...cached.events };
       for (const event of added) events[event.id] = event;
-      writeCache(sessionId, { state, events, updated: context.now.toISOString() });
+      writeCache(sessionId, { ...cached, state, events, updated: context.now.toISOString() });
       try {
         appendLog(defaultLogDir(), added, context.now.toISOString());
       } catch {
@@ -2572,6 +2670,7 @@ var init_statusline = __esm({
       return {
         turns: list.length,
         events: list,
+        said: cached.said ?? [],
         estimates: list.map(
           (event) => estimate(event, {
             dataset: context.dataset,
@@ -2636,7 +2735,6 @@ var init_statusline = __esm({
       writeLine(input.session_id, line);
       return line;
     };
-    CODING_SESSION_MUTES = ["no-llm.arithmetic", "no-llm.unit-conversion", "downgrade.short-simple"];
     configPath = () => process.env["BUAI_CONFIG"] ?? join7(process.env["CLAUDE_CONFIG_DIR"] ?? join7(homedir4(), ".claude"), "betteruseofai", "config.json");
     readMuted = () => {
       try {
@@ -2646,51 +2744,14 @@ var init_statusline = __esm({
         return [];
       }
     };
-    switchPath = (sessionId) => join7(stateDir(), `${safeName(sessionId)}.model`);
-    readSwitch = (sessionId) => {
+    markSaid = (sessionId, ruleId) => {
       try {
-        const parsed = JSON.parse(readFileSync2(switchPath(sessionId), "utf8"));
-        return typeof parsed.model === "string" && typeof parsed.at === "string" ? { model: parsed.model, at: parsed.at } : null;
-      } catch {
-        return null;
-      }
-    };
-    lastTranscriptModel = (path) => {
-      try {
-        const fd = openSync(path, "r");
-        try {
-          const size = fstatSync(fd).size;
-          const length = Math.min(size, 256 * 1024);
-          const buffer = Buffer.alloc(length);
-          readSync(fd, buffer, 0, length, size - length);
-          const lines = buffer.toString("utf8").split("\n");
-          for (let index = lines.length - 1; index >= 0; index -= 1) {
-            const line = lines[index];
-            if (!line.includes('"assistant"')) continue;
-            try {
-              const parsed = JSON.parse(line);
-              const model = parsed.message?.model;
-              if (parsed.type === "assistant" && typeof model === "string" && model !== "<synthetic>") {
-                return { model, at: parsed.timestamp ?? "" };
-              }
-            } catch {
-            }
-          }
-        } finally {
-          closeSync(fd);
-        }
+        const cached = readCache(sessionId);
+        const said = new Set(cached.said ?? []);
+        said.add(ruleId);
+        writeCache(sessionId, { ...cached, said: [...said].sort() });
       } catch {
       }
-      return null;
-    };
-    currentModel = (input) => {
-      if (input.model?.id) return input.model.id;
-      const seen = [
-        input.session_id ? readSwitch(input.session_id) : null,
-        input.transcript_path ? lastTranscriptModel(input.transcript_path) : null
-      ].filter((one) => one !== null);
-      seen.sort((a, b) => a.at < b.at ? 1 : a.at > b.at ? -1 : 0);
-      return seen[0]?.model ?? null;
     };
     hook = async (context, args) => {
       const event = args.positional[0] ?? "";
@@ -2717,7 +2778,20 @@ var init_statusline = __esm({
           cached.push(`${displayNumber(scaled.value)} ${scaled.unit}`);
         }
         writeLine(input.session_id, cached.join(" \xB7 "));
-        if (rolled.count % 10 !== 0) return say(null);
+        const nudge = sessionNudge({
+          events: totals.events,
+          estimates: totals.estimates,
+          dataset: context.dataset,
+          settings: {
+            ...context.regionCode ? { regionCode: context.regionCode } : {},
+            waterScope: context.waterScope,
+            carbonBasis: context.carbonBasis
+          },
+          said: totals.said,
+          muted: readMuted()
+        });
+        if (nudge) markSaid(input.session_id, nudge.ruleId);
+        if (rolled.count % 10 !== 0) return say(nudge?.message ?? null);
         const byModel = Object.entries(rolled.byModel).sort((a, b) => b[1] - a[1]);
         const top = byModel[0];
         const share = top ? ` \xB7 ${Math.round(top[1] / rolled.count * 100)}% ${getModel(top[0], context.dataset)?.displayName ?? top[0]}` : "";
@@ -2727,52 +2801,9 @@ var init_statusline = __esm({
           )
         ].sort();
         const unknownNote = unknownNames.length > 0 ? ` ${rolled.unknownModelCount} ${rolled.unknownModelCount === 1 ? "turn is" : "turns are"} on ${unknownNames.length === 1 ? "a model" : "models"} the dataset does not know (${unknownNames.join(", ")}) and ${rolled.unknownModelCount === 1 ? "is" : "are"} not in the total.` : "";
-        return say(
-          `Session so far: ${cached.join(", ")} across ${rolled.count} turns${share}.${unknownNote}`
-        );
+        const total = `Session so far: ${cached.join(", ")} across ${rolled.count} turns${share}.${unknownNote}`;
+        return say(nudge ? `${total} ${nudge.message}` : total);
       }
-      if (event === "UserPromptSubmit") {
-        const prompt = input.prompt ?? "";
-        if (prompt.trim() === "") return say(null);
-        const recommender = createRecommender({
-          dataset: context.dataset,
-          hintThreshold: 0.75,
-          muted: [...CODING_SESSION_MUTES, ...readMuted()],
-          ...context.regionCode ? { regionCode: context.regionCode } : {},
-          waterScope: context.waterScope,
-          carbonBasis: context.carbonBasis
-        });
-        const last = Object.values(readCache(input.session_id).events).sort(
-          (a, b) => a.timestamp < b.timestamp ? 1 : -1
-        )[0];
-        const model = currentModel(input);
-        const advice = recommender.recommend({
-          prompt,
-          ...model ? { modelRaw: model } : {},
-          surface: "claude-code",
-          ...last ? { turn: last.tokens } : {},
-          at: context.now.toISOString()
-        });
-        if (!advice.showAsHint) return say(null);
-        const saving2 = advice.estimatedSavings?.energyWh;
-        if (!saving2) return say(advice.explanation);
-        return say(`${advice.explanation} That would save roughly ${displayNumber(saving2.central)} Wh.`);
-      }
-      if (event === "PostModelSwitch") {
-        if (input.to_model) {
-          try {
-            mkdirSync3(stateDir(), { recursive: true });
-            writeFileSync3(
-              switchPath(input.session_id),
-              JSON.stringify({ model: input.to_model, at: context.now.toISOString() }),
-              "utf8"
-            );
-          } catch {
-          }
-        }
-        return say(null);
-      }
-      if (event === "SessionStart") return say(null);
       return say(null);
     };
   }
@@ -4801,8 +4832,8 @@ ${branch ?? ""}`;
     bySurface: surfaces.map(bucketOut),
     sessions: sessions2.map((one) => {
       const top = Object.entries(one.byModel).sort((a, b) => b[1] !== a[1] ? b[1] - a[1] : a[0] < b[0] ? -1 : 1)[0];
-      const topModel = top ? top[0] === "unknown" ? "unknown" : getModel(top[0], context.dataset)?.displayName ?? top[0] : "unknown";
-      return { ...bucketOut(one), from: one.from, to: one.to, topModel };
+      const topModel2 = top ? top[0] === "unknown" ? "unknown" : getModel(top[0], context.dataset)?.displayName ?? top[0] : "unknown";
+      return { ...bucketOut(one), from: one.from, to: one.to, topModel: topModel2 };
     }),
     saving: saved ? {
       baseline: saved.baseline,

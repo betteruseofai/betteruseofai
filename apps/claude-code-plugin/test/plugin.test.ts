@@ -35,7 +35,7 @@ const call = (script: string, argv: string[], payload: unknown): string =>
   execFileSync(process.execPath, [script, ...argv], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env: { ...process.env, BUAI_STATE_DIR: stateDir, BUAI_LOG_DIR: logDir },
+    env: { ...process.env, BUAI_STATE_DIR: stateDir, BUAI_LOG_DIR: logDir, BUAI_CONFIG: join(stateDir, 'none.json') },
   });
 
 beforeAll(() => {
@@ -58,8 +58,9 @@ describe('the manifests', () => {
   it('every hook points at a file that exists', () => {
     const hooks = JSON.parse(readFileSync(join(root, 'hooks', 'hooks.json'), 'utf8'));
     const events = Object.keys(hooks.hooks);
-    expect(events).toContain('UserPromptSubmit');
-    expect(events).toContain('Stop');
+    // Only Stop. The nudge on each prompt moved there, and a hook we don't
+    // need would cost a Node start-up on every prompt.
+    expect(events).toEqual(['Stop']);
     for (const group of Object.values(hooks.hooks) as Array<{ hooks: Array<{ command: string }> }[]>) {
       for (const entry of group) {
         for (const one of entry.hooks) {
@@ -138,20 +139,9 @@ describe('the hooks', () => {
     expect(cached).toMatch(/mL/);
   });
 
-  it('the prompt hook nudges on a rewrite and stays quiet on engineering', () => {
-    const nudge = JSON.parse(
-      call(bundle, ['hook', 'UserPromptSubmit'], payload({ prompt: 'Rewrite this more plainly.' })),
-    );
-    expect(nudge.systemMessage).toContain('downgrade.rewrite-task');
-
-    const quiet = JSON.parse(
-      call(
-        bundle,
-        ['hook', 'UserPromptSubmit'],
-        payload({ prompt: 'Explain why this deadlock happens and derive the fix.' }),
-      ),
-    );
-    expect(quiet.systemMessage).toBeUndefined();
+  it('an older install that still calls the prompt hook gets nothing back', () => {
+    const out = call(bundle, ['hook', 'UserPromptSubmit'], payload({ prompt: 'Rewrite this more plainly.' }));
+    expect(JSON.parse(out)).toEqual({});
   });
 
   it('say nothing at all when the payload is not one of ours', () => {
