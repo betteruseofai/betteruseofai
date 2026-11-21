@@ -753,6 +753,47 @@
           "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv"
         ]
       }
+    },
+    "model-assumed": {
+      "modelId": "gpt-5.6",
+      "energyWh": {
+        "low": "0.0281609",
+        "central": "0.152799",
+        "high": "0.803103"
+      },
+      "waterMl": {
+        "low": "0.0754109",
+        "central": "0.566556",
+        "high": "4.35913"
+      },
+      "carbonG": {
+        "low": "0.0191494",
+        "central": "0.108487",
+        "high": "0.598312"
+      },
+      "basis": {
+        "benchmarkRowId": "proxy.gpt-5.6",
+        "benchmarkParentId": "jegham.o3",
+        "methodology": "proxy",
+        "boundary": "server",
+        "regionCode": "IN",
+        "thinkingHandling": "included-in-row",
+        "thinkingTokens": null,
+        "waterScope": "on-site + off-site",
+        "carbonBasis": "location-based",
+        "qualityScore": 2,
+        "flags": [
+          "input-partial",
+          "model-assumed",
+          "proxy-row",
+          "tokens-estimated"
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/abs/2505.09598",
+          "https://cea.nic.in/cdm-co2-baseline-database/",
+          "https://files.wri.org/d8/s3fs-public/guidance-calculating-water-use-embedded-purchased-electricity_0.pdf"
+        ]
+      }
     }
   }
 }

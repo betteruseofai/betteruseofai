@@ -618,6 +618,42 @@ def test_an_uncounted_attachment_is_flagged():
     assert "attachments-uncounted" not in without.flags
 
 
+def test_an_assumed_model_is_priced_flagged_and_matches_the_golden_case():
+    # The signed-out ChatGPT case in fixtures/estimates, which only the
+    # TypeScript engine reads; this holds the Python one to the same figures.
+    golden = json.loads((REPO / "fixtures" / "estimates" / "expected.json").read_text("utf-8"))
+    expected = golden["results"]["model-assumed"]
+    got = estimate(
+        UsageEvent(
+            id="case-chatgpt-signed-out",
+            surface="chatgpt-web",
+            hosting="cloud",
+            model_raw="gpt-5.6",
+            model_assumed=True,
+            tokens=TokenCounts(input=12, output=40, estimated=True, estimator="o200k"),
+            timestamp="2026-11-16T12:00:00.000Z",
+        ),
+        DATASET,
+        region_code="IN",
+    )
+    assert got.model_id == "gpt-5.6"
+    assert sorted(got.flags) == expected["basis"]["flags"]
+    figures = (("energyWh", got.energy_wh), ("waterMl", got.water_ml), ("carbonG", got.carbon_g))
+    for name, value in figures:
+        assert value is not None
+        assert {
+            "low": canonical_number(value.low),
+            "central": canonical_number(value.central),
+            "high": canonical_number(value.high),
+        } == expected[name], name
+
+    from betteruseofai.cli import EXPLAIN, format_range
+    from betteruseofai.engine import Range
+
+    assert format_range(Range(1, 2, 3), "Wh", ["model-assumed"], bounds=False) == "~2.00 Wh"
+    assert "model-assumed" in EXPLAIN
+
+
 def test_missing_on_site_water_reads_unknown_not_zero():
     result = estimate(
         event(model_raw="deepseek-r1-distill-llama-70b", tokens=TokenCounts(input=200, output=300)),

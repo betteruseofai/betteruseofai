@@ -286,6 +286,25 @@ against. The decisions taken on it, on 2026-09-13:
     bar of nothing would read as a measured zero. Past a year of days the chart shows only the
     days there are.
 
+57. **Signed-out ChatGPT turns are priced as an assumed model.** Decided with the owner on
+    2026-11-21. Hard rule 3 says an unknown model reads "unknown", and since `921e380` signed-out
+    turns did. A capture of 16 November showed why they always would: neither the page nor the
+    stream names a model. The header says "ChatGPT", the answer has no model menu, and the stream
+    carries only `requested_model_experience: "instant"` and a "guest" plan. The owner chose to
+    price these turns as GPT-5.6, the current model, with no thinking added, because "instant" is
+    the mode that answers without thinking first. A new flag, `model-assumed`, in both engines,
+    makes the figure read with a "~" (`isApproximate` in core, `is_approximate` in Python, now
+    the one place that decides the tilde) and adds a line of explanation. `UsageEvent` gains
+    `modelAssumed`. The adapter marks the model's source as "assumed", a model the page names
+    beats it, and a stream that asks for any other mode leaves the thinking undisclosed. The
+    extension keeps assumed turns in a model row of their own, "gpt-5.6, assumed", and the popup
+    says what was assumed. Its readouts show the "~" for this flag only: estimated token counts
+    still go without one there, as before. One thing the choice turned out not to change: the
+    GPT-5.6 row is scaled from Jegham's o3 measurement, whose rate already holds o3's reasoning,
+    so "no thinking" adds nothing to take away and the figure is the same as a signed-in GPT-5.6
+    turn of the same length. For a short turn that is about 0.15 Wh against 0.13 Wh on GPT-4.1,
+    with a wider high bound.
+
 ## Still open
 - The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 

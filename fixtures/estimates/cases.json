@@ -289,6 +289,21 @@
         "timestamp": "2026-09-01T12:00:00.000Z"
       },
       "options": { "regionCode": "GB" }
+    },
+    {
+      "name": "model-assumed",
+      "why": "A signed-out ChatGPT turn. The site names no model and asks for its instant mode, so the turn is priced as GPT-5.6 with no thinking and flagged as assumed.",
+      "event": {
+        "id": "case-chatgpt-signed-out",
+        "surface": "chatgpt-web",
+        "hosting": "cloud",
+        "modelRaw": "gpt-5.6",
+        "modelId": null,
+        "modelAssumed": true,
+        "tokens": { "input": 12, "output": 40, "estimated": true, "estimator": "o200k" },
+        "timestamp": "2026-11-16T12:00:00.000Z"
+      },
+      "options": { "regionCode": "IN" }
     }
   ]
 }

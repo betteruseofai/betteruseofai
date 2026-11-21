@@ -26,6 +26,7 @@ export {
   canonicalNumber,
   roundSignificant,
   explainFlags,
+  isApproximate,
   isLowerBound,
   measureOfUnit,
   SIGNIFICANT_DIGITS,

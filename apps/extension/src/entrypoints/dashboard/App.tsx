@@ -3,6 +3,7 @@ import type { Aggregate, Dataset, Range, Saving } from '@betteruseofai/core';
 import { useEffect, useState } from 'preact/hooks';
 
 import { everyDay, isEmptyDay, localDay } from '../../lib/days.js';
+import { modelRowKey, modelRowName } from '../../lib/models.js';
 import { MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
@@ -131,8 +132,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
             </thead>
             <tbody>
               {summary.byModel.map((one) => (
-                <tr key={one.key}>
-                  <td>{one.key === 'unknown' ? "one we don't recognise" : one.key}</td>
+                <tr key={modelRowKey(one)}>
+                  <td>{modelRowName(one, "one we don't recognise")}</td>
                   <td class="buai-num">{one.count}</td>
                   <td class="buai-num">{short(one.energyWh, 'Wh')}</td>
                   <td class="buai-num">{short(one.waterMl, 'mL')}</td>

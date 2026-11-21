@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import type { Dataset } from '@betteruseofai/core';
 import { describe, expect, it } from 'vitest';
 
-import { claudeAdapter, localAdapter } from '../src/adapters/index.js';
+import { chatgptAdapter, claudeAdapter, localAdapter } from '../src/adapters/index.js';
 import type { CapturedTurn } from '../src/adapters/types.js';
 import { countTokens, priceTurn, reconcile, reprice, toEvent } from '../src/lib/pipeline.js';
 import { DEFAULT_SETTINGS } from '../src/lib/storage.js';
@@ -131,6 +131,23 @@ describe('pricing a turn', () => {
     const image = await priceTurn(turn({ attachmentsUncounted: true }), claudeAdapter, dataset, DEFAULT_SETTINGS);
     expect(plain.estimate.basis.flags).not.toContain('attachments-uncounted');
     expect(image.estimate.basis.flags).toContain('attachments-uncounted');
+  });
+
+  it('prices a signed-out ChatGPT turn as the model assumed, and flags it', async () => {
+    const stored = await priceTurn(
+      turn({ modelRaw: 'gpt-5.6', modelSource: 'assumed' }),
+      chatgptAdapter,
+      dataset,
+      DEFAULT_SETTINGS,
+    );
+    expect(stored.event.modelAssumed).toBe(true);
+    expect(stored.estimate.modelId).toBe('gpt-5.6');
+    expect(stored.estimate.energyWh?.central).toBeGreaterThan(0);
+    expect(stored.estimate.basis.flags).toContain('model-assumed');
+
+    const named = await priceTurn(turn({ modelRaw: 'gpt-5.6' }), chatgptAdapter, dataset, DEFAULT_SETTINGS);
+    expect(named.event.modelAssumed).toBeUndefined();
+    expect(named.estimate.basis.flags).not.toContain('model-assumed');
   });
 
   it('follows the region and water scope from settings', async () => {

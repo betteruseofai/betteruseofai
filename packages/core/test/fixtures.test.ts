@@ -41,6 +41,7 @@ describe('golden estimates', () => {
     }
     for (const expected of [
       'model-unknown',
+      'model-assumed',
       'thinking-unknown',
       'proxy-row',
       'region-default',

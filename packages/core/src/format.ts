@@ -102,6 +102,13 @@ const MISSING_FROM: Record<Measure, readonly EstimateFlag[]> = {
 export const isLowerBound = (flags: readonly EstimateFlag[], measure: Measure): boolean =>
   flags.some((flag) => MISSING_FROM_ALL.includes(flag) || MISSING_FROM[measure].includes(flag));
 
+/** Flags that make a figure approximate, shown with a tilde, without making it a lower bound. */
+const APPROXIMATE: readonly EstimateFlag[] = ['tokens-estimated', 'derived-rate', 'model-assumed'];
+
+/** Whether a figure rests on something we worked out or assumed, and so reads "~". */
+export const isApproximate = (flags: readonly EstimateFlag[]): boolean =>
+  flags.some((flag) => APPROXIMATE.includes(flag));
+
 const MEASURE_OF_UNIT: Record<string, Measure> = { Wh: 'energy', mL: 'water', g: 'carbon' };
 
 /** The measure a base unit belongs to, so a caller that gives the unit need not say it twice. */
@@ -140,8 +147,7 @@ export const formatRange = (
   const lowerBound = measure
     ? isLowerBound(flags, measure)
     : flags.some((flag) => MISSING_FROM_ALL.includes(flag));
-  const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
-  const prefix = lowerBound ? (ascii ? '>= ' : '≥ ') : estimated ? '~' : '';
+  const prefix = lowerBound ? (ascii ? '>= ' : '≥ ') : isApproximate(flags) ? '~' : '';
 
   // The whole range is shown in one unit, chosen by the central value, so the
   // three numbers can be compared without doing arithmetic.
@@ -166,6 +172,9 @@ export const explainFlags = (flags: EstimateFlag[]): string[] => {
         break;
       case 'no-benchmark':
         lines.push('We know this model but nobody has published a measurement for it.');
+        break;
+      case 'model-assumed':
+        lines.push("The site didn't say which model answered, so we priced the one it most likely uses.");
         break;
       case 'tokens-estimated':
         lines.push('Token counts come from our own tokenizer, not from the provider.');

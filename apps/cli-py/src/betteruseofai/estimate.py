@@ -47,6 +47,15 @@ def is_lower_bound(flags: list[str], measure: str) -> bool:
     return any(flag in MISSING_FROM_ALL or flag in MISSING_FROM[measure] for flag in flags)
 
 
+# Flags that make a figure approximate, shown with a tilde, without making it a lower bound.
+APPROXIMATE = ("tokens-estimated", "derived-rate", "model-assumed")
+
+
+def is_approximate(flags: list[str]) -> bool:
+    """Whether a figure rests on something we worked out or assumed, and so reads "~"."""
+    return any(flag in APPROXIMATE for flag in flags)
+
+
 @dataclass
 class TokenCounts:
     input: int | None = 0
@@ -81,6 +90,9 @@ class UsageEvent:
     meta: dict[str, Any] = field(default_factory=dict)
     # A resolved id, used before the raw string, as the TypeScript does.
     model_id: str | None = None
+    # True when the surface named no model and the one given is the one it most
+    # likely used. The estimate is then flagged and reads as approximate.
+    model_assumed: bool = False
 
 
 @dataclass
@@ -206,6 +218,9 @@ def estimate(
         return _unknown(
             event, dataset["version"], resolved_region, [*flags, "model-unknown"], "unknown-model"
         )
+    # A model the surface didn't name. Priced, and said to be assumed.
+    if event.model_assumed:
+        flags.append("model-assumed")
 
     row = select_benchmark(model, dataset, at=at, hosting=event.hosting)
     if row is None:

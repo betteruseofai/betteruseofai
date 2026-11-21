@@ -4,6 +4,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { Hazard, MetaStrip, Readout, staleNote } from '../../ui/Readout.js';
 import { healthNotes } from '../../lib/health.js';
+import { assumedNotes, modelRowKey, modelRowName } from '../../lib/models.js';
 import type { HealthStore } from '../../lib/health.js';
 import type { Settings } from '../../lib/storage.js';
 import { browser } from 'wxt/browser';
@@ -111,6 +112,7 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
       `${total.unknownModelCount} of ${total.count} turns used a model we don't recognise. We've counted them and left the price blank, since a guess would be worse than a gap.`,
     );
   }
+  caveats.push(...assumedNotes(summary.byModel, dataset));
   caveats.push(...healthNotes(summary.health));
 
   return (
@@ -136,8 +138,8 @@ export const App = ({ dataset }: { dataset: Dataset }) => {
           .sort((a, b) => b.count - a.count || (a.key < b.key ? -1 : 1))
           .slice(0, 4)
           .map((one) => (
-            <div class="buai-popup__model" key={one.key}>
-              <span>{one.key === 'unknown' ? 'unrecognised' : one.key}</span>
+            <div class="buai-popup__model" key={modelRowKey(one)}>
+              <span>{modelRowName(one, 'unrecognised')}</span>
               <span class="buai-mono">{one.count}</span>
             </div>
           ))}

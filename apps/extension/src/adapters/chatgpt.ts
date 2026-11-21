@@ -22,10 +22,17 @@ const CONVERSATION_ENDPOINT = /\/backend-api\/(?:f\/)?conversation$/;
 /*
  * Signed out, the site uses another address and another format altogether: a
  * form-encoded request and a stream of JSON lines. Recorded on 16 November
- * 2026. Neither the request nor the stream names a model, so a signed-out
- * turn is priced as unknown unless the page says more.
+ * 2026. Neither the request nor the stream names a model, and the page shows
+ * none either: the header says "ChatGPT" and the answer has no model menu.
+ *
+ * The stream does say which "experience" was asked for, "instant", which is
+ * the mode that answers without thinking first. So a signed-out turn is priced
+ * as the current model, GPT-5.6, marked assumed (decided 21 November 2026,
+ * DECISIONS 57). Instant means no thinking is added; any other experience
+ * leaves the thinking undisclosed.
  */
 const ANON_ENDPOINT = /\/unauth-mweb\/conversation\/updates$/;
+const ASSUMED_SIGNED_OUT_MODEL = 'gpt-5.6';
 const CONVERSATION_IN_URL = /\/c\/([0-9a-f-]{16,})/i;
 
 const parseAnonRequest = (body: string): ParsedRequest | null => {
@@ -74,6 +81,7 @@ const parseAnonRequest = (body: string): ParsedRequest | null => {
 const parseAnonStream = (body: string): ParsedStream | null => {
   const messages = new Map<string, { markdown: string; fallback: string }>();
   let recognised = false;
+  let experience: string | null = null;
 
   for (const line of body.split('\n')) {
     const trimmed = line.trim();
@@ -86,6 +94,16 @@ const parseAnonStream = (body: string): ParsedStream | null => {
     }
     if (typeof record['version'] !== 'number' || typeof record['type'] !== 'string') continue;
     recognised = true;
+    if (record['type'] === 'control') {
+      // The timing record near the end tags the turn with the mode asked for.
+      const detail = record['detail'] as Record<string, unknown> | undefined;
+      const latency = detail?.['turnLatency'] as Record<string, unknown> | undefined;
+      const tags = latency?.['tags'] as Record<string, unknown> | undefined;
+      if (typeof tags?.['requested_model_experience'] === 'string') {
+        experience = tags['requested_model_experience'];
+      }
+      continue;
+    }
     if (record['type'] !== 'content' || typeof record['messageId'] !== 'string') continue;
 
     const held = messages.get(record['messageId']) ?? { markdown: '', fallback: '' };
@@ -100,12 +118,12 @@ const parseAnonStream = (body: string): ParsedStream | null => {
 
   if (!recognised) return null;
   return {
-    modelRaw: null,
-    modelSource: 'unknown',
+    modelRaw: ASSUMED_SIGNED_OUT_MODEL,
+    modelSource: 'assumed',
     outputText: [...messages.values()].map((one) => one.markdown + one.fallback).join('\n'),
-    // Nothing in this stream says whether the model reasoned first, and
-    // nothing says it did not.
-    thinkingUndisclosed: false,
+    // Instant answers without thinking first. Anything else may have thought,
+    // and the stream would not say how much.
+    thinkingUndisclosed: experience !== 'instant',
   };
 };
 
@@ -124,7 +142,7 @@ export const chatgptAdapter: SiteAdapter = {
   id: 'chatgpt-web',
   surface: 'chatgpt-web',
   hosting: 'cloud',
-  version: 2,
+  version: 3,
   matches: ['https://chatgpt.com/*', 'https://chat.openai.com/*'],
   provider: 'openai',
 

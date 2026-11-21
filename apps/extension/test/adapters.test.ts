@@ -234,9 +234,25 @@ describe('chatgpt.com', () => {
   it('takes the newest revision of the signed-out answer, once', () => {
     const parsed = chatgptAdapter.parseStream(read('chatgpt', 'anon-source.ndjson'));
     expect(parsed?.outputText).toBe('1. First River\n2. Second River\n3. Third River');
-    // The stream names an "experience", not a model. Unknown, not a guess.
-    expect(parsed?.modelRaw).toBeNull();
-    expect(parsed?.modelSource).toBe('unknown');
+  });
+
+  /*
+   * The stream names an "experience", not a model, and the page names none.
+   * Decided 21 November 2026: price it as GPT-5.6 and say it was assumed.
+   */
+  it('assumes GPT-5.6 for a signed-out answer, and says it assumed it', () => {
+    const parsed = chatgptAdapter.parseStream(read('chatgpt', 'anon-source.ndjson'));
+    expect(parsed?.modelRaw).toBe('gpt-5.6');
+    expect(parsed?.modelSource).toBe('assumed');
+    // Instant is the mode that answers without thinking first.
+    expect(parsed?.thinkingUndisclosed).toBe(false);
+  });
+
+  it('leaves the thinking undisclosed when the mode asked for is not instant', () => {
+    const body = read('chatgpt', 'anon-source.ndjson').replace('"requested_model_experience":"instant"', '"requested_model_experience":"thinking"');
+    expect(chatgptAdapter.parseStream(body)?.thinkingUndisclosed).toBe(true);
+    const untagged = read('chatgpt', 'anon-source.ndjson').replace(/"requested_model_experience":"instant",?/, '');
+    expect(chatgptAdapter.parseStream(untagged)?.thinkingUndisclosed).toBe(true);
   });
 });
 

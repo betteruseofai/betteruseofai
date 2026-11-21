@@ -93,6 +93,15 @@ describe('rendering a range', () => {
     ).toBe('~2.00 Wh');
   });
 
+  it('marks a figure on an assumed model with a tilde, and explains it', () => {
+    expect(
+      formatRange({ low: 1, central: 2, high: 3 }, { unit: 'Wh', flags: ['model-assumed'], bounds: false }),
+    ).toBe('~2.00 Wh');
+    expect(explainFlags(['model-assumed'])).toEqual([
+      "The site didn't say which model answered, so we priced the one it most likely uses.",
+    ]);
+  });
+
   it('steps up to a larger unit once the number stops being readable', () => {
     // An agent session reaches thousands of watt hours, and 7111 Wh is a
     // number nobody pictures.

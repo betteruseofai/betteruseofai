@@ -57,6 +57,11 @@ explanation.
   reads "unknown". It is never zero. A total that leaves such turns out renders with the "greater
   than or equal to" marker, and so does one that leaves out a turn with no energy figure
   (`no-energy-figure`, energy only) or no water figure (`no-water-figure`, water only).
+- **`model-assumed`** The site named no model, so the turn is priced as the one it most likely
+  used, and the figure reads with a "~". Only the browser extension raises it, for ChatGPT used
+  signed out: neither the page nor the stream names a model there, and the turn is priced as
+  GPT-5.6. Say the model was assumed whenever you quote such a figure. Claude Code turns never
+  carry it.
 
 The "greater than or equal to" marker means something known is missing from the figure. That is
 all it means; undisclosed thinking doesn't carry it, because its range already spans it.

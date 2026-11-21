@@ -137,6 +137,8 @@ export const estimate = (event: UsageEvent, options: EstimateOptions): Estimate 
   if (!model) {
     return unknownEstimate(event, dataset.version, regionCode, [...flags, 'model-unknown'], 'unknown-model');
   }
+  // A model the surface didn't name. Priced, and said to be assumed.
+  if (event.modelAssumed === true) flags.push('model-assumed');
 
   const row = selectBenchmark(model, dataset, { at, hosting: event.hosting });
   if (!row) {

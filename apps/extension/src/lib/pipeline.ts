@@ -77,6 +77,9 @@ export const toEvent = async (
   // interface can say which model it did not know.
   modelRaw: turn.modelRaw ?? '',
   modelId: null,
+  // The site named no model and the adapter put in its likeliest one. The
+  // engine flags the estimate so it reads as approximate.
+  ...(turn.modelSource === 'assumed' ? { modelAssumed: true } : {}),
   tokens: await countTokens(turn, adapter, dataset),
   timestamp: turn.at,
   ...(turn.conversationId ? { conversationId: turn.conversationId } : {}),

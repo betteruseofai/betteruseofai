@@ -23,8 +23,12 @@ export interface CapturedTurn {
   conversationId: string | null;
   /** Whatever string the site gave us, kept verbatim. Never guessed at. */
   modelRaw: string | null;
-  /** Where the model string came from, which decides how much to trust it. */
-  modelSource: 'response' | 'request' | 'header' | 'picker' | 'unknown';
+  /**
+   * Where the model string came from, which decides how much to trust it.
+   * "assumed" means the site named none and the adapter put in the one the
+   * site most likely uses; the estimate is flagged and reads as approximate.
+   */
+  modelSource: 'response' | 'request' | 'header' | 'picker' | 'assumed' | 'unknown';
   inputText: string;
   outputText: string;
   /** Set when the site itself reports a count, which beats any estimate. */

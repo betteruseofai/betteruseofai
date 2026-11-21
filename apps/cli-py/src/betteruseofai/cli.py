@@ -35,6 +35,7 @@ from .estimate import (
     Estimate,
     UsageEvent,
     estimate,
+    is_approximate,
     is_lower_bound,
 )
 from .log import (
@@ -480,8 +481,8 @@ def format_range(
         if measure
         else any(flag in MISSING_FROM_ALL for flag in flags)
     )
-    estimated = "tokens-estimated" in flags or "derived-rate" in flags
-    prefix = (">= " if ascii_only else "≥ ") if lower_bound else ("~" if estimated else "")
+    approximate = "~" if is_approximate(flags) else ""
+    prefix = (">= " if ascii_only else "≥ ") if lower_bound else approximate
 
     # The whole range is shown in one unit, chosen by the central value, so the
     # three numbers can be compared without doing arithmetic.
@@ -595,6 +596,9 @@ def caveat_flags(totals: Aggregate) -> list[str]:
 EXPLAIN = {
     "model-unknown": "We do not recognise this model, so there is no figure to show.",
     "no-benchmark": "We know this model but nobody has published a measurement for it.",
+    "model-assumed": (
+        "The site didn't say which model answered, so we priced the one it most likely uses."
+    ),
     "tokens-estimated": "Token counts come from our own tokenizer, not from the provider.",
     "thinking-unknown": (
         "This model thinks before it answers and didn't say how much, so the range runs from "
@@ -1421,11 +1425,10 @@ def _figure(value: Range | None, unit: str, flags: list[str]) -> dict[str, str] 
         if measure
         else any(flag in MISSING_FROM_ALL for flag in flags)
     )
-    estimated = "tokens-estimated" in flags or "derived-rate" in flags
     scaled, scaled_unit = scale_unit(value.central, unit)
     divisor = value.central / scaled if scaled_unit != unit and scaled else 1.0
     return {
-        "prefix": "≥ " if lower_bound else ("~" if estimated else ""),
+        "prefix": "≥ " if lower_bound else ("~" if is_approximate(flags) else ""),
         "value": display_number(scaled),
         "unit": scaled_unit,
         "low": display_number(value.low / divisor),

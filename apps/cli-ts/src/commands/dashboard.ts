@@ -8,6 +8,7 @@ import {
   displayNumber,
   equivalents,
   getModel,
+  isApproximate,
   isLowerBound,
   measureOfUnit,
   saving as computeSaving,
@@ -53,11 +54,10 @@ const figure = (range: Range | null, unit: string, flags: EstimateFlag[]): Figur
   if (range === null) return null;
   const measure = measureOfUnit(unit);
   const lowerBound = measure ? isLowerBound(flags, measure) : flags.includes('thinking-unknown');
-  const estimated = flags.includes('tokens-estimated') || flags.includes('derived-rate');
   const scaled = scaleUnit(range.central, unit);
   const divisor = scaled.unit !== unit && scaled.value !== 0 ? range.central / scaled.value : 1;
   return {
-    prefix: lowerBound ? '≥ ' : estimated ? '~' : '',
+    prefix: lowerBound ? '≥ ' : isApproximate(flags) ? '~' : '',
     value: displayNumber(scaled.value),
     unit: scaled.unit,
     low: displayNumber(range.low / divisor),

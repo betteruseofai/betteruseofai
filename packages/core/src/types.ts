@@ -259,8 +259,17 @@ export interface UsageEvent {
   hosting: 'cloud' | 'local';
   /** Whatever string the surface gave us, kept verbatim so an unknown model can be reported. */
   modelRaw: string;
-  /** Resolved id, or null when we do not recognise the model. Never guessed. */
+  /**
+   * Resolved id, or null when we do not recognise the model. Never guessed,
+   * except where `modelAssumed` says so.
+   */
   modelId: string | null;
+  /**
+   * True when the surface named no model and the one in `modelRaw` or
+   * `modelId` is the one it most likely used. The estimate is then flagged and
+   * reads as approximate. Signed-out ChatGPT is the only case so far.
+   */
+  modelAssumed?: boolean;
   tokens: TokenCounts;
   /** ISO 8601, always UTC. */
   timestamp: string;
@@ -279,6 +288,8 @@ export type EstimateFlag =
   | 'model-unknown'
   /** We know the model but have no benchmark row for it. */
   | 'no-benchmark'
+  /** The surface named no model, so the figure rests on the one it most likely used. */
+  | 'model-assumed'
   /** Token counts came from a tokenizer, not the provider. */
   | 'tokens-estimated'
   /** The model can think and did not say how much. The low bound assumes none. */

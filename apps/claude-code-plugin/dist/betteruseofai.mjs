@@ -562,6 +562,8 @@ var init_estimate = __esm({
       if (!model) {
         return unknownEstimate(event, dataset2.version, regionCode, [...flags, "model-unknown"], "unknown-model");
       }
+      if (event.modelAssumed === true)
+        flags.push("model-assumed");
       const row = selectBenchmark(model, dataset2, { at, hosting: event.hosting });
       if (!row) {
         return unknownEstimate(event, dataset2.version, regionCode, [...flags, "no-benchmark"], "unknown-model", model.id);
@@ -936,7 +938,7 @@ var init_saving = __esm({
 });
 
 // ../../packages/core/dist/format.js
-var SIGNIFICANT_DIGITS, roundSignificant, canonicalNumber, displayNumber, SCALES, scaleUnit, MISSING_FROM_ALL, MISSING_FROM, isLowerBound, MEASURE_OF_UNIT, measureOfUnit, formatRange, explainFlags;
+var SIGNIFICANT_DIGITS, roundSignificant, canonicalNumber, displayNumber, SCALES, scaleUnit, MISSING_FROM_ALL, MISSING_FROM, isLowerBound, APPROXIMATE, isApproximate, MEASURE_OF_UNIT, measureOfUnit, formatRange, explainFlags;
 var init_format = __esm({
   "../../packages/core/dist/format.js"() {
     "use strict";
@@ -992,6 +994,8 @@ var init_format = __esm({
       carbon: ["embodied-missing", "direct-scope-wider"]
     };
     isLowerBound = (flags, measure) => flags.some((flag) => MISSING_FROM_ALL.includes(flag) || MISSING_FROM[measure].includes(flag));
+    APPROXIMATE = ["tokens-estimated", "derived-rate", "model-assumed"];
+    isApproximate = (flags) => flags.some((flag) => APPROXIMATE.includes(flag));
     MEASURE_OF_UNIT = { Wh: "energy", mL: "water", g: "carbon" };
     measureOfUnit = (unit) => MEASURE_OF_UNIT[unit];
     formatRange = (range, options = {}) => {
@@ -1000,8 +1004,7 @@ var init_format = __esm({
       if (range === null || range === void 0)
         return "unknown";
       const lowerBound = measure ? isLowerBound(flags, measure) : flags.some((flag) => MISSING_FROM_ALL.includes(flag));
-      const estimated = flags.includes("tokens-estimated") || flags.includes("derived-rate");
-      const prefix = lowerBound ? ascii ? ">= " : "\u2265 " : estimated ? "~" : "";
+      const prefix = lowerBound ? ascii ? ">= " : "\u2265 " : isApproximate(flags) ? "~" : "";
       const scaled = unit ? scaleUnit(range.central, unit) : { value: range.central, unit: "" };
       const divisor = unit && scaled.unit !== unit ? range.central / scaled.value : 1;
       const suffix = scaled.unit ? ` ${scaled.unit}` : "";
@@ -1021,6 +1024,9 @@ var init_format = __esm({
             break;
           case "no-benchmark":
             lines.push("We know this model but nobody has published a measurement for it.");
+            break;
+          case "model-assumed":
+            lines.push("The site didn't say which model answered, so we priced the one it most likely uses.");
             break;
           case "tokens-estimated":
             lines.push("Token counts come from our own tokenizer, not from the provider.");
@@ -4697,11 +4703,10 @@ var figure = (range, unit, flags) => {
   if (range === null) return null;
   const measure = measureOfUnit(unit);
   const lowerBound = measure ? isLowerBound(flags, measure) : flags.includes("thinking-unknown");
-  const estimated = flags.includes("tokens-estimated") || flags.includes("derived-rate");
   const scaled = scaleUnit(range.central, unit);
   const divisor = scaled.unit !== unit && scaled.value !== 0 ? range.central / scaled.value : 1;
   return {
-    prefix: lowerBound ? "\u2265 " : estimated ? "~" : "",
+    prefix: lowerBound ? "\u2265 " : isApproximate(flags) ? "~" : "",
     value: displayNumber(scaled.value),
     unit: scaled.unit,
     low: displayNumber(range.low / divisor),

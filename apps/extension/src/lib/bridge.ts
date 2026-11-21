@@ -99,7 +99,8 @@ export const fillModelFromPage = (
   adapter: SiteAdapter,
   document: Document,
 ): CapturedTurn => {
-  if (turn.modelRaw) return turn;
+  // A model the page names beats one we assumed.
+  if (turn.modelRaw && turn.modelSource !== 'assumed') return turn;
   const fromPicker = adapter.readSelectedModel(document);
   if (!fromPicker) return turn;
   return { ...turn, modelRaw: fromPicker, modelSource: 'picker' };

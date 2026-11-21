@@ -49,13 +49,17 @@ export const Readout = ({ label, value, unit, flags = [], lead = false }: Readou
   const divisor = scaled.unit === unit ? 1 : value.central / scaled.value;
   const measure = measureOfUnit(unit);
   const lowerBound = measure ? isLowerBound(flags, measure) : flags.includes('thinking-unknown');
+  // A model we assumed makes the figure a guess, and it says so. Estimated
+  // token counts don't get the tilde here: every web turn has them, and the
+  // header already says the whole page is an estimate.
+  const assumed = !lowerBound && flags.includes('model-assumed');
 
   return (
     <div class={lead ? 'buai-readout-group buai-readout-group--lead' : 'buai-readout-group'}>
       <div class="buai-readout">
         <span class="buai-readout__label">{label}</span>
         <span class="buai-readout__figure">
-          {lowerBound ? '≥ ' : ''}
+          {lowerBound ? '≥ ' : assumed ? '~' : ''}
           {displayNumber(scaled.value)}
           <span class="buai-readout__unit">{scaled.unit}</span>
         </span>

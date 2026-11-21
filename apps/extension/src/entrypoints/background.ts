@@ -9,6 +9,7 @@ import { setRanksLoader } from '@betteruseofai/tokenizers';
 import { localDay } from '../lib/days.js';
 import { alreadyCounted, replacedBy } from '../lib/fallback.js';
 import { HEALTH_KEY, currentHealth, recordHealth } from '../lib/health.js';
+import { modelRows } from '../lib/models.js';
 import type { HealthStore } from '../lib/health.js';
 import { priceTurn, reprice } from '../lib/pipeline.js';
 import {
@@ -138,7 +139,8 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
         total: aggregate(pairs, 'all')[0] ?? null,
         // Days end at the viewer's own midnight. Stored timestamps stay UTC.
         byDay: aggregate(pairs, 'day', { dayOf: localDay }),
-        byModel: aggregate(pairs, 'model'),
+        // Turns whose model we assumed get rows of their own.
+        byModel: modelRows(pairs),
         bySurface: aggregate(pairs, 'surface'),
         // The saving against the largest model in each family, for the
         // dashboard's rings. Same rows, same region, same boundary.
