@@ -64,6 +64,33 @@ jobs:
 
       - run: pnpm turbo run test
 
+  # The dashboard page drawn in Chromium. The matrix above installs no browser,
+  # so this test failed on every runner from 30 October until it moved here.
+  browser:
+    name: the dashboard in a browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm turbo run build --filter=betteruseofai...
+
+      - name: install a browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: a wide chart opens on its newest bars
+        working-directory: apps/cli-ts
+        run: pnpm test:browser
+
   attribution:
     name: attribution rule
     runs-on: ubuntu-latest

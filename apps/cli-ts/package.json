@@ -28,6 +28,7 @@
   "scripts": {
     "build": "node scripts/embed-template.mjs && tsc -p tsconfig.build.json",
     "test": "node scripts/embed-template.mjs && vitest run",
+    "test:browser": "node scripts/embed-template.mjs && vitest run --config vitest.browser.config.ts",
     "typecheck": "node scripts/embed-template.mjs && tsc --noEmit",
     "dev": "tsx src/cli.ts"
   },
