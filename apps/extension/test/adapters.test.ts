@@ -248,6 +248,22 @@ describe('chatgpt.com', () => {
     expect(parsed?.thinkingUndisclosed).toBe(false);
   });
 
+  /*
+   * Signed out the page has no model picker at all, which used to read as a
+   * broken page and put "we can't find the model picker" in the popup, about
+   * turns that are now priced. Its sign-in buttons link to /auth/login_with.
+   */
+  it('calls a signed-out chat page healthy, and a signed-in one without its picker not', () => {
+    const page = (present: string[]) =>
+      ({
+        querySelector: (selector: string) => (present.some((one) => selector.includes(one)) ? {} : null),
+      }) as unknown as Document;
+    expect(chatgptAdapter.healthProbe(page(['#prompt-textarea', '/auth/login']))).toBe('ok');
+    expect(chatgptAdapter.healthProbe(page(['#prompt-textarea']))).toBe('degraded');
+    expect(chatgptAdapter.healthProbe(page(['#prompt-textarea', 'model-switcher']))).toBe('ok');
+    expect(chatgptAdapter.healthProbe(page(['/auth/login']))).toBe('unsupported');
+  });
+
   it('leaves the thinking undisclosed when the mode asked for is not instant', () => {
     const body = read('chatgpt', 'anon-source.ndjson').replace('"requested_model_experience":"instant"', '"requested_model_experience":"thinking"');
     expect(chatgptAdapter.parseStream(body)?.thinkingUndisclosed).toBe(true);

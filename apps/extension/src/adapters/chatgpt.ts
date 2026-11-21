@@ -291,6 +291,11 @@ export const chatgptAdapter: SiteAdapter = {
     const hasPicker =
       document.querySelector('[data-testid="model-switcher-dropdown-button"]') !== null;
     if (hasComposer && hasPicker) return 'ok';
+    // Signed out there is no picker at all, and the turn is priced as an
+    // assumed model, so nothing is missing that we'd expect. The page links
+    // to /auth/login_with for its sign-in buttons (seen 21 November 2026),
+    // which a signed-in page doesn't.
+    if (hasComposer && document.querySelector('a[href*="/auth/login"]') !== null) return 'ok';
     if (hasComposer) return 'degraded';
     return 'unsupported';
   },
