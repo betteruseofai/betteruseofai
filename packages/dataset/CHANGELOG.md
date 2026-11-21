@@ -1,5 +1,20 @@
 # @betteruseofai/dataset
 
+## 3.4.0
+
+Data only, so a minor bump.
+
+- **India's grid is 675 g a kilowatt hour, from CEA's version 22.0.** It was 710, from version
+  21.0. The newer edition, published in August 2026, covers FY 2025-26: 0.675 t of CO2 a megawatt
+  hour, the average over every grid station weighted by what it generated, with renewables in it
+  (Table S of its user guide). Read from the file this time; 0.710 had been
+  copied from the plan's appendix. Carbon for anyone in India drops by about five per cent.
+- **The source link works again.** CEA rebuilt its site and the old address answers 404, which is
+  what the weekly link check caught. The database now lives at
+  `cea.nic.in/cdm-co2-baseline-view`.
+- The range keeps the spread the row had, about four per cent below and five above. That spread
+  was never sourced, and the note now says so.
+
 ## 3.3.0
 
 Data only, so a minor bump. From the audit of 19 October 2026 (E15).

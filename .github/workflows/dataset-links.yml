@@ -51,6 +51,13 @@ jobs:
                 continue
               fi
             fi
+            # 429 is a server that is up and asking us to slow down, as Blogger
+            # did on 2026-11-16. It says nothing about whether the page exists,
+            # so it is reported and not counted as dead.
+            if [ "$code" = "429" ]; then
+              echo "busy  429  $url  (rate limited, so not checked this week)"
+              continue
+            fi
             if [ "$code" -ge 400 ] || [ "$code" = "000" ]; then
               echo "DEAD  $code  $url"
               fail=1

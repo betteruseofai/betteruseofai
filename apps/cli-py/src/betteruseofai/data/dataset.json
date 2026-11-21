@@ -1,6 +1,6 @@
 {
-  "version": "3.3.0",
-  "sha256": "41089741295e3d024a60d2f6d84db7c8001edc9f0ccd31c2c79eb09e27edd69c",
+  "version": "3.4.0",
+  "sha256": "628212f85a316f6a3d555d035cdab696a8def084a6de2a85954ac72f0ec4cad1",
   "models": [
     {
       "id": "claude-opus-5.5",
@@ -2292,22 +2292,22 @@
       "kind": "country",
       "continent": "Asia",
       "gridGco2PerKwh": {
-        "low": 680,
-        "central": 710,
-        "high": 745
+        "low": 646,
+        "central": 675,
+        "high": 708
       },
       "waterOffsiteLPerKwh": {
         "low": 2.41,
         "central": 3.44,
         "high": 5.16
       },
-      "year": 2025,
+      "year": 2026,
       "source": {
-        "title": "CO2 Baseline Database for the Indian Power Sector, version 21.0",
-        "url": "https://cea.nic.in/cdm-co2-baseline-database/",
+        "title": "CO2 Baseline Database for the Indian Power Sector, version 22.0, User Guide, Table S",
+        "url": "https://cea.nic.in/cdm-co2-baseline-view?mappingId=234&lang=en",
         "publisher": "Central Electricity Authority, Government of India",
-        "date": "2025-12",
-        "retrieved": "2026-09-10"
+        "date": "2026-08",
+        "retrieved": "2026-11-21"
       },
       "waterSource": {
         "title": "Guidance for Calculating Water Use Embedded in Purchased Electricity, Appendices 1 and 2 and Table 4",
@@ -2318,9 +2318,9 @@
         "licence": "CC BY 4.0"
       },
       "provenance": {
-        "method": "source-appendix",
-        "recorded": "2026-09-10",
-        "note": "0.710 tCO2 per MWh weighted average."
+        "method": "fetched",
+        "recorded": "2026-11-21",
+        "note": "0.675 tCO2 per MWh, the weighted average of all grid stations for FY 2025-26, renewables and captive injection included, Table S of the version 22.0 user guide (August 2026). Version 21.0 gave 0.710 for FY 2024-25. The range keeps the relative spread the row carried before, 4.2 per cent below and 4.9 per cent above, which was never sourced; it is about the size of one year's fall."
       },
       "notes": "Off-site water is the water consumed generating the electricity: 0.91 US gal/kWh from Appendix 2 of the WRI guidance, at 3.785 L per gallon. The factor is a single modelled value from 2018 generation mixes, so the range takes 0.7 and 1.5 times it, to cover the shift in mix since and the gap between modelling approaches: Li and colleagues put the United States at 3.1 L/kWh where this method gives 3.14."
     },
@@ -3459,7 +3459,7 @@
     }
   ],
   "calibration": {
-    "version": "3.3.0",
+    "version": "3.4.0",
     "notes": "Constants the engine needs that are not benchmark rows. Several are honest guesses with a shape rather than measurements, and each says which it is. The tokenizer ratios in particular have not yet been measured against the providers' own counting endpoints.",
     "tokenizer": {
       "baseEncoding": "o200k_base",
