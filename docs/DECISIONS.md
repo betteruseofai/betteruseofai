@@ -306,9 +306,9 @@ against. The decisions taken on it, on 2026-09-13:
     with a wider high bound.
 
 ## Still open
-- The tokenizer ratios, which the owner has chosen to leave as unmeasured ranges for now.
 
-- The tokenizer ratios, which need the providers' counting endpoints and so an API key, in
-  `packages/dataset/CHANGELOG.md`.
+- The tokenizer ratios. Measuring them needs the providers' counting endpoints and so an API key
+  (`packages/dataset/CHANGELOG.md`); the owner has chosen to leave them as unmeasured ranges for
+  now.
 - Release and snapshot automation, and the GitHub organisation, accounts and domain the plan lists
   as owed.
