@@ -180,7 +180,12 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
         return;
       }
 
-      const ask = message as unknown as { prompt: string; surface: string };
+      const ask = message as unknown as { prompt: string; surface: string; modelRaw?: unknown };
+      // From the page's menu, so treated as text and nothing more.
+      const modelRaw =
+        typeof ask.modelRaw === 'string' && ask.modelRaw.length > 0 && ask.modelRaw.length < 120
+          ? ask.modelRaw
+          : null;
       const recommender = createRecommender({
         dataset,
         hasLocalModel: current.hasLocalModel,
@@ -193,6 +198,7 @@ browser.runtime.onMessage.addListener((raw, _sender, sendResponse) => {
       const advice = recommender.recommend({
         prompt: ask.prompt,
         surface: ask.surface,
+        ...(modelRaw ? { modelRaw } : {}),
         at: new Date().toISOString(),
       });
 

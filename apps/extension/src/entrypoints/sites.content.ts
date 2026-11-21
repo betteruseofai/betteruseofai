@@ -200,8 +200,12 @@ export default defineContentScript({
           return;
         }
 
+        // The model the page's menu shows, so the hint can name the one a rung
+        // down and what it would save. Null when the menu is missing or says
+        // nothing we know, and the hint then gives its reasons alone.
+        const modelRaw = adapter.readSelectedModel(document);
         void browser.runtime
-          .sendMessage({ type: 'hint:ask', prompt: draft, surface: adapter.surface })
+          .sendMessage({ type: 'hint:ask', prompt: draft, surface: adapter.surface, modelRaw })
           .then((reply) => {
             const advice = reply as
               | { show: boolean; explanation: string; ruleId: string; saving?: string; answer?: string }

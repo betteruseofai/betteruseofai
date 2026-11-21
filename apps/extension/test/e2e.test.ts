@@ -161,6 +161,40 @@ describe('the extension in a browser', () => {
     await page.close();
   }, 30000);
 
+  /*
+   * The content script sends the model the page's menu shows. Without it, the
+   * hint could give its reasons but never say which model would do, or what
+   * that would save, on any site.
+   */
+  it('names a smaller model in the hint when the page says which one is chosen', async () => {
+    if (skipIfUnavailable() || !context) return;
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/popup.html`);
+    await page.waitForSelector('.buai-popup', { timeout: 10000 });
+    const ask = (modelRaw: string | null) =>
+      page.evaluate(
+        (model) =>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (globalThis as any).chrome.runtime.sendMessage({
+            type: 'hint:ask',
+            prompt: 'Rewrite this sentence so it is shorter.',
+            surface: 'claude-web',
+            modelRaw: model,
+          }),
+        modelRaw,
+      ) as Promise<{ show: boolean; explanation: string; saving?: string }>;
+
+    const named = await ask('Claude Opus 5.5');
+    expect(named.show).toBe(true);
+    expect(named.explanation).toContain('Claude Sonnet 5.5 would probably do');
+    expect(named.saving).toMatch(/lighter$/);
+
+    // A menu that says nothing we know leaves the reasons alone, as before.
+    const unknown = await ask(null);
+    expect(unknown.explanation).not.toContain('would probably do');
+    await page.close();
+  }, 30000);
+
   it('asks where you are on the first run, once', async () => {
     if (skipIfUnavailable() || !context) return;
     const page = await context.newPage();
